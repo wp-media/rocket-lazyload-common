@@ -1,0 +1,23 @@
+{
+    "name": "wp-media/rocket-lazyload-common",
+    "description": "Common Code between WP Rocket and Lazyload by WP Rocket",
+    "license": "GPLv3",
+    "authors": [
+        {
+            "name": "WP Media",
+            "email": "contact@wp-media.me"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "RocketLazyload\\": "src"
+        }
+    },
+    "require": {
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.2"
+    }
+}
