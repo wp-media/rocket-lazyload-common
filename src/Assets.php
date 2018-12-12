@@ -58,16 +58,18 @@ class Assets
             // Get the instance and puts it in the lazyLoadInstance variable
             var lazyLoadInstance = e.detail.instance;
         
-            var observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    lazyLoadInstance.update();
+            if ("MutationObserver" in w) {
+                var observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        lazyLoadInstance.update();
+                    } );
                 } );
-            } );
-            
-            var b      = document.getElementsByTagName("body")[0];
-            var config = { childList: true, subtree: true };
-            
-            observer.observe(b, config);
+                
+                var b      = document.getElementsByTagName("body")[0];
+                var config = { childList: true, subtree: true };
+                
+                observer.observe(b, config);
+            }
         }, false);
         </script>';
     }
