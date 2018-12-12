@@ -58,7 +58,7 @@ class Assets
             // Get the instance and puts it in the lazyLoadInstance variable
             var lazyLoadInstance = e.detail.instance;
         
-            if ("MutationObserver" in w) {
+            if (window.MutationObserver) {
                 var observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
                         lazyLoadInstance.update();
