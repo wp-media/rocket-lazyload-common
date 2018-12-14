@@ -21,7 +21,7 @@ class Iframe
 
         $args = wp_parse_args($args, $defaults);
 
-        preg_match_all('/<iframe.*\ssrc=["|\'](.+)["|\'].*(>\s*<\/iframe>)/iU', $html, $matches, PREG_SET_ORDER);
+        preg_match_all('@<iframe(?<atts>\s.+)>.*</iframe>@iUs', $html, $matches, PREG_SET_ORDER);
 
         if (empty($matches)) {
             return $html;
@@ -32,18 +32,29 @@ class Iframe
                 continue;
             }
 
-            if ($args['youtube'] && false !== strpos($iframe[1], 'youtube')) {
-                $youtube_lazyload = $this->replaceYoutubeThumbnail($iframe);
+            // Given the previous regex pattern, $iframe['atts'] starts with a whitespace character.
+            if (! preg_match('@\ssrc\s*=\s*(\'|")(?<src>.*)\1@iUs', $iframe['atts'], $atts)) {
+                continue;
+            }
+
+            $iframe['src'] = trim($atts['src']);
+
+            if ('' === $iframe['src']) {
+                continue;
+            }
+
+            if ($args['youtube'] && false !== strpos($iframe['src'], 'youtube')) {
+                $youtube_lazyload = $this->replaceYoutubeThumbnail($iframe, $iframe['src']);
 
                 if (! $youtube_lazyload) {
-                    $youtube_lazyload = $this->replaceIframe($iframe);
+                    $youtube_lazyload = $this->replaceIframe($iframe, $iframe['src']);
                 }
 
                 $html = str_replace($iframe[0], $youtube_lazyload, $html);
                 continue;
             }
 
-            $iframe_lazyload = $this->replaceIframe($iframe);
+            $iframe_lazyload = $this->replaceIframe($iframe, $iframe['src']);
             $html            = str_replace($iframe[0], $iframe_lazyload, $html);
         }
 
@@ -80,9 +91,10 @@ class Iframe
      * Applies lazyload on the iframe provided
      *
      * @param array $iframe Array of matched elements
+     * @param string $src   Iframe URL.
      * @return string
      */
-    private function replaceIframe($iframe)
+    private function replaceIframe($iframe, $src)
     {
         /**
          * Filter the LazyLoad placeholder on src attribute
@@ -93,10 +105,8 @@ class Iframe
          */
         $placeholder = apply_filters('rocket_lazyload_placeholder', 'about:blank');
 
-        $iframe_noscript = '<noscript>' . $iframe[0] . '</noscript>';
-
-        $iframe_lazyload = str_replace($iframe[1], $placeholder, $iframe[0]);
-        $iframe_lazyload = str_replace($iframe[2], ' data-rocket-lazyload="fitvidscompatible" data-lazy-src="' . esc_url($iframe[1]) . '"' . $iframe[2], $iframe_lazyload);
+        $placeholder_atts = str_replace($src, $placeholder, $iframe['atts']);
+        $iframe_lazyload  = str_replace($iframe['atts'], $placeholder_atts . ' data-rocket-lazyload="fitvidscompatible" data-lazy-src="' . esc_url($src) . '"', $iframe[0]);
 
         /**
          * Filter the LazyLoad HTML output on iframes
@@ -106,7 +116,7 @@ class Iframe
          * @param array $html Output that will be printed.
          */
         $iframe_lazyload  = apply_filters('rocket_lazyload_iframe_html', $iframe_lazyload);
-        $iframe_lazyload .= $iframe_noscript;
+        $iframe_lazyload .= '<noscript>' . $iframe[0] . '</noscript>';
 
         return $iframe_lazyload;
     }
@@ -115,17 +125,18 @@ class Iframe
      * Replaces the iframe provided by the Youtube thumbnail
      *
      * @param array $iframe Array of matched elements
+     * @param string $src   Iframe URL.
      * @return bool|string
      */
-    private function replaceYoutubeThumbnail($iframe)
+    private function replaceYoutubeThumbnail($iframe, $src)
     {
-        $youtube_id = $this->getYoutubeIDFromURL($iframe[1]);
+        $youtube_id = $this->getYoutubeIDFromURL($src);
 
         if (! $youtube_id) {
             return false;
         }
 
-        $query = wp_parse_url(htmlspecialchars_decode($iframe[1]), PHP_URL_QUERY);
+        $query = wp_parse_url(htmlspecialchars_decode($src), PHP_URL_QUERY);
 
         /**
          * Filter the LazyLoad HTML output on Youtube iframes
@@ -148,7 +159,7 @@ class Iframe
      */
     private function getYoutubeIDFromURL($url)
     {
-        $pattern = '#^(?:https?://)?(?:www\.)?(?:youtu\.be|youtube\.com|youtube-nocookie\.com)/(?:embed/|v/|watch/?\?v=)([\w-]{11})#iU';
+        $pattern = '#^(?:https?:)?(?://)?(?:www\.)?(?:youtu\.be|youtube\.com|youtube-nocookie\.com)/(?:embed/|v/|watch/?\?v=)([\w-]{11})#iU';
         $result  = preg_match($pattern, $url, $matches);
 
         if (! $result) {
