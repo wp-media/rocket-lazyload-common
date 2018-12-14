@@ -21,7 +21,7 @@ class Iframe
 
         $args = wp_parse_args($args, $defaults);
 
-        preg_match_all('/<iframe.*\ssrc=["|\'](.+)["|\'].*(>\s*<\/iframe>)/iU', $html, $matches, PREG_SET_ORDER);
+        preg_match_all('@<iframe(?<atts>\s.+)>.*</iframe>@iUs', $html, $matches, PREG_SET_ORDER);
 
         if (empty($matches)) {
             return $html;
@@ -32,19 +32,26 @@ class Iframe
                 continue;
             }
 
-            if ($args['youtube'] && false !== strpos($iframe[1], 'youtube')) {
-                $youtube_lazyload = $this->replaceYoutubeThumbnail($iframe);
-
-                if (! $youtube_lazyload) {
-                    $youtube_lazyload = $this->replaceIframe($iframe);
-                }
-
-                $html = str_replace($iframe[0], $youtube_lazyload, $html);
+            // Given the previous regex pattern, $iframe['atts'] starts with a whitespace character.
+            if (! preg_match('@\ssrc\s*=\s*(\'|")(?<src>.*)\1@iUs', $iframe['atts'], $atts)) {
                 continue;
             }
 
-            $iframe_lazyload = $this->replaceIframe($iframe);
-            $html            = str_replace($iframe[0], $iframe_lazyload, $html);
+            $iframe['src'] = trim($atts['src']);
+
+            if ('' === $iframe['src']) {
+                continue;
+            }
+
+            if ($args['youtube']) {
+                $iframe_lazyload = $this->replaceYoutubeThumbnail($iframe);
+            }
+
+            if (empty($iframe_lazyload)) {
+                $iframe_lazyload = $this->replaceIframe($iframe);
+            }
+
+            $html = str_replace($iframe[0], $iframe_lazyload, $html);
         }
 
         return $html;
@@ -93,10 +100,8 @@ class Iframe
          */
         $placeholder = apply_filters('rocket_lazyload_placeholder', 'about:blank');
 
-        $iframe_noscript = '<noscript>' . $iframe[0] . '</noscript>';
-
-        $iframe_lazyload = str_replace($iframe[1], $placeholder, $iframe[0]);
-        $iframe_lazyload = str_replace($iframe[2], ' data-rocket-lazyload="fitvidscompatible" data-lazy-src="' . esc_url($iframe[1]) . '"' . $iframe[2], $iframe_lazyload);
+        $placeholder_atts = str_replace($iframe['src'], $placeholder, $iframe['atts']);
+        $iframe_lazyload  = str_replace($iframe['atts'], $placeholder_atts . ' data-rocket-lazyload="fitvidscompatible" data-lazy-src="' . esc_url($iframe['src']) . '"', $iframe[0]);
 
         /**
          * Filter the LazyLoad HTML output on iframes
@@ -106,7 +111,7 @@ class Iframe
          * @param array $html Output that will be printed.
          */
         $iframe_lazyload  = apply_filters('rocket_lazyload_iframe_html', $iframe_lazyload);
-        $iframe_lazyload .= $iframe_noscript;
+        $iframe_lazyload .= '<noscript>' . $iframe[0] . '</noscript>';
 
         return $iframe_lazyload;
     }
@@ -119,13 +124,13 @@ class Iframe
      */
     private function replaceYoutubeThumbnail($iframe)
     {
-        $youtube_id = $this->getYoutubeIDFromURL($iframe[1]);
+        $youtube_id = $this->getYoutubeIDFromURL($iframe['src']);
 
         if (! $youtube_id) {
             return false;
         }
 
-        $query = wp_parse_url(htmlspecialchars_decode($iframe[1]), PHP_URL_QUERY);
+        $query = wp_parse_url(htmlspecialchars_decode($iframe['src']), PHP_URL_QUERY);
 
         /**
          * Filter the LazyLoad HTML output on Youtube iframes
@@ -148,7 +153,7 @@ class Iframe
      */
     private function getYoutubeIDFromURL($url)
     {
-        $pattern = '#^(?:https?://)?(?:www\.)?(?:youtu\.be|youtube\.com|youtube-nocookie\.com)/(?:embed/|v/|watch/?\?v=)([\w-]{11})#iU';
+        $pattern = '#^(?:https?:)?(?://)?(?:www\.)?(?:youtu\.be|youtube\.com|youtube-nocookie\.com)/(?:embed/|v/|watch/?\?v=)([\w-]{11})#iU';
         $result  = preg_match($pattern, $url, $matches);
 
         if (! $result) {
