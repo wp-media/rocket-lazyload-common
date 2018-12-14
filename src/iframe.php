@@ -43,19 +43,15 @@ class Iframe
                 continue;
             }
 
-            if ($args['youtube'] && false !== strpos($iframe['src'], 'youtube')) {
-                $youtube_lazyload = $this->replaceYoutubeThumbnail($iframe, $iframe['src']);
-
-                if (! $youtube_lazyload) {
-                    $youtube_lazyload = $this->replaceIframe($iframe, $iframe['src']);
-                }
-
-                $html = str_replace($iframe[0], $youtube_lazyload, $html);
-                continue;
+            if ($args['youtube']) {
+                $iframe_lazyload = $this->replaceYoutubeThumbnail($iframe);
             }
 
-            $iframe_lazyload = $this->replaceIframe($iframe, $iframe['src']);
-            $html            = str_replace($iframe[0], $iframe_lazyload, $html);
+            if (empty($iframe_lazyload)) {
+                $iframe_lazyload = $this->replaceIframe($iframe);
+            }
+
+            $html = str_replace($iframe[0], $iframe_lazyload, $html);
         }
 
         return $html;
@@ -91,10 +87,9 @@ class Iframe
      * Applies lazyload on the iframe provided
      *
      * @param array $iframe Array of matched elements
-     * @param string $src   Iframe URL.
      * @return string
      */
-    private function replaceIframe($iframe, $src)
+    private function replaceIframe($iframe)
     {
         /**
          * Filter the LazyLoad placeholder on src attribute
@@ -105,8 +100,8 @@ class Iframe
          */
         $placeholder = apply_filters('rocket_lazyload_placeholder', 'about:blank');
 
-        $placeholder_atts = str_replace($src, $placeholder, $iframe['atts']);
-        $iframe_lazyload  = str_replace($iframe['atts'], $placeholder_atts . ' data-rocket-lazyload="fitvidscompatible" data-lazy-src="' . esc_url($src) . '"', $iframe[0]);
+        $placeholder_atts = str_replace($iframe['src'], $placeholder, $iframe['atts']);
+        $iframe_lazyload  = str_replace($iframe['atts'], $placeholder_atts . ' data-rocket-lazyload="fitvidscompatible" data-lazy-src="' . esc_url($iframe['src']) . '"', $iframe[0]);
 
         /**
          * Filter the LazyLoad HTML output on iframes
@@ -125,18 +120,17 @@ class Iframe
      * Replaces the iframe provided by the Youtube thumbnail
      *
      * @param array $iframe Array of matched elements
-     * @param string $src   Iframe URL.
      * @return bool|string
      */
-    private function replaceYoutubeThumbnail($iframe, $src)
+    private function replaceYoutubeThumbnail($iframe)
     {
-        $youtube_id = $this->getYoutubeIDFromURL($src);
+        $youtube_id = $this->getYoutubeIDFromURL($iframe['src']);
 
         if (! $youtube_id) {
             return false;
         }
 
-        $query = wp_parse_url(htmlspecialchars_decode($src), PHP_URL_QUERY);
+        $query = wp_parse_url(htmlspecialchars_decode($iframe['src']), PHP_URL_QUERY);
 
         /**
          * Filter the LazyLoad HTML output on Youtube iframes
