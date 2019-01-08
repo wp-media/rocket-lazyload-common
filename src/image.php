@@ -230,9 +230,11 @@ class Image
      * @since 1.2
      * @author Remy Perona
      *
+     * @param int $width  Width of the placeholder image. Default 1.
+     * @param int $height Height of the placeholder image. Default 1.
      * @return void
      */
-    private function getPlaceholder()
+    private function getPlaceholder($width = 1, $height = 1)
     {
         /**
          * Filter the image lazyLoad placeholder on src attribute
@@ -241,6 +243,6 @@ class Image
          *
          * @param string $placeholder Placeholder that will be printed.
          */
-        return apply_filters('rocket_lazyload_placeholder', 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3C/svg%3E');
+        return apply_filters('rocket_lazyload_placeholder', "data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 $width $height\'%3E%3C/svg%3E");
     }
 }
