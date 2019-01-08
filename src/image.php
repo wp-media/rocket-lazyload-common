@@ -79,16 +79,7 @@ class Image
             return $image[0];
         }
 
-        /**
-         * Filter the LazyLoad placeholder on src attribute
-         *
-         * @since 1.1
-         *
-         * @param string $placeholder Placeholder that will be printed.
-         */
-        $placeholder = apply_filters('rocket_lazyload_placeholder', 'data:image/gif;base64,R0lGODdhAQABAPAAAP///wAAACwAAAAAAQABAEACAkQBADs=');
-
-        $html = sprintf('<img%1$s src="%4$s" data-lazy-src=%2$s%3$s>', $image[1], $image[2], $image[3], $placeholder);
+        $html = sprintf('<img%1$s src="%4$s" data-lazy-src=%2$s%3$s>', $image[1], $image[2], $image[3], $this->getPlaceholder());
 
         $html_noscript = sprintf('<noscript><img%1$s src=%2$s%3$s></noscript>', $image[1], $image[2], $image[3]);
 
@@ -139,31 +130,6 @@ class Image
         }
     
         return $html;
-    }
-
-    /**
-     * Applies lazyload on wp_get_attachment_image() function
-     *
-     * @param array $attr Array of attributes for the image
-     * @return array
-     */
-    public function lazyloadGetAttachmentImage($attr)
-    {
-        $attr['data-lazy-src'] = $attr['src'];
-        // this filter is documented in RocketLazyload\Lazyload.php.
-        $attr['src'] = apply_filters('rocket_lazyload_placeholder', 'data:image/gif;base64,R0lGODdhAQABAPAAAP///wAAACwAAAAAAQABAEACAkQBADs=');
-
-        if (isset($attr['srcset'])) {
-            $attr['data-lazy-srcset'] = $attr['srcset'];
-            unset($attr['srcset']);
-        }
-
-        if (isset($attr['sizes'])) {
-            $attr['data-lazy-sizes'] = $attr['sizes'];
-            unset($attr['sizes']);
-        }
-
-        return $attr;
     }
 
     /**
@@ -255,9 +221,28 @@ class Image
             return sprintf(' <img src="%s" alt="%s" class="wp-smiley" /> ', esc_url($src_url), esc_attr($smiley));
         }
 
-        // This filter is documented in RocketLazyload\Lazyload.php.
-        $placeholder = apply_filters('rocket_lazyload_placeholder', 'data:image/gif;base64,R0lGODdhAQABAPAAAP///wAAACwAAAAAAQABAEACAkQBADs=');
+        return sprintf(' <img src="%s" data-lazy-src="%s" alt="%s" class="wp-smiley" /> ', $this->getPlaceholder(), esc_url($src_url), esc_attr($smiley));
+    }
 
-        return sprintf(' <img src="%s" data-lazy-src="%s" alt="%s" class="wp-smiley" /> ', $placeholder, esc_url($src_url), esc_attr($smiley));
+    /**
+     * Returns the placeholder for the src attribute
+     *
+     * @since 1.2
+     * @author Remy Perona
+     *
+     * @param int $width  Width of the placeholder image. Default 1.
+     * @param int $height Height of the placeholder image. Default 1.
+     * @return void
+     */
+    private function getPlaceholder($width = 1, $height = 1)
+    {
+        /**
+         * Filter the image lazyLoad placeholder on src attribute
+         *
+         * @since 1.1
+         *
+         * @param string $placeholder Placeholder that will be printed.
+         */
+        return apply_filters('rocket_lazyload_placeholder', "data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 $width $height\'%3E%3C/svg%3E");
     }
 }
