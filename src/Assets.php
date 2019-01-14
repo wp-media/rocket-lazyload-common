@@ -121,6 +121,6 @@ HTML;
 
         wp_register_style('rocket-lazyload', false);
         wp_enqueue_style('rocket-lazyload');
-        wp_add_inline_style($css);
+        wp_add_inline_style('rocket-lazyload', $css);
     }
 }
