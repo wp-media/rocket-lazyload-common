@@ -52,6 +52,8 @@ class Iframe
             }
 
             $html = str_replace($iframe[0], $iframe_lazyload, $html);
+
+            unset($iframe_lazyload);
         }
 
         return $html;
