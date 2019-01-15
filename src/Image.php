@@ -10,89 +10,88 @@ class Image
      * Finds the images to be lazyloaded and call the callback method to replace them.
      *
      * @param string $html
+     * @param string $buffer
      * @return string
      */
-    public function lazyloadImages($html)
+    public function lazyloadImages($html, $buffer)
     {
-        return preg_replace_callback('#<img([^>]*) src=("(?:[^"]+)"|\'(?:[^\']+)\'|(?:[^ >]+))([^>]*)>#', [$this,'imageReplaceCallback'], $html);
-    }
+        preg_match_all('#<img([^>]*) src=("(?:[^"]+)"|\'(?:[^\']+)\'|(?:[^ >]+))([^>]*)>#', $buffer, $images, PREG_SET_ORDER);
 
-    /**
-     * Modifies the HTML image tag provided to apply lazyload on it.
-     *
-     * @param array $image Array of matching patterns.
-     * @return string
-     */
-    private function imageReplaceCallback($image)
-    {
-        // Don't apply LazyLoad on images from WP Retina x2.
-        if (function_exists('wr2x_picture_rewrite')) {
-            if (wr2x_get_retina(trailingslashit(ABSPATH) . wr2x_get_pathinfo_from_image_src(trim($image[2], '"')))) {
-                return $image[0];
+        if (! empty($images)) {
+            return $html;
+        }
+
+        foreach ($images as $image) {
+            // Don't apply LazyLoad on images from WP Retina x2.
+            if (function_exists('wr2x_picture_rewrite')) {
+                if (wr2x_get_retina(trailingslashit(ABSPATH) . wr2x_get_pathinfo_from_image_src(trim($image[2], '"')))) {
+                    continue;
+                }
             }
+
+            /**
+             * Filters the attributes used to prevent lazylad from being applied
+             *
+             * @since 1.0
+             * @author Remy Perona
+             *
+             * @param array $excluded_attributes An array of excluded attributes.
+             */
+            $excluded_attributes = apply_filters(
+                'rocket_lazyload_excluded_attributes',
+                [
+                    'data-src=',
+                    'data-no-lazy=',
+                    'data-lazy-original=',
+                    'data-lazy-src=',
+                    'data-lazysrc=',
+                    'data-lazyload=',
+                    'data-bgposition=',
+                    'data-envira-src=',
+                    'fullurl=',
+                    'lazy-slider-img=',
+                    'data-srcset=',
+                    'class="ls-l',
+                    'class="ls-bg',
+                ]
+            );
+
+            /**
+             * Filters the src used to prevent lazylad from being applied
+             *
+             * @since 1.0
+             * @author Remy Perona
+             *
+             * @param array $excluded_src An array of excluded src.
+             */
+            $excluded_src = apply_filters(
+                'rocket_lazyload_excluded_src',
+                [
+                    '/wpcf7_captcha/',
+                    'timthumb.php?src',
+                ]
+            );
+
+            if ($this->isExcluded($image[1] . $image[3], $excluded_attributes) || $this->isExcluded($image[2], $excluded_src)) {
+                continue;
+            }
+
+            $image_lazyload = sprintf('<img%1$s src="%4$s" data-lazy-src=%2$s%3$s>', $image[1], $image[2], $image[3], $this->getPlaceholder());
+
+            /**
+             * Filter the LazyLoad HTML output
+             *
+             * @since 1.0
+             *
+             * @param string $html Output that will be printed
+             */
+            $image_lazyload = apply_filters('rocket_lazyload_html', $image_lazyload);
+            $image_lazyload .= '<noscript>' . $image[0] . '</noscript>';
+
+            $html = str_replace($image[0], $image_lazyload, $html);
         }
 
-        /**
-         * Filters the attributes used to prevent lazylad from being applied
-         *
-         * @since 2.11
-         * @author Remy Perona
-         *
-         * @param array $excluded_attributes An array of excluded attributes.
-         */
-        $excluded_attributes = apply_filters(
-            'rocket_lazyload_excluded_attributes',
-            [
-                'data-src=',
-                'data-no-lazy=',
-                'data-lazy-original=',
-                'data-lazy-src=',
-                'data-lazysrc=',
-                'data-lazyload=',
-                'data-bgposition=',
-                'data-envira-src=',
-                'fullurl=',
-                'lazy-slider-img=',
-                'data-srcset=',
-                'class="ls-l',
-                'class="ls-bg',
-            ]
-        );
-
-        /**
-         * Filters the src used to prevent lazylad from being applied
-         *
-         * @since 2.11
-         * @author Remy Perona
-         *
-         * @param array $excluded_src An array of excluded src.
-         */
-        $excluded_src = apply_filters(
-            'rocket_lazyload_excluded_src',
-            [
-                '/wpcf7_captcha/',
-                'timthumb.php?src',
-            ]
-        );
-
-        if ($this->isExcluded($image[1] . $image[3], $excluded_attributes) || $this->isExcluded($image[2], $excluded_src)) {
-            return $image[0];
-        }
-
-        $html = sprintf('<img%1$s src="%4$s" data-lazy-src=%2$s%3$s>', $image[1], $image[2], $image[3], $this->getPlaceholder());
-
-        $html_noscript = sprintf('<noscript><img%1$s src=%2$s%3$s></noscript>', $image[1], $image[2], $image[3]);
-
-        /**
-         * Filter the LazyLoad HTML output
-         *
-         * @since 1.0.2
-         *
-         * @param array $html Output that will be printed
-         */
-        $html = apply_filters('rocket_lazyload_html', $html);
-
-        return $html . $html_noscript;
+        return $html;
     }
 
     /**
