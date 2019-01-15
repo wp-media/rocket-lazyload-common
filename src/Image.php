@@ -17,7 +17,7 @@ class Image
     {
         preg_match_all('#<img([^>]*) src=("(?:[^"]+)"|\'(?:[^\']+)\'|(?:[^ >]+))([^>]*)>#', $buffer, $images, PREG_SET_ORDER);
 
-        if (! empty($images)) {
+        if (empty($images)) {
             return $html;
         }
 
