@@ -9,11 +9,12 @@ class Iframe
     /**
      * Finds iframes in the HTML provided and call the methods to lazyload them
      *
-     * @param string $html HTML to parse
+     * @param string $html Original HTML
+     * @param string $buffer Content to parse
      * @param array $args Array of arguments to use
      * @return string
      */
-    public function lazyloadIframes($html, $args)
+    public function lazyloadIframes($html, $buffer, $args)
     {
         $defaults = [
             'youtube' => false,
@@ -21,7 +22,7 @@ class Iframe
 
         $args = wp_parse_args($args, $defaults);
 
-        preg_match_all('@<iframe(?<atts>\s.+)>.*</iframe>@iUs', $html, $matches, PREG_SET_ORDER);
+        preg_match_all('@<iframe(?<atts>\s.+)>.*</iframe>@iUs', $buffer, $matches, PREG_SET_ORDER);
 
         if (empty($matches)) {
             return $html;
@@ -96,7 +97,7 @@ class Iframe
         /**
          * Filter the LazyLoad placeholder on src attribute
          *
-         * @since 2.11
+         * @since 1.0
          *
          * @param string $placeholder placeholder that will be printed.
          */
@@ -108,7 +109,7 @@ class Iframe
         /**
          * Filter the LazyLoad HTML output on iframes
          *
-         * @since 2.11
+         * @since 1.0
          *
          * @param array $html Output that will be printed.
          */
