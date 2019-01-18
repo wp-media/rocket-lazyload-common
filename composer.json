@@ -1,7 +1,7 @@
 {
     "name": "wp-media/rocket-lazyload-common",
     "description": "Common Code between WP Rocket and Lazyload by WP Rocket",
-    "license": "GPLv3",
+    "license": "GPL-3.0-or-later",
     "authors": [
         {
             "name": "WP Media",
