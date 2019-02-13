@@ -3,5 +3,22 @@
 	<description>Rocket Lazyload Coding Standards</description>
 
 	<config name="testVersion" value="5.4-" />
-	<rule ref="PSR2" />
+	<rule ref="PHPCompatibilityWP">
+    	<include-pattern>*\.php$</include-pattern>
+	</rule>
+	<rule ref="PSR2">
+		<exclude name="Generic.Files.LineLength.TooLong" />
+	</rule>
+	<rule ref="WordPress">
+		<exclude name="WordPress.Files.FileName" />
+		<exclude name="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid" />
+		<exclude name="WordPress.WhiteSpace.ControlStructureSpacing" />
+		<exclude name="WordPress.WhiteSpace.OperatorSpacing.NoSpaceBefore" />
+		<exclude name="WordPress.Arrays.ArrayDeclarationSpacing" />
+		<exclude name="Generic.Classes.OpeningBraceSameLine.BraceOnNewLine" />
+		<exclude name="Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed" />
+		<exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.BraceOnNewLine" />
+		<exclude name="PEAR.Functions.FunctionCallSignature" />
+		<exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterOpen" />
+	</rule>
 </ruleset>
