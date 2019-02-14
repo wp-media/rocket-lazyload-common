@@ -1,4 +1,10 @@
 <?php
+/**
+ * Handles lazyloading of images
+ *
+ * @package RocketLazyload
+ */
+
 namespace RocketLazyload;
 
 /**
@@ -9,8 +15,8 @@ class Image
     /**
      * Finds the images to be lazyloaded and call the callback method to replace them.
      *
-     * @param string $html
-     * @param string $buffer
+     * @param string $html   Original HTML.
+     * @param string $buffer Content to parse.
      * @return string
      */
     public function lazyloadImages($html, $buffer)
@@ -21,6 +27,8 @@ class Image
             return $html;
         }
 
+        $images = array_unique($images, SORT_REGULAR);
+
         foreach ($images as $image) {
             // Don't apply LazyLoad on images from WP Retina x2.
             if (function_exists('wr2x_picture_rewrite')) {
@@ -29,66 +37,14 @@ class Image
                 }
             }
 
-            /**
-             * Filters the attributes used to prevent lazylad from being applied
-             *
-             * @since 1.0
-             * @author Remy Perona
-             *
-             * @param array $excluded_attributes An array of excluded attributes.
-             */
-            $excluded_attributes = apply_filters(
-                'rocket_lazyload_excluded_attributes',
-                [
-                    'data-src=',
-                    'data-no-lazy=',
-                    'data-lazy-original=',
-                    'data-lazy-src=',
-                    'data-lazysrc=',
-                    'data-lazyload=',
-                    'data-bgposition=',
-                    'data-envira-src=',
-                    'fullurl=',
-                    'lazy-slider-img=',
-                    'data-srcset=',
-                    'class="ls-l',
-                    'class="ls-bg',
-                ]
-            );
-
-            /**
-             * Filters the src used to prevent lazylad from being applied
-             *
-             * @since 1.0
-             * @author Remy Perona
-             *
-             * @param array $excluded_src An array of excluded src.
-             */
-            $excluded_src = apply_filters(
-                'rocket_lazyload_excluded_src',
-                [
-                    '/wpcf7_captcha/',
-                    'timthumb.php?src',
-                ]
-            );
-
-            if ($this->isExcluded($image[1] . $image[3], $excluded_attributes) || $this->isExcluded($image[2], $excluded_src)) {
+            if ($this->isExcluded($image[1] . $image[3], $this->getExcludedAttributes()) || $this->isExcluded($image[2], $this->getExcludedSrc())) {
                 continue;
             }
 
-            $image_lazyload = sprintf('<img%1$s src="%4$s" data-lazy-src=%2$s%3$s>', $image[1], $image[2], $image[3], $this->getPlaceholder());
-
-            /**
-             * Filter the LazyLoad HTML output
-             *
-             * @since 1.0
-             *
-             * @param string $html Output that will be printed
-             */
-            $image_lazyload = apply_filters('rocket_lazyload_html', $image_lazyload);
-            $image_lazyload .= '<noscript>' . $image[0] . '</noscript>';
-
+            $image_lazyload = $this->replaceImage($image);
             $html = str_replace($image[0], $image_lazyload, $html);
+
+            unset($image_lazyload);
         }
 
         return $html;
@@ -97,12 +53,20 @@ class Image
     /**
      * Checks if the provided string matches with the provided excluded patterns
      *
-     * @param string $string String to check
-     * @param array $excluded_values Patterns to match against
+     * @param string $string          String to check.
+     * @param array  $excluded_values Patterns to match against.
      * @return boolean
      */
-    private function isExcluded($string, $excluded_values)
+    public function isExcluded($string, $excluded_values)
     {
+        if (! is_array($excluded_values)) {
+            (array) $excluded_values;
+        }
+
+        if (empty($excluded_values)) {
+            return false;
+        }
+
         foreach ($excluded_values as $excluded_value) {
             if (strpos($string, $excluded_value) !== false) {
                 return true;
@@ -113,9 +77,91 @@ class Image
     }
 
     /**
+     * Returns the list of excluded attributes
+     *
+     * @return array
+     */
+    public function getExcludedAttributes()
+    {
+        /**
+         * Filters the attributes used to prevent lazylad from being applied
+         *
+         * @since 1.0
+         * @author Remy Perona
+         *
+         * @param array $excluded_attributes An array of excluded attributes.
+         */
+        return apply_filters(
+            'rocket_lazyload_excluded_attributes',
+            [
+                'data-src=',
+                'data-no-lazy=',
+                'data-lazy-original=',
+                'data-lazy-src=',
+                'data-lazysrc=',
+                'data-lazyload=',
+                'data-bgposition=',
+                'data-envira-src=',
+                'fullurl=',
+                'lazy-slider-img=',
+                'data-srcset=',
+                'class="ls-l',
+                'class="ls-bg',
+            ]
+        );
+    }
+
+    /**
+     * Returns the list of excluded src
+     *
+     * @return array
+     */
+    public function getExcludedSrc()
+    {
+        /**
+         * Filters the src used to prevent lazylad from being applied
+         *
+         * @since 1.0
+         * @author Remy Perona
+         *
+         * @param array $excluded_src An array of excluded src.
+         */
+        return apply_filters(
+            'rocket_lazyload_excluded_src',
+            [
+                '/wpcf7_captcha/',
+                'timthumb.php?src',
+            ]
+        );
+    }
+
+    /**
+     * Replaces the original image by the lazyload one
+     *
+     * @param array $image Array of matches elements.
+     * @return string
+     */
+    private function replaceImage($image)
+    {
+        $image_lazyload = sprintf('<img%1$s src="%4$s" data-lazy-src=%2$s%3$s>', $image[1], $image[2], $image[3], $this->getPlaceholder());
+
+        /**
+         * Filter the LazyLoad HTML output
+         *
+         * @since 1.0
+         *
+         * @param string $html Output that will be printed
+         */
+        $image_lazyload  = apply_filters('rocket_lazyload_html', $image_lazyload);
+        $image_lazyload .= '<noscript>' . $image[0] . '</noscript>';
+
+        return $image_lazyload;
+    }
+
+    /**
      * Applies lazyload on srcset and sizes attributes
      *
-     * @param string $html HTML image tag
+     * @param string $html HTML image tag.
      * @return string
      */
     public function lazyloadResponsiveAttributes($html)
@@ -134,7 +180,7 @@ class Image
     /**
      * Finds patterns matching smiley and call the callback method to replace them with the image
      *
-     * @param string $text Content to search in
+     * @param string $text Content to search in.
      * @return string
      */
     public function convertSmilies($text)
@@ -181,7 +227,7 @@ class Image
     /**
      * Replace matches by smiley image, lazyloaded
      *
-     * @param array $matches Array of matches
+     * @param array $matches Array of matches.
      * @return string
      */
     private function translateSmiley($matches)
@@ -231,10 +277,16 @@ class Image
      *
      * @param int $width  Width of the placeholder image. Default 1.
      * @param int $height Height of the placeholder image. Default 1.
-     * @return void
+     * @return string
      */
-    private function getPlaceholder($width = 1, $height = 1)
+    public function getPlaceholder($width = 1, $height = 1)
     {
+        $width  = absint($width);
+        $height = absint($height);
+
+        $width  = 0 === $width ? 1 : $width;
+        $height = 0 === $height ? 1 : $height;
+
         /**
          * Filter the image lazyLoad placeholder on src attribute
          *
@@ -242,6 +294,6 @@ class Image
          *
          * @param string $placeholder Placeholder that will be printed.
          */
-        return apply_filters('rocket_lazyload_placeholder', "data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 $width $height\'%3E%3C/svg%3E");
+        return apply_filters('rocket_lazyload_placeholder', "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $width $height'%3E%3C/svg%3E");
     }
 }
