@@ -1,4 +1,10 @@
 <?php
+/**
+ * Handles lazyloading of iframes
+ *
+ * @package RocketLazyload
+ */
+
 namespace RocketLazyload;
 
 /**
@@ -9,12 +15,12 @@ class Iframe
     /**
      * Finds iframes in the HTML provided and call the methods to lazyload them
      *
-     * @param string $html Original HTML
-     * @param string $buffer Content to parse
-     * @param array $args Array of arguments to use
+     * @param string $html   Original HTML.
+     * @param string $buffer Content to parse.
+     * @param array  $args   Array of arguments to use.
      * @return string
      */
-    public function lazyloadIframes($html, $buffer, $args)
+    public function lazyloadIframes($html, $buffer, $args = [])
     {
         $defaults = [
             'youtube' => false,
@@ -22,13 +28,15 @@ class Iframe
 
         $args = wp_parse_args($args, $defaults);
 
-        preg_match_all('@<iframe(?<atts>\s.+)>.*</iframe>@iUs', $buffer, $matches, PREG_SET_ORDER);
+        preg_match_all('@<iframe(?<atts>\s.+)>.*</iframe>@iUs', $buffer, $iframes, PREG_SET_ORDER);
 
-        if (empty($matches)) {
+        if (empty($iframes)) {
             return $html;
         }
 
-        foreach ($matches as $iframe) {
+        $iframes = array_unique($iframes, SORT_REGULAR);
+
+        foreach ($iframes as $iframe) {
             if ($this->isIframeExcluded($iframe)) {
                 continue;
             }
@@ -63,10 +71,10 @@ class Iframe
     /**
      * Checks if the provided iframe is excluded from lazyload
      *
-     * @param array $iframe Array of matched patterns
+     * @param array $iframe Array of matched patterns.
      * @return boolean
      */
-    private function isIframeExcluded($iframe)
+    public function isIframeExcluded($iframe)
     {
         // Don't mess with the Gravity Forms ajax iframe.
         if (strpos($iframe[0], 'gform_ajax_frame')) {
@@ -89,7 +97,7 @@ class Iframe
     /**
      * Applies lazyload on the iframe provided
      *
-     * @param array $iframe Array of matched elements
+     * @param array $iframe Array of matched elements.
      * @return string
      */
     private function replaceIframe($iframe)
@@ -122,7 +130,7 @@ class Iframe
     /**
      * Replaces the iframe provided by the Youtube thumbnail
      *
-     * @param array $iframe Array of matched elements
+     * @param array $iframe Array of matched elements.
      * @return bool|string
      */
     private function replaceYoutubeThumbnail($iframe)
@@ -151,12 +159,12 @@ class Iframe
     /**
      * Gets the Youtube ID from the URL provided
      *
-     * @param string $url URL to search
+     * @param string $url URL to search.
      * @return bool|string
      */
-    private function getYoutubeIDFromURL($url)
+    public function getYoutubeIDFromURL($url)
     {
-        $pattern = '#^(?:https?:)?(?://)?(?:www\.)?(?:youtu\.be|youtube\.com|youtube-nocookie\.com)/(?:embed/|v/|watch/?\?v=)([\w-]{11})#iU';
+        $pattern = '#^(?:https?:)?(?://)?(?:www\.)?(?:youtu\.be|youtube\.com|youtube-nocookie\.com)/(?:embed/|v/|watch/?\?v=)?([\w-]{11})#iU';
         $result  = preg_match($pattern, $url, $matches);
 
         if (! $result) {

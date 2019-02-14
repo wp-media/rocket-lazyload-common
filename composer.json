@@ -2,6 +2,10 @@
     "name": "wp-media/rocket-lazyload-common",
     "description": "Common Code between WP Rocket and Lazyload by WP Rocket",
     "license": "GPL-3.0-or-later",
+    "support": {
+        "issues": "https://github.com/wp-media/rocket-lazyload-common/issues",
+        "source": "https://github.com/wp-media/rocket-lazyload-common"
+    },
     "authors": [
         {
             "name": "WP Media",
@@ -14,10 +18,25 @@
             "RocketLazyload\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "RocketLazyload\\Tests\\Unit\\": "tests/Unit",
+            "RocketLazyload\\Tests\\Integration\\": "tests/Integration"
+        }
+    },
     "require": {
         "php": ">=5.4"
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "^3.2"
+        "wp-coding-standards/wpcs": "^2.0.0",
+        "phpcompatibility/phpcompatibility-wp": "^2.0",
+        "phpunit/phpunit": "^5.7",
+        "brain/monkey": "^2.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0"
+
+    },
+    "scripts": {
+        "test-unit":"\"vendor/bin/phpunit\" --testsuite unit --colors=always",
+        "test-integration": "\"vendor/bin/phpunit\" --testsuite integration --colors=always --configuration tests/Integration/phpunit.xml.dist"
     }
 }
