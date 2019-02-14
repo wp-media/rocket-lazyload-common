@@ -1,8 +1,8 @@
 <?php
 /**
- * Unit tests for RocketLazyload\Image::isExcluded method
+ * Unit tests for Image::isExcluded method
  *
- * @package RocketLazyload\Tests\Unit\Image
+ * @package RocketLazyload
  */
 
 namespace RocketLazyload\Tests\Unit\Image;
@@ -11,14 +11,16 @@ use PHPUnit\Framework\TestCase;
 use RocketLazyload\Image;
 
 /**
- * Tests for the RocketLazyload\Image::isExcluded method
+ * Tests for the Image::isExcluded method
+ *
+ * @coversDefaultClass RocketLazyload\Image
  */
 class TestIsExcluded extends TestCase
 {
     /**
-     * Instance of RocketLazyload\Image
+     * Instance of Image
      *
-     * @var RocketLazyload\Image
+     * @var Image
      */
     private $image;
 
@@ -33,7 +35,7 @@ class TestIsExcluded extends TestCase
     }
 
     /**
-     * Tests the method returns true when an excluded pattern is contained in the provided string
+     * @covers ::isExcluded
      *
      * @dataProvider imageWithExcludedPatternProvider
      * @param string $string          String to test.
@@ -139,7 +141,7 @@ class TestIsExcluded extends TestCase
     }
 
     /**
-     * Test the method returns false when the excluded values parameters is an empty array
+     * @covers ::isExcluded
      */
     public function testShouldReturnFalseWhenEmptyExcludedValues()
     {
@@ -152,7 +154,7 @@ class TestIsExcluded extends TestCase
     }
 
     /**
-     * Tests the method returns false when no excluded pattern is contained in the provided string
+     * @covers ::isExcluded
      *
      * @dataProvider imageWithoutExcludedPatternProvider
      * @param string $string          String to test.

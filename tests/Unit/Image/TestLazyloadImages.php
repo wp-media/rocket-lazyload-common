@@ -14,6 +14,8 @@ use RocketLazyload\Image;
 
 /**
  * Tests for the RocketLazyload\Image::lazyloadImages method
+ *
+ * @coversDefaultClass RocketLazyload\Image
  */
 class TestLazyloadImages extends TestCase
 {

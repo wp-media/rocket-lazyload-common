@@ -1,8 +1,8 @@
 <?php
 /**
- * Unit tests for get excluded patterns methods
+ * Unit tests for Image::getExcludedAttributes and Image::getExcludedSrc methods
  *
- * @package RocketLazyload\Tests\Unit\Image
+ * @package RocketLazyload
  */
 
 namespace RocketLazyload\Tests\Unit\Image;
@@ -10,17 +10,16 @@ namespace RocketLazyload\Tests\Unit\Image;
 use PHPUnit\Framework\TestCase;
 use RocketLazyload\Image;
 use Brain\Monkey;
-use Brain\Monkey\Functions;
 
 /**
- * Tests the RocketLazyload\Image::getExcludedAttributes & RocketLazyload\Image::getExcludedSrc methods
+ * Tests the Image::getExcludedAttributes and Image::getExcludedSrc methods
  */
 class TestExcluded extends TestCase
 {
     /**
-     * Instance of RocketLazyload\Image
+     * Instance of Image
      *
-     * @var RocketLazyload\Image
+     * @var Image
      */
     private $image;
 
@@ -32,7 +31,8 @@ class TestExcluded extends TestCase
     public function setUp()
     {
         $this->image = new Image();
-        Monkey\Setup();
+        parent::setUp();
+        Monkey\setUp();
     }
 
     /**
@@ -43,10 +43,12 @@ class TestExcluded extends TestCase
     public function tearDown()
     {
         Monkey\TearDown();
+        parent::tearDown();
     }
 
     /**
-     * Test the returned array matches with the expected
+     * @covers ::getExcludedAttributes
+     * @author Remy Perona
      */
     public function testShouldReturnArrayExcludedAttributes()
     {
@@ -73,7 +75,8 @@ class TestExcluded extends TestCase
     }
 
     /**
-     * Test the returned array matches with the expected
+     * @covers ::getExcludedSrc
+     * @author Remy Perona
      */
     public function testShouldReturnArrayExcludedSrc()
     {

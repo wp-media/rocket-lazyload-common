@@ -1,8 +1,8 @@
 <?php
 /**
- * Unit tests for RocketLazyload\Image:lazyloadResponsiveAttributes method
+ * Unit tests for Image:lazyloadResponsiveAttributes method
  *
- * @package RocketLazyload\Tests\Unit\Image
+ * @package RocketLazyload
  */
 
 namespace RocketLazyload\Tests\Unit\Image;
@@ -11,14 +11,16 @@ use PHPUnit\Framework\TestCase;
 use RocketLazyload\Image;
 
 /**
- * Tests for the RocketLazyload\Image::lazyloadResponsiveAttributes method
+ * Tests for the Image::lazyloadResponsiveAttributes method
+ *
+ * @coversDefaultClass RocketLazyload\Image
  */
 class TestLazyloadResponsiveAttributes extends TestCase
 {
     /**
-     * Instance of RocketLazyload\Image
+     * Instance of Image
      *
-     * @var RocketLazyload\Image
+     * @var Image
      */
     private $image;
 
@@ -33,7 +35,7 @@ class TestLazyloadResponsiveAttributes extends TestCase
     }
 
     /**
-     * Test replacement of responsive attributes srcset and sizes by data-srcset and data-sizes
+     * @covers ::lazyloadResponsiveAttributes
      */
     public function testShouldLazyloadResponsiveAttributesWhenPresent()
     {
@@ -47,7 +49,7 @@ class TestLazyloadResponsiveAttributes extends TestCase
     }
 
     /**
-     * Test that nothing happens if the image doesn't contain responsive attributes
+     * @covers ::lazyloadResponsiveAttributes
      */
     public function testShouldDoNothingWhenNoResponsiveAttribute()
     {
