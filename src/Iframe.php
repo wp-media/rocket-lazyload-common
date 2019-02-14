@@ -28,13 +28,15 @@ class Iframe
 
         $args = wp_parse_args($args, $defaults);
 
-        preg_match_all('@<iframe(?<atts>\s.+)>.*</iframe>@iUs', $buffer, $matches, PREG_SET_ORDER);
+        preg_match_all('@<iframe(?<atts>\s.+)>.*</iframe>@iUs', $buffer, $iframes, PREG_SET_ORDER);
 
-        if (empty($matches)) {
+        if (empty($iframes)) {
             return $html;
         }
 
-        foreach ($matches as $iframe) {
+        $iframes = array_unique($iframes, SORT_REGULAR);
+
+        foreach ($iframes as $iframe) {
             if ($this->isIframeExcluded($iframe)) {
                 continue;
             }
