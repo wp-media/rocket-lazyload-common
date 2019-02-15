@@ -24,6 +24,9 @@
             "RocketLazyload\\Tests\\Integration\\": "tests/Integration"
         }
     },
+    "config": {
+		"sort-packages": true
+	},
     "require": {
         "php": ">=5.6"
     },
