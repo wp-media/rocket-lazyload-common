@@ -66,6 +66,7 @@ class TestExcluded extends TestCase
             'data-srcset=',
             'class="ls-l',
             'class="ls-bg',
+            'soliloquy-image',
         ];
 
         $this->assertSame(
