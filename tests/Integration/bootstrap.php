@@ -24,7 +24,7 @@ function rocketlazyloadGetWPTestsDir()
 
     // Travis CI & Vagrant SSH tests directory.
     if (empty($tests_dir)) {
-        $tests_dir = '/tmp/wordpress-tests';
+        $tests_dir = '/tmp/wordpress';
     }
     // If the tests' includes directory does not exist, try a relative path to Core tests directory.
     if (! file_exists($tests_dir . '/includes/')) {
