@@ -8,6 +8,7 @@
 namespace RocketLazyload\Tests\Unit\Iframe;
 
 use PHPUnit\Framework\TestCase;
+use Brain\Monkey;
 use RocketLazyload\Iframe;
 
 /**
@@ -31,7 +32,20 @@ class TestIsIframeExcluded extends TestCase
      */
     public function setUp()
     {
+        parent::setUp();
+        Monkey\setUp();
         $this->iframe = new Iframe();
+    }
+
+    /**
+     * Do this after each test
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        Monkey\tearDown();
+        parent::tearDown();
     }
 
     /**

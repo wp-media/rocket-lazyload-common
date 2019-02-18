@@ -76,22 +76,40 @@ class Iframe
      */
     public function isIframeExcluded($iframe)
     {
-        // Don't mess with the Gravity Forms ajax iframe.
-        if (strpos($iframe[0], 'gform_ajax_frame')) {
-            return true;
-        }
 
-        // Don't lazyload if iframe has data-no-lazy attribute.
-        if (strpos($iframe[0], 'data-no-lazy=')) {
-            return true;
-        }
-
-        // Don't lazyload if iframe is google recaptcha fallback.
-        if (strpos($iframe[0], 'recaptcha/api/fallback')) {
-            return true;
+        foreach ($this->getExcludedPatterns() as $excluded_pattern) {
+            if (strpos($iframe[0], $excluded_pattern) !== false) {
+                return true;
+            }
         }
 
         return false;
+    }
+
+    /**
+     * Gets patterns excluded from lazyload for iframes
+     *
+     * @since 2.1.1
+     *
+     * @return array
+     */
+    private function getExcludedPatterns()
+    {
+        /**
+         * Filters the patterns excluded from lazyload for iframes
+         *
+         * @since 2.1.1
+         *
+         * @param array $excluded_patterns Array of excluded patterns.
+         */
+        return apply_filters(
+            'rocket_lazyload_iframe_excluded_patterns',
+            [
+                'gform_ajax_frame',
+                'data-no-lazy=',
+                'recaptcha/api/fallback',
+            ]
+        );
     }
 
     /**
