@@ -107,6 +107,7 @@ class Image
                 'data-srcset=',
                 'class="ls-l',
                 'class="ls-bg',
+                'soliloquy-image',
             ]
         );
     }
