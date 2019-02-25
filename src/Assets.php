@@ -39,17 +39,14 @@ class Assets
             ],
             'threshold' => 300,
             'version'   => '',
-            'fallback'  => '',
         ];
 
         $args = wp_parse_args($args, $defaults);
         $min  = defined('SCRIPT_DEBUG') ? '' : '.min';
 
-        return '<script>(function(w, d){
-            var b = d.getElementsByTagName("body")[0];
-            var s = d.createElement("script"); s.async = true;
-            s.src = !("IntersectionObserver" in w) ? "' . $args['base_url'] . 'lazyload-' . $args['fallback'] . $min . '.js" : "' . $args['base_url'] . 'lazyload-' . $args['version'] . $min . '.js";
-            w.lazyLoadOptions = {
+        return '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script>
+        <script>
+            window.lazyLoadOptions = {
                 elements_selector: "' . esc_attr(implode(',', $args['elements'])) . '",
                 data_src: "lazy-src",
                 data_srcset: "lazy-srcset",
@@ -69,9 +66,7 @@ class Assets
                         }
                     }
                 }
-            }; // Your options here. See "recipes" for more information about async.
-            b.appendChild(s);
-        }(window, document));
+            };
         
         // Listen to the Initialized event
         window.addEventListener(\'LazyLoad::Initialized\', function (e) {
@@ -91,7 +86,8 @@ class Assets
                 observer.observe(b, config);
             }
         }, false);
-        </script>';
+        </script>
+        <script async src="' . $args['base_url'] . 'lazyload-' . $args['version'] . $min . '.js"></script>';
     }
 
     /**
