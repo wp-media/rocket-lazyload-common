@@ -42,7 +42,7 @@ class Assets
         ];
 
         $args = wp_parse_args($args, $defaults);
-        $min  = defined('SCRIPT_DEBUG') ? '' : '.min';
+        $min  = ( defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ) ? '' : '.min';
 
         return '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script>
         <script>
