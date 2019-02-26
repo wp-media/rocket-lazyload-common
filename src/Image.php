@@ -59,7 +59,7 @@ class Image
      */
     public function lazyloadBackgroundImages($html, $buffer)
     {
-        if (! preg_match_all('#<div\s+(?<before>[^>]*)style=([\'|"]*)(?<styles>[^>]*)\2(?<after>[^>]*)>#is', $buffer, $elements, PREG_SET_ORDER)) {
+        if (! preg_match_all('#<div\s+(?<before>[^>]*)style=([\'"]*)(?<styles>[^>]*)\2(?<after>[^>]*)>#is', $buffer, $elements, PREG_SET_ORDER)) {
             return $html;
         }
 
@@ -97,7 +97,7 @@ class Image
      */
     private function addLazyBgClass($element)
     {
-        if (preg_match('#class=["|\']?(?<classes>[^"|\'|>]*)["|\']?#is', $element, $class)) {
+        if (preg_match('#class=["\']?(?<classes>[^"\'>]*)["\']?#is', $element, $class)) {
             $classes = str_replace($class['classes'], $class['classes'] . ' rocket-lazyload-bg', $class[0]);
             $element = str_replace($class[0], $classes, $element);
 
