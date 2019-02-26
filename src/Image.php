@@ -51,6 +51,50 @@ class Image
     }
 
     /**
+     * Applies lazyload on background images defined in style attributes
+     *
+     * @param string $html   Original HTML.
+     * @param string $buffer Content to parse.
+     * @return string
+     */
+    public function lazyloadBackgroundImages($html, $buffer)
+    {
+        preg_match_all('#<div\s+(?<before>[^>]*)style=([\'|"]*)(?<styles>[^>]*)\2(?<after>[^>]*)>#is', $buffer, $elements, PREG_SET_ORDER);
+ 
+        if (empty($elements)) {
+            return $html;
+        }
+
+        foreach ($elements as $element) {
+            if ($this->isExcluded($element['before'] . $element['after'], $this->getExcludedAttributes())) {
+                continue;
+            }
+
+            if (! preg_match('#background-image\s*:\s*(?<attr>\s*url\s*\((?<url>[^)]+)\))\s*;?#is', $element['styles'], $url)) {
+                continue;
+            }
+
+            $data_url = trim($url['url'], '\'" ');
+            $lazy_bg  = $element[0];
+
+            if (preg_match('#class=["|\']?(?<classes>[^"|\'|>]*)["|\'|]?#is', $lazy_bg, $class)) {
+                $classes = str_replace($class['classes'], $class['classes'] . ' lazy-bg', $class[0]);
+                $lazy_bg = str_replace($class[0], $classes, $lazy_bg);
+            } else {
+                $lazy_bg = str_replace('<div', '<div class="lazy-bg"', $lazy_bg);
+            }
+
+            $lazy_bg = str_replace($url[0], '', $lazy_bg);
+            $lazy_bg = str_replace('<div', '<div data-bg="url(' . esc_attr($data_url) . ')"', $lazy_bg);
+
+            $html = str_replace($element[0], $lazy_bg, $html);
+            unset($lazy_bg);
+        }
+
+        return $html;
+    }
+
+    /**
      * Checks if the provided string matches with the provided excluded patterns
      *
      * @param string $string          String to check.
