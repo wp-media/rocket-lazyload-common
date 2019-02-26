@@ -82,7 +82,7 @@ class Image
                     continue;
                 }
 
-                $lazyload_srcset = str_replace('srcset', 'data-srcset', $source[0]);
+                $lazyload_srcset = preg_replace('/([\s"\'])srcset/i', '\1data-srcset', $source[0]);
                 $html            = str_replace($source[0], $lazyload_srcset, $html);
 
                 unset($lazyload_srcset);
