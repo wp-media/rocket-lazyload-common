@@ -59,9 +59,7 @@ class Image
      */
     public function lazyloadBackgroundImages($html, $buffer)
     {
-        preg_match_all('#<div\s+(?<before>[^>]*)style=([\'|"]*)(?<styles>[^>]*)\2(?<after>[^>]*)>#is', $buffer, $elements, PREG_SET_ORDER);
- 
-        if (empty($elements)) {
+        if (! preg_match_all('#<div\s+(?<before>[^>]*)style=([\'|"]*)(?<styles>[^>]*)\2(?<after>[^>]*)>#is', $buffer, $elements, PREG_SET_ORDER)) {
             return $html;
         }
 
@@ -74,24 +72,39 @@ class Image
                 continue;
             }
 
-            $data_url = trim($url['url'], '\'" ');
-            $lazy_bg  = $element[0];
+            $url['url'] = trim($url['url'], '\'" ');
 
-            if (preg_match('#class=["|\']?(?<classes>[^"|\'|>]*)["|\'|]?#is', $lazy_bg, $class)) {
-                $classes = str_replace($class['classes'], $class['classes'] . ' lazy-bg', $class[0]);
-                $lazy_bg = str_replace($class[0], $classes, $lazy_bg);
-            } else {
-                $lazy_bg = str_replace('<div', '<div class="lazy-bg"', $lazy_bg);
+            if ($this->isExcluded($url['url'], $this->getExcludedSrc())) {
+                continue;
             }
 
+            $lazy_bg = $this->addLazyBgCLass($element[0]);
             $lazy_bg = str_replace($url[0], '', $lazy_bg);
-            $lazy_bg = str_replace('<div', '<div data-bg="url(' . esc_attr($data_url) . ')"', $lazy_bg);
+            $lazy_bg = str_replace('<div', '<div data-bg="url(' . esc_attr($url['url']) . ')"', $lazy_bg);
 
             $html = str_replace($element[0], $lazy_bg, $html);
             unset($lazy_bg);
         }
 
         return $html;
+    }
+
+    /**
+     * Add the identifier class to the element
+     *
+     * @param string $element Element to add the class to.
+     * @return string
+     */
+    private function addLazyBgClass($element)
+    {
+        if (preg_match('#class=["|\']?(?<classes>[^"|\'|>]*)["|\']?#is', $element, $class)) {
+            $classes = str_replace($class['classes'], $class['classes'] . ' rocket-lazyload-bg', $class[0]);
+            $element = str_replace($class[0], $classes, $element);
+
+            return $element;
+        }
+
+        return str_replace('<div', '<div class="rocket-lazyload-bg"', $element);
     }
 
     /**
