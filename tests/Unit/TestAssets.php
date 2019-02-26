@@ -152,6 +152,8 @@ class TestAssets extends TestCase
             return $r;
         });
 
+        define('SCRIPT_DEBUG', false);
+
         $args = [
             'base_url' => 'http://example.org/',
             'version'  => '11.0.2',
