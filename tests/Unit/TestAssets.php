@@ -73,15 +73,12 @@ class TestAssets extends TestCase
         define('SCRIPT_DEBUG', true);
         $args = [
             'base_url' => 'http://example.org/',
-            'version'  => '10.19',
-            'fallback' => '8.17',
+            'version'  => '11.0.2',
         ];
 
-        $expected = '<script>(function(w, d){
-            var b = d.getElementsByTagName("body")[0];
-            var s = d.createElement("script"); s.async = true;
-            s.src = !("IntersectionObserver" in w) ? "http://example.org/lazyload-8.17.js" : "http://example.org/lazyload-10.19.js";
-            w.lazyLoadOptions = {
+        $expected = '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script>
+        <script>
+            window.lazyLoadOptions = {
                 elements_selector: "img,iframe",
                 data_src: "lazy-src",
                 data_srcset: "lazy-srcset",
@@ -101,9 +98,7 @@ class TestAssets extends TestCase
                         }
                     }
                 }
-            }; // Your options here. See "recipes" for more information about async.
-            b.appendChild(s);
-        }(window, document));
+            };
         
         // Listen to the Initialized event
         window.addEventListener(\'LazyLoad::Initialized\', function (e) {
@@ -123,7 +118,8 @@ class TestAssets extends TestCase
                 observer.observe(b, config);
             }
         }, false);
-        </script>';
+        </script>
+        <script async src="http://example.org/lazyload-11.0.2.js"></script>';
 
         $this->assertSame(
             $expected,
@@ -158,15 +154,12 @@ class TestAssets extends TestCase
 
         $args = [
             'base_url' => 'http://example.org/',
-            'version'  => '10.19',
-            'fallback' => '8.17',
+            'version'  => '11.0.2',
         ];
 
-        $expected = '<script>(function(w, d){
-            var b = d.getElementsByTagName("body")[0];
-            var s = d.createElement("script"); s.async = true;
-            s.src = !("IntersectionObserver" in w) ? "http://example.org/lazyload-8.17.min.js" : "http://example.org/lazyload-10.19.min.js";
-            w.lazyLoadOptions = {
+        $expected = '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script>
+        <script>
+            window.lazyLoadOptions = {
                 elements_selector: "img,iframe",
                 data_src: "lazy-src",
                 data_srcset: "lazy-srcset",
@@ -186,9 +179,7 @@ class TestAssets extends TestCase
                         }
                     }
                 }
-            }; // Your options here. See "recipes" for more information about async.
-            b.appendChild(s);
-        }(window, document));
+            };
         
         // Listen to the Initialized event
         window.addEventListener(\'LazyLoad::Initialized\', function (e) {
@@ -208,7 +199,8 @@ class TestAssets extends TestCase
                 observer.observe(b, config);
             }
         }, false);
-        </script>';
+        </script>
+        <script async src="http://example.org/lazyload-11.0.2.min.js"></script>';
 
         $this->assertSame(
             $expected,

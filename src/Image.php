@@ -108,6 +108,48 @@ class Image
     }
 
     /**
+     * Applies lazyload on picture elements found in the HTML.
+     *
+     * @param string $html   Original HTML.
+     * @param string $buffer Content to parse.
+     * @return string
+     */
+    public function lazyloadPictures($html, $buffer)
+    {
+        preg_match_all('#<picture(?:.*)?>(?<sources>.*)</picture>#iUs', $buffer, $pictures, PREG_SET_ORDER);
+
+        if (empty($pictures)) {
+            return $html;
+        }
+
+        $pictures = array_unique($pictures, SORT_REGULAR);
+        $excluded = array_merge($this->getExcludedAttributes(), $this->getExcludedSrc());
+
+        foreach ($pictures as $picture) {
+            preg_match_all('#<source(?<atts>\s.+)>#iUs', $picture['sources'], $sources, PREG_SET_ORDER);
+
+            if (empty($sources)) {
+                continue;
+            }
+
+            $sources = array_unique($sources, SORT_REGULAR);
+
+            foreach ($sources as $source) {
+                if ($this->isExcluded($source['atts'], $excluded)) {
+                    continue;
+                }
+
+                $lazyload_srcset = preg_replace('/([\s"\'])srcset/i', '\1data-srcset', $source[0]);
+                $html            = str_replace($source[0], $lazyload_srcset, $html);
+
+                unset($lazyload_srcset);
+            }
+        }
+
+        return $html;
+    }
+
+    /**
      * Checks if the provided string matches with the provided excluded patterns
      *
      * @param string $string          String to check.
