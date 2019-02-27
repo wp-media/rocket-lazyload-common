@@ -78,7 +78,7 @@ class Image
                 continue;
             }
 
-            $lazy_bg = $this->addLazyBgCLass($element[0]);
+            $lazy_bg = $this->addLazyCLass($element[0]);
             $lazy_bg = str_replace($url[0], '', $lazy_bg);
             $lazy_bg = str_replace('<div', '<div data-bg="url(' . esc_attr($url['url']) . ')"', $lazy_bg);
 
@@ -95,16 +95,16 @@ class Image
      * @param string $element Element to add the class to.
      * @return string
      */
-    private function addLazyBgClass($element)
+    private function addLazyClass($element)
     {
         if (preg_match('#class=["\']?(?<classes>[^"\'>]*)["\']?#is', $element, $class)) {
-            $classes = str_replace($class['classes'], $class['classes'] . ' rocket-lazyload-bg', $class[0]);
+            $classes = str_replace($class['classes'], $class['classes'] . ' rocket-lazyload', $class[0]);
             $element = str_replace($class[0], $classes, $element);
 
             return $element;
         }
 
-        return str_replace('<div', '<div class="rocket-lazyload-bg"', $element);
+        return str_replace('<div', '<div class="rocket-lazyload"', $element);
     }
 
     /**
@@ -116,9 +116,7 @@ class Image
      */
     public function lazyloadPictures($html, $buffer)
     {
-        preg_match_all('#<picture(?:.*)?>(?<sources>.*)</picture>#iUs', $buffer, $pictures, PREG_SET_ORDER);
-
-        if (empty($pictures)) {
+        if (! preg_match_all('#<picture(?:.*)?>(?<sources>.*)</picture>#iUs', $buffer, $pictures, PREG_SET_ORDER) ) {
             return $html;
         }
 
@@ -126,24 +124,28 @@ class Image
         $excluded = array_merge($this->getExcludedAttributes(), $this->getExcludedSrc());
 
         foreach ($pictures as $picture) {
-            preg_match_all('#<source(?<atts>\s.+)>#iUs', $picture['sources'], $sources, PREG_SET_ORDER);
+            if (preg_match_all('#<source(?<atts>\s.+)>#iUs', $picture['sources'], $sources, PREG_SET_ORDER)) {
+                $sources = array_unique($sources, SORT_REGULAR);
 
-            if (empty($sources)) {
+                foreach ($sources as $source) {
+                    if ($this->isExcluded($source['atts'], $excluded)) {
+                        continue;
+                    }
+
+                    $lazyload_srcset = preg_replace('/([\s"\'])srcset/i', '\1data-lazy-srcset', $source[0]);
+                    $html            = str_replace($source[0], $lazyload_srcset, $html);
+
+                    unset($lazyload_srcset);
+                }
+            }
+
+            if (! preg_match('#<img(?:[^>]*)>#is', $picture[0], $img)) {
                 continue;
             }
 
-            $sources = array_unique($sources, SORT_REGULAR);
-
-            foreach ($sources as $source) {
-                if ($this->isExcluded($source['atts'], $excluded)) {
-                    continue;
-                }
-
-                $lazyload_srcset = preg_replace('/([\s"\'])srcset/i', '\1data-srcset', $source[0]);
-                $html            = str_replace($source[0], $lazyload_srcset, $html);
-
-                unset($lazyload_srcset);
-            }
+            $img_lazy = preg_replace('/([\s"\'])srcset/i', '\1data-lazy-src', $img[0]);
+            $img_lazy = $this->addLazyClass($img_lazy);
+            $html     = str_replace($img[0], $img_lazy, $html);
         }
 
         return $html;
