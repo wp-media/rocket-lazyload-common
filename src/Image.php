@@ -104,7 +104,7 @@ class Image
             return $element;
         }
 
-        return str_replace('<div', '<div class="rocket-lazyload"', $element);
+        return preg_replace('#<(img|div)([^>]*)>#is', '<\1 class="rocket-lazyload"\2>', $element);
     }
 
     /**
@@ -127,6 +127,8 @@ class Image
             if (preg_match_all('#<source(?<atts>\s.+)>#iUs', $picture['sources'], $sources, PREG_SET_ORDER)) {
                 $sources = array_unique($sources, SORT_REGULAR);
 
+                $lazy_sources = 0;
+
                 foreach ($sources as $source) {
                     if ($this->isExcluded($source['atts'], $excluded)) {
                         continue;
@@ -136,7 +138,12 @@ class Image
                     $html            = str_replace($source[0], $lazyload_srcset, $html);
 
                     unset($lazyload_srcset);
+                    $lazy_sources++;
                 }
+            }
+
+            if (0 === $lazy_sources) {
+                continue;
             }
 
             if (! preg_match('#<img(?:[^>]*)>#is', $picture[0], $img)) {
@@ -146,6 +153,8 @@ class Image
             $img_lazy = preg_replace('/([\s"\'])srcset/i', '\1data-lazy-src', $img[0]);
             $img_lazy = $this->addLazyClass($img_lazy);
             $html     = str_replace($img[0], $img_lazy, $html);
+
+            unset($img_lazy);
         }
 
         return $html;
