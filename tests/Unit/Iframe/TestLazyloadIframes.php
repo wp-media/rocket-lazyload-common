@@ -71,7 +71,7 @@ class TestLazyloadIframe extends TestCase
             return $r;
         });
 
-        $noiframe = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/contentProvider/Iframe/noiframe.html');
+        $noiframe = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Iframe/noiframe.html');
 
         $this->assertSame(
             $noiframe,
@@ -101,8 +101,8 @@ class TestLazyloadIframe extends TestCase
             return $r;
         });
 
-        $original = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/contentProvider/Iframe/youtube.html');
-        $expected = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/contentProvider/Iframe/iframelazyloaded.html');
+        $original = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Iframe/youtube.html');
+        $expected = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Iframe/iframelazyloaded.html');
 
         $this->assertSame(
             $expected,
@@ -138,8 +138,8 @@ class TestLazyloadIframe extends TestCase
         $args     = [
             'youtube' => true,
         ];
-        $original = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/contentProvider/Iframe/youtube.html');
-        $expected = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/contentProvider/Iframe/youtubelazyloaded.html');
+        $original = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Iframe/youtube.html');
+        $expected = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Iframe/youtubelazyloaded.html');
 
         $this->assertSame(
             $expected,

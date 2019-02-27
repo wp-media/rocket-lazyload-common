@@ -55,7 +55,7 @@ class TestLazyloadImages extends TestCase
      */
     public function testShouldReturnSameWhenNoImage()
     {
-        $noimage = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/contentProvider/Image/noimage.html');
+        $noimage = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Image/noimage.html');
 
         $this->assertSame(
             $noimage,
@@ -73,8 +73,8 @@ class TestLazyloadImages extends TestCase
             return abs(intval($value));
         });
 
-        $original = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/contentProvider/Image/images.html');
-        $expected = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/contentProvider/Image/imageslazyloaded.html');
+        $original = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Image/images.html');
+        $expected = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Image/imageslazyloaded.html');
 
         $this->assertSame(
             $expected,
