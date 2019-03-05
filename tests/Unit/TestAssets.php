@@ -76,7 +76,7 @@ class TestAssets extends TestCase
             'version'  => '11.0.2',
         ];
 
-        $expected = '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script><script>
+        $expected = '<script>
             window.lazyLoadOptions = {
                 elements_selector: "img,iframe",
                 data_src: "lazy-src",
@@ -158,7 +158,7 @@ class TestAssets extends TestCase
             'version'  => '11.0.2',
         ];
 
-        $expected = '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script><script>
+        $expected = '<script>
             window.lazyLoadOptions = {
                 elements_selector: "img,iframe",
                 data_src: "lazy-src",
@@ -214,7 +214,7 @@ class TestAssets extends TestCase
      * @preserveGlobalState disabled
      * @author Remy Perona
      */
-    public function testShouldReturnLazyloadScriptNoPolyfill()
+    public function testShouldReturnLazyloadScriptWithPolyfill()
     {
         Functions\when('esc_attr')->returnArg();
         Functions\when('wp_parse_args')->alias(function ($args, $defaults) {
@@ -238,10 +238,10 @@ class TestAssets extends TestCase
         $args = [
             'base_url' => 'http://example.org/',
             'version'  => '11.0.2',
-            'polyfill' => false,
+            'polyfill' => true,
         ];
 
-        $expected = '<script>
+        $expected = '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script><script>
             window.lazyLoadOptions = {
                 elements_selector: "img,iframe",
                 data_src: "lazy-src",
