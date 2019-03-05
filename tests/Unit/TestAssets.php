@@ -76,8 +76,7 @@ class TestAssets extends TestCase
             'version'  => '11.0.2',
         ];
 
-        $expected = '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script>
-        <script>
+        $expected = '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script><script>
             window.lazyLoadOptions = {
                 elements_selector: "img,iframe",
                 data_src: "lazy-src",
@@ -119,7 +118,7 @@ class TestAssets extends TestCase
             }
         }, false);
         </script>
-        <script async src="http://example.org/lazyload-11.0.2.js"></script>';
+        <script data-cfasync="false" async src="http://example.org/11.0.2/lazyload.js"></script>';
 
         $this->assertSame(
             $expected,
@@ -159,8 +158,7 @@ class TestAssets extends TestCase
             'version'  => '11.0.2',
         ];
 
-        $expected = '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script>
-        <script>
+        $expected = '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script><script>
             window.lazyLoadOptions = {
                 elements_selector: "img,iframe",
                 data_src: "lazy-src",
@@ -202,7 +200,90 @@ class TestAssets extends TestCase
             }
         }, false);
         </script>
-        <script async src="http://example.org/lazyload-11.0.2.min.js"></script>';
+        <script data-cfasync="false" async src="http://example.org/11.0.2/lazyload.min.js"></script>';
+
+        $this->assertSame(
+            $expected,
+            $this->assets->getLazyloadScript($args)
+        );
+    }
+
+    /**
+     * @covers ::getLazyloadScript
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     * @author Remy Perona
+     */
+    public function testShouldReturnLazyloadScriptNoPolyfill()
+    {
+        Functions\when('esc_attr')->returnArg();
+        Functions\when('wp_parse_args')->alias(function ($args, $defaults) {
+            if (is_object($args)) {
+                $r = get_object_vars($args);
+            } elseif (is_array($args)) {
+                $r =& $args;
+            } else {
+                parse_str($args, $r);
+            }
+        
+            if (is_array($defaults)) {
+                return array_merge($defaults, $r);
+            }
+
+            return $r;
+        });
+
+        define('SCRIPT_DEBUG', false);
+
+        $args = [
+            'base_url' => 'http://example.org/',
+            'version'  => '11.0.2',
+            'polyfill' => false,
+        ];
+
+        $expected = '<script>
+            window.lazyLoadOptions = {
+                elements_selector: "img,iframe",
+                data_src: "lazy-src",
+                data_srcset: "lazy-srcset",
+                data_sizes: "lazy-sizes",
+                skip_invisible: false,
+                class_loading: "lazyloading",
+                class_loaded: "lazyloaded",
+                threshold: 300,
+                callback_load: function(element) {
+                    if ( element.tagName === "IFRAME" && element.dataset.rocketLazyload == "fitvidscompatible" ) {
+                        if (element.classList.contains("lazyloaded") ) {
+                            if (typeof window.jQuery != "undefined") {
+                                if (jQuery.fn.fitVids) {
+                                    jQuery(element).parent().fitVids();
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+        
+        // Listen to the Initialized event
+        window.addEventListener(\'LazyLoad::Initialized\', function (e) {
+            // Get the instance and puts it in the lazyLoadInstance variable
+            var lazyLoadInstance = e.detail.instance;
+        
+            if (window.MutationObserver) {
+                var observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        lazyLoadInstance.update();
+                    } );
+                } );
+                
+                var b      = document.getElementsByTagName("body")[0];
+                var config = { childList: true, subtree: true };
+                
+                observer.observe(b, config);
+            }
+        }, false);
+        </script>
+        <script data-cfasync="false" async src="http://example.org/11.0.2/lazyload.min.js"></script>';
 
         $this->assertSame(
             $expected,
@@ -327,7 +408,7 @@ class TestAssets extends TestCase
     public function testGetnojscssShouldReturnCss()
     {
         $this->assertSame(
-            '.no-js .rll-youtube-player, .no-js [data-lazy-src]{display:none !important;}',
+            '<noscript><style id="rocket-lazyload-nojs-css">.rll-youtube-player, [data-lazy-src]{display:none !important;}</style></noscript>',
             $this->assets->getNoJSCSS()
         );
     }

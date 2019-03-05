@@ -13,28 +13,6 @@ class TestAssets extends WP_UnitTestCase
         $this->assets = new Assets();
     }
 
-    public function testAddInlineStyleNoJS()
-    {
-        global $wp_styles;
-
-        $this->assets->insertNoJSCSS();
-
-        $this->assertArrayHasKey(
-            'rocket-lazyload',
-            $wp_styles->registered
-        );
-
-        $this->assertContains(
-            'rocket-lazyload',
-            $wp_styles->queue
-        );
-
-        $this->assertContains(
-            '.no-js .rll-youtube-player, .no-js [data-lazy-src]{display:none !important;}',
-            $wp_styles->registered['rocket-lazyload']->extra['after']
-        );
-    }
-
     public function testAddYoutubeThumbnailCSS()
     {
         global $wp_styles;
