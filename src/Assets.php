@@ -118,21 +118,44 @@ class Assets
     {
         $defaults = [
             'resolution' => 'hqdefault',
+            'lazy_image' => false,
         ];
 
         $allowed_resolutions = [
-            'default'       => 1,
-            'mqdefault'     => 1,
-            'sddefault'     => 1,
-            'hqdefault'     => 1,
-            'maxresdefault' => 1,
+            'default'       => [
+                'width'  => 120,
+                'height' => 90,
+            ],
+            'mqdefault'     => [
+                'width'  => 320,
+                'height' => 180,
+            ],
+            'hqdefault'     => [
+                'width'  => 480,
+                'height' => 360,
+            ],
+            'sddefault'     => [
+                'width'  => 640,
+                'height' => 480,
+            ],
+            
+            'maxresdefault' => [
+                'width'  => 1280,
+                'height' => 720,
+            ],
         ];
 
         $args['resolution'] = ( isset($args['resolution']) && isset($allowed_resolutions[ $args['resolution'] ]) ) ? $args['resolution'] : 'hqdefault';
 
         $args = wp_parse_args($args, $defaults);
 
-        return "<script>function lazyLoadThumb(e){var t='<img src=\"https://i.ytimg.com/vi/ID/{$args['resolution']}.jpg\">',a='<div class=\"play\"></div>';return t.replace(\"ID\",e)+a}function lazyLoadYoutubeIframe(){var e=document.createElement(\"iframe\"),t=\"https://www.youtube.com/embed/ID?autoplay=1\";t+=0===this.dataset.query.length?'':'&'+this.dataset.query;e.setAttribute(\"src\",t.replace(\"ID\",this.dataset.id)),e.setAttribute(\"frameborder\",\"0\"),e.setAttribute(\"allowfullscreen\",\"1\"),this.parentNode.replaceChild(e,this)}document.addEventListener(\"DOMContentLoaded\",function(){var e,t,a=document.getElementsByClassName(\"rll-youtube-player\");for(t=0;t<a.length;t++)e=document.createElement(\"div\"),e.setAttribute(\"data-id\",a[t].dataset.id),e.setAttribute(\"data-query\", a[t].dataset.query),e.innerHTML=lazyLoadThumb(a[t].dataset.id),e.onclick=lazyLoadYoutubeIframe,a[t].appendChild(e)});</script>";
+        $image = '<img src="https://i.ytimg.com/vi/ID/' . $args['resolution'] . '.jpg" width="' . $allowed_resolutions[ $args['resolution'] ]['width'] . '" height="' . $allowed_resolutions[ $args['resolution'] ]['height'] . '">';
+
+        if (isset($args['lazy_image']) && $args['lazy_image']) {
+            $image = '<img data-lazy-src="https://i.ytimg.com/vi/ID/' . $args['resolution'] . '.jpg" width="' . $allowed_resolutions[ $args['resolution'] ]['width'] . '" height="' . $allowed_resolutions[ $args['resolution'] ]['height'] . '"><noscript><img src="https://i.ytimg.com/vi/ID/' . $args['resolution'] . '.jpg" width="' . $allowed_resolutions[ $args['resolution'] ]['width'] . '" height="' . $allowed_resolutions[ $args['resolution'] ]['height'] . '"></noscript>';
+        }
+
+        return "<script>function lazyLoadThumb(e){var t='{$image}',a='<div class=\"play\"></div>';return t.replace(\"ID\",e)+a}function lazyLoadYoutubeIframe(){var e=document.createElement(\"iframe\"),t=\"https://www.youtube.com/embed/ID?autoplay=1\";t+=0===this.dataset.query.length?'':'&'+this.dataset.query;e.setAttribute(\"src\",t.replace(\"ID\",this.dataset.id)),e.setAttribute(\"frameborder\",\"0\"),e.setAttribute(\"allowfullscreen\",\"1\"),this.parentNode.replaceChild(e,this)}document.addEventListener(\"DOMContentLoaded\",function(){var e,t,a=document.getElementsByClassName(\"rll-youtube-player\");for(t=0;t<a.length;t++)e=document.createElement(\"div\"),e.setAttribute(\"data-id\",a[t].dataset.id),e.setAttribute(\"data-query\", a[t].dataset.query),e.innerHTML=lazyLoadThumb(a[t].dataset.id),e.onclick=lazyLoadYoutubeIframe,a[t].appendChild(e)});</script>";
     }
 
     /**
