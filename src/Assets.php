@@ -39,7 +39,7 @@ class Assets
             ],
             'threshold' => 300,
             'version'   => '',
-            'polyfill'  => true,
+            'polyfill'  => false,
         ];
 
         $args   = wp_parse_args($args, $defaults);
