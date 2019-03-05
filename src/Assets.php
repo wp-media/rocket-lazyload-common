@@ -39,13 +39,18 @@ class Assets
             ],
             'threshold' => 300,
             'version'   => '',
+            'polyfill'  => true,
         ];
 
-        $args = wp_parse_args($args, $defaults);
-        $min  = ( defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ) ? '' : '.min';
+        $args   = wp_parse_args($args, $defaults);
+        $min    = ( defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ) ? '' : '.min';
+        $script = '';
 
-        return '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script>
-        <script>
+        if (isset($args['polyfill']) && $args['polyfill']) {
+            $script .= '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script>';
+        }
+
+        $script .= '<script>
             window.lazyLoadOptions = {
                 elements_selector: "' . esc_attr(implode(',', $args['elements'])) . '",
                 data_src: "lazy-src",
@@ -87,7 +92,9 @@ class Assets
             }
         }, false);
         </script>
-        <script async src="' . $args['base_url'] . 'lazyload-' . $args['version'] . $min . '.js"></script>';
+        <script data-cfasync="false" async src="' . $args['base_url'] . $args['version'] . '/lazyload' . $min . '.js"></script>';
+
+        return $script;
     }
 
     /**
@@ -163,9 +170,7 @@ class Assets
      */
     public function insertNoJSCSS()
     {
-        wp_register_style('rocket-lazyload', false);
-        wp_enqueue_style('rocket-lazyload');
-        wp_add_inline_style('rocket-lazyload', $this->getNoJSCSS());
+        echo $this->getNoJSCSS();
     }
 
     /**
@@ -175,6 +180,6 @@ class Assets
      */
     public function getNoJSCSS()
     {
-        return '.no-js .rll-youtube-player, .no-js [data-lazy-src]{display:none !important;}';
+        return '<noscript><style id="rocket-lazyload-nojs-css">.rll-youtube-player, [data-lazy-src]{display:none !important;}</style></noscript>';
     }
 }
