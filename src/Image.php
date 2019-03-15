@@ -116,7 +116,7 @@ class Image
      */
     public function lazyloadPictures($html, $buffer)
     {
-        if (! preg_match_all('#<picture(?:.*)?>(?<sources>.*)</picture>#iUs', $buffer, $pictures, PREG_SET_ORDER) ) {
+        if (! preg_match_all('#<picture(?:.*)?>(?<sources>.*)</picture>#iUs', $buffer, $pictures, PREG_SET_ORDER)) {
             return $html;
         }
 
