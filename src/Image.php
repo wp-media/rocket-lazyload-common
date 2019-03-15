@@ -59,7 +59,7 @@ class Image
      */
     public function lazyloadBackgroundImages($html, $buffer)
     {
-        if (! preg_match_all('#<div\s+(?<before>[^>]*)style\s*=\s*([\'"])(?<styles>(?:(?!\2).)*?)\2(?<after>[^>]*)>#is', $buffer, $elements, PREG_SET_ORDER)) {
+        if (! preg_match_all('#<div\s+(?<before>[^>]+[\'"\s])?style\s*=\s*([\'"])(?<styles>.*?)\2(?<after>[^>]*)>#is', $buffer, $elements, PREG_SET_ORDER)) {
             return $html;
         }
 
@@ -71,7 +71,7 @@ class Image
             if (! preg_match('#background-image\s*:\s*(?<attr>\s*url\s*\((?<url>[^)]+)\))\s*;?#is', $element['styles'], $url)) {
                 continue;
             }
-
+ 
             $url['url'] = trim($url['url'], '\'" ');
 
             if ($this->isExcluded($url['url'], $this->getExcludedSrc())) {
