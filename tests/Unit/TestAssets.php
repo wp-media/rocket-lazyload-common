@@ -33,6 +33,8 @@ class TestAssets extends TestCase
      */
     public function setUp()
     {
+        parent::setUp();
+        Monkey\setUp();
         $this->assets = new Assets();
     }
 
@@ -117,8 +119,7 @@ class TestAssets extends TestCase
                 observer.observe(b, config);
             }
         }, false);
-        </script>
-        <script data-cfasync="false" async src="http://example.org/11.0.2/lazyload.js"></script>';
+        </script><script async src="http://example.org/11.0.2/lazyload.js"></script>';
 
         $this->assertSame(
             $expected,
@@ -199,8 +200,7 @@ class TestAssets extends TestCase
                 observer.observe(b, config);
             }
         }, false);
-        </script>
-        <script data-cfasync="false" async src="http://example.org/11.0.2/lazyload.min.js"></script>';
+        </script><script async src="http://example.org/11.0.2/lazyload.min.js"></script>';
 
         $this->assertSame(
             $expected,
@@ -282,8 +282,7 @@ class TestAssets extends TestCase
                 observer.observe(b, config);
             }
         }, false);
-        </script>
-        <script data-cfasync="false" async src="http://example.org/11.0.2/lazyload.min.js"></script>';
+        </script><script async src="http://example.org/11.0.2/lazyload.min.js"></script>';
 
         $this->assertSame(
             $expected,
