@@ -119,7 +119,7 @@ class TestAssets extends TestCase
                 observer.observe(b, config);
             }
         }, false);
-        </script><script async src="http://example.org/11.0.2/lazyload.js"></script>';
+        </script><script data-no-minify="1" async src="http://example.org/11.0.2/lazyload.js"></script>';
 
         $this->assertSame(
             $expected,
@@ -200,7 +200,7 @@ class TestAssets extends TestCase
                 observer.observe(b, config);
             }
         }, false);
-        </script><script async src="http://example.org/11.0.2/lazyload.min.js"></script>';
+        </script><script data-no-minify="1" async src="http://example.org/11.0.2/lazyload.min.js"></script>';
 
         $this->assertSame(
             $expected,
@@ -282,7 +282,7 @@ class TestAssets extends TestCase
                 observer.observe(b, config);
             }
         }, false);
-        </script><script async src="http://example.org/11.0.2/lazyload.min.js"></script>';
+        </script><script data-no-minify="1" async src="http://example.org/11.0.2/lazyload.min.js"></script>';
 
         $this->assertSame(
             $expected,

@@ -100,7 +100,7 @@ class Assets
          *
          * @param $script_tag HTML tag for the lazyload script.
          */
-        $script .= apply_filters('rocket_lazyload_script_tag', '<script async src="' . $args['base_url'] . $args['version'] . '/lazyload' . $min . '.js"></script>');
+        $script .= apply_filters('rocket_lazyload_script_tag', '<script data-no-minify="1" async src="' . $args['base_url'] . $args['version'] . '/lazyload' . $min . '.js"></script>');
 
         return $script;
     }
