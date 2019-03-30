@@ -109,7 +109,21 @@ class TestAssets extends TestCase
             if (window.MutationObserver) {
                 var observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
-                        lazyLoadInstance.update();
+                        mutation.addedNodes.forEach(function(node) {
+                            if (typeof node.getElementsByTagName !== \'function\') {
+                                return;
+                            }
+
+                            imgs = node.getElementsByTagName(\'img\');
+                            iframes = node.getElementsByTagName(\'iframe\');
+                            rocket_lazy = node.getElementsByClassName(\'rocket-lazyload\');
+
+                            if ( 0 === imgs.length && 0 === iframes.length && 0 === rocket_lazy.length ) {
+                                return;
+                            }
+
+                            lazyLoadInstance.update();
+                        } );
                     } );
                 } );
                 
@@ -190,7 +204,21 @@ class TestAssets extends TestCase
             if (window.MutationObserver) {
                 var observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
-                        lazyLoadInstance.update();
+                        mutation.addedNodes.forEach(function(node) {
+                            if (typeof node.getElementsByTagName !== \'function\') {
+                                return;
+                            }
+
+                            imgs = node.getElementsByTagName(\'img\');
+                            iframes = node.getElementsByTagName(\'iframe\');
+                            rocket_lazy = node.getElementsByClassName(\'rocket-lazyload\');
+
+                            if ( 0 === imgs.length && 0 === iframes.length && 0 === rocket_lazy.length ) {
+                                return;
+                            }
+
+                            lazyLoadInstance.update();
+                        } );
                     } );
                 } );
                 
@@ -272,7 +300,21 @@ class TestAssets extends TestCase
             if (window.MutationObserver) {
                 var observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
-                        lazyLoadInstance.update();
+                        mutation.addedNodes.forEach(function(node) {
+                            if (typeof node.getElementsByTagName !== \'function\') {
+                                return;
+                            }
+
+                            imgs = node.getElementsByTagName(\'img\');
+                            iframes = node.getElementsByTagName(\'iframe\');
+                            rocket_lazy = node.getElementsByClassName(\'rocket-lazyload\');
+
+                            if ( 0 === imgs.length && 0 === iframes.length && 0 === rocket_lazy.length ) {
+                                return;
+                            }
+
+                            lazyLoadInstance.update();
+                        } );
                     } );
                 } );
                 
