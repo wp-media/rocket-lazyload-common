@@ -28,9 +28,7 @@ class Iframe
 
         $args = wp_parse_args($args, $defaults);
 
-        preg_match_all('@<iframe(?<atts>\s.+)>.*</iframe>@iUs', $buffer, $iframes, PREG_SET_ORDER);
-
-        if (empty($iframes)) {
+        if (! preg_match_all('@<iframe(?<atts>\s.+)>.*</iframe>@iUs', $buffer, $iframes, PREG_SET_ORDER) ) {
             return $html;
         }
 
@@ -108,6 +106,9 @@ class Iframe
                 'gform_ajax_frame',
                 'data-no-lazy=',
                 'recaptcha/api/fallback',
+                'loading="eager"',
+                'loading="lazy"',
+                'loading="auto"',
             ]
         );
     }
