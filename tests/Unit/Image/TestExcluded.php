@@ -67,6 +67,9 @@ class TestExcluded extends TestCase
             'class="ls-l',
             'class="ls-bg',
             'soliloquy-image',
+            'loading="auto"',
+            'loading="lazy"',
+            'loading="eager"',
         ];
 
         $this->assertSame(

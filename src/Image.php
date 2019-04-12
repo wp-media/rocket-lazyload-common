@@ -21,24 +21,37 @@ class Image
      */
     public function lazyloadImages($html, $buffer)
     {
-        preg_match_all('#<img([^>]*) src=("(?:[^"]+)"|\'(?:[^\']+)\'|(?:[^ >]+))([^>]*)>#', $buffer, $images, PREG_SET_ORDER);
-
-        if (empty($images)) {
+        if (! preg_match_all('#<img(?<atts>\s.+)\s?/?>#iUs', $buffer, $images, PREG_SET_ORDER)) {
             return $html;
         }
 
         $images = array_unique($images, SORT_REGULAR);
 
         foreach ($images as $image) {
-            // Don't apply LazyLoad on images from WP Retina x2.
-            if (function_exists('wr2x_picture_rewrite')) {
-                if (wr2x_get_retina(trailingslashit(ABSPATH) . wr2x_get_pathinfo_from_image_src(trim($image[2], '"')))) {
-                    continue;
-                }
+            if ($this->isExcluded($image['atts'], $this->getExcludedAttributes())) {
+                continue;
             }
 
-            if ($this->isExcluded($image[1] . $image[3], $this->getExcludedAttributes()) || $this->isExcluded($image[2], $this->getExcludedSrc())) {
+            // Given the previous regex pattern, $image['atts'] starts with a whitespace character.
+            if (! preg_match('@\ssrc\s*=\s*(\'|")(?<src>.*)\1@iUs', $image['atts'], $atts)) {
                 continue;
+            }
+
+            $image['src'] = trim($atts['src']);
+
+            if ('' === $image['src']) {
+                continue;
+            }
+
+            if ($this->isExcluded($image['src'], $this->getExcludedSrc())) {
+                continue;
+            }
+
+            // Don't apply LazyLoad on images from WP Retina x2.
+            if (function_exists('wr2x_picture_rewrite')) {
+                if (wr2x_get_retina(trailingslashit(ABSPATH) . wr2x_get_pathinfo_from_image_src(trim($image['src'], '"')))) {
+                    continue;
+                }
             }
 
             $image_lazyload = $this->replaceImage($image);
@@ -218,6 +231,9 @@ class Image
                 'class="ls-l',
                 'class="ls-bg',
                 'soliloquy-image',
+                'loading="auto"',
+                'loading="lazy"',
+                'loading="eager"',
             ]
         );
     }
@@ -254,7 +270,20 @@ class Image
      */
     private function replaceImage($image)
     {
-        $image_lazyload = sprintf('<img%1$s src="%4$s" data-lazy-src=%2$s%3$s>', $image[1], $image[2], $image[3], $this->getPlaceholder());
+        $width  = 1;
+        $height = 1;
+
+        if (preg_match('@\swidth\s*=\s*(\'|")(?<width>.*)\1@iUs', $image['atts'], $atts)) {
+            $width = absint($atts['width']);
+        }
+
+        if (preg_match('@\sheight\s*=\s*(\'|")(?<height>.*)\1@iUs', $image['atts'], $atts)) {
+            $height = absint($atts['height']);
+        }
+
+        $placeholder_atts = preg_replace('@\ssrc\s*=\s*(\'|")(?<src>.*)\1@iUs', ' src=$1' . $this->getPlaceholder($width, $height) . '$1', $image['atts']);
+
+        $image_lazyload = str_replace($image['atts'], $placeholder_atts . ' data-lazy-src="' . esc_url($image['src']) . '"', $image[0]);
 
         /**
          * Filter the LazyLoad HTML output
