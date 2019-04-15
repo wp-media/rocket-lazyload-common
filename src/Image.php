@@ -273,11 +273,11 @@ class Image
         $width  = 1;
         $height = 1;
 
-        if (preg_match('@\swidth\s*=\s*(\'|")(?<width>.*)\1@iUs', $image['atts'], $atts)) {
+        if (preg_match('@[\s"\']width\s*=\s*(\'|")(?<width>.*)\1@iUs', $image['atts'], $atts)) {
             $width = absint($atts['width']);
         }
 
-        if (preg_match('@\sheight\s*=\s*(\'|")(?<height>.*)\1@iUs', $image['atts'], $atts)) {
+        if (preg_match('@[\s"\']height\s*=\s*(\'|")(?<height>.*)\1@iUs', $image['atts'], $atts)) {
             $height = absint($atts['height']);
         }
 
