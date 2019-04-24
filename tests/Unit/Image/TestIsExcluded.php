@@ -58,6 +58,7 @@ class TestIsExcluded extends TestCase
         $excluded_src = [
             '/wpcf7_captcha/',
             'timthumb.php?src',
+            'woocommerce/assets/images/placeholder.png',
         ];
 
         $excluded_attributes = [
@@ -74,6 +75,11 @@ class TestIsExcluded extends TestCase
             'data-srcset=',
             'class="ls-l',
             'class="ls-bg',
+            'soliloquy-image',
+            'loading="auto"',
+            'loading="lazy"',
+            'loading="eager"',
+            'swatch-img',
         ];
 
         return [
@@ -83,6 +89,10 @@ class TestIsExcluded extends TestCase
             ],
             [
                 'http://example.org/timthumb.php?src=image.jpg',
+                $excluded_src,
+            ],
+            [
+                'http://example.org/wp-content/plugins/woocommerce/assets/images/placeholder.png',
                 $excluded_src,
             ],
             [
@@ -137,6 +147,10 @@ class TestIsExcluded extends TestCase
                 'class="ls-bg" width="200" height="200" alt=""',
                 $excluded_attributes,
             ],
+            [
+                'class="swatch-img" width="200" height="200" alt=""',
+                $excluded_attributes,
+            ],
         ];
     }
 
@@ -177,6 +191,7 @@ class TestIsExcluded extends TestCase
         $excluded_src = [
             '/wpcf7_captcha/',
             'timthumb.php?src',
+            'woocommerce/assets/images/placeholder.png',
         ];
 
         $excluded_attributes = [
@@ -193,6 +208,11 @@ class TestIsExcluded extends TestCase
             'data-srcset=',
             'class="ls-l',
             'class="ls-bg',
+            'soliloquy-image',
+            'loading="auto"',
+            'loading="lazy"',
+            'loading="eager"',
+            'swatch-img',
         ];
 
         return [

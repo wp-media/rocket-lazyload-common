@@ -234,6 +234,7 @@ class Image
                 'loading="auto"',
                 'loading="lazy"',
                 'loading="eager"',
+                'swatch-img',
             ]
         );
     }
@@ -258,6 +259,7 @@ class Image
             [
                 '/wpcf7_captcha/',
                 'timthumb.php?src',
+                'woocommerce/assets/images/placeholder.png',
             ]
         );
     }
