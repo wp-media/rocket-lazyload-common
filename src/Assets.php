@@ -81,21 +81,25 @@ class Assets
             if (window.MutationObserver) {
                 var observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
-                        mutation.addedNodes.forEach(function(node) {
-                            if (typeof node.getElementsByTagName !== \'function\') {
+                        for (i = 0; i < mutation.addedNodes.length; i++) {
+                            if (typeof mutation.addedNodes[i].getElementsByTagName !== \'function\') {
                                 return;
                             }
 
-                            imgs = node.getElementsByTagName(\'img\');
-                            iframes = node.getElementsByTagName(\'iframe\');
-                            rocket_lazy = node.getElementsByClassName(\'rocket-lazyload\');
+                           if (typeof mutation.addedNodes[i].getElementsByClassName !== \'function\') {
+                                return;
+                            }
+
+                            imgs = mutation.addedNodes[i].getElementsByTagName(\'img\');
+                            iframes = mutation.addedNodes[i].getElementsByTagName(\'iframe\');
+                            rocket_lazy = mutation.addedNodes[i].getElementsByClassName(\'rocket-lazyload\');
 
                             if ( 0 === imgs.length && 0 === iframes.length && 0 === rocket_lazy.length ) {
                                 return;
                             }
 
                             lazyLoadInstance.update();
-                        } );
+                        }
                     } );
                 } );
                 
