@@ -283,7 +283,7 @@ class Image
 
         $placeholder_atts = preg_replace('@\ssrc\s*=\s*(\'|")(?<src>.*)\1@iUs', ' src=$1' . $this->getPlaceholder($width, $height) . '$1', $image['atts']);
 
-        $image_lazyload = str_replace($image['atts'], $placeholder_atts . ' data-lazy-src="' . esc_url($image['src']) . '"', $image[0]);
+        $image_lazyload = str_replace($image['atts'], $placeholder_atts . ' data-lazy-src="' . $image['src'] . '"', $image[0]);
 
         /**
          * Filter the LazyLoad HTML output
