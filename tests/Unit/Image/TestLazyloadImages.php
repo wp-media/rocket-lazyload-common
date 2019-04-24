@@ -69,7 +69,6 @@ class TestLazyloadImages extends TestCase
      */
     public function testShouldReturnImagesLazyloaded()
     {
-        Functions\when('esc_url')->returnArg();
         Functions\when('absint')->alias(function ($value) {
             return abs(intval($value));
         });
