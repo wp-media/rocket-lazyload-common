@@ -98,12 +98,8 @@ class TestAssets extends TestCase
                             }
                         }
                     }
-                }
-            };
-        
-        // Listen to the Initialized event
+                }};
         window.addEventListener(\'LazyLoad::Initialized\', function (e) {
-            // Get the instance and puts it in the lazyLoadInstance variable
             var lazyLoadInstance = e.detail.instance;
         
             if (window.MutationObserver) {
@@ -197,12 +193,8 @@ class TestAssets extends TestCase
                             }
                         }
                     }
-                }
-            };
-        
-        // Listen to the Initialized event
+                }};
         window.addEventListener(\'LazyLoad::Initialized\', function (e) {
-            // Get the instance and puts it in the lazyLoadInstance variable
             var lazyLoadInstance = e.detail.instance;
         
             if (window.MutationObserver) {
@@ -297,12 +289,110 @@ class TestAssets extends TestCase
                             }
                         }
                     }
-                }
-            };
-        
-        // Listen to the Initialized event
+                }};
         window.addEventListener(\'LazyLoad::Initialized\', function (e) {
-            // Get the instance and puts it in the lazyLoadInstance variable
+            var lazyLoadInstance = e.detail.instance;
+        
+            if (window.MutationObserver) {
+                var observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        for (i = 0; i < mutation.addedNodes.length; i++) {
+                            if (typeof mutation.addedNodes[i].getElementsByTagName !== \'function\') {
+                                return;
+                            }
+
+                           if (typeof mutation.addedNodes[i].getElementsByClassName !== \'function\') {
+                                return;
+                            }
+
+                            imgs = mutation.addedNodes[i].getElementsByTagName(\'img\');
+                            iframes = mutation.addedNodes[i].getElementsByTagName(\'iframe\');
+                            rocket_lazy = mutation.addedNodes[i].getElementsByClassName(\'rocket-lazyload\');
+
+                            if ( 0 === imgs.length && 0 === iframes.length && 0 === rocket_lazy.length ) {
+                                return;
+                            }
+
+                            lazyLoadInstance.update();
+                        }
+                    } );
+                } );
+                
+                var b      = document.getElementsByTagName("body")[0];
+                var config = { childList: true, subtree: true };
+                
+                observer.observe(b, config);
+            }
+        }, false);
+        </script><script data-no-minify="1" async src="http://example.org/11.0.2/lazyload.min.js"></script>';
+
+        $this->assertSame(
+            $expected,
+            $this->assets->getLazyloadScript($args)
+        );
+    }
+
+        /**
+     * @covers ::getLazyloadScript
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     * @author Remy Perona
+     */
+    public function testShouldReturnLazyloadScriptWithOptions()
+    {
+        Functions\when('esc_attr')->returnArg();
+        Functions\when('wp_parse_args')->alias(function ($args, $defaults) {
+            if (is_object($args)) {
+                $r = get_object_vars($args);
+            } elseif (is_array($args)) {
+                $r =& $args;
+            } else {
+                parse_str($args, $r);
+            }
+        
+            if (is_array($defaults)) {
+                return array_merge($defaults, $r);
+            }
+
+            return $r;
+        });
+
+        define('SCRIPT_DEBUG', false);
+
+        $args = [
+            'base_url' => 'http://example.org/',
+            'version'  => '11.0.2',
+            'polyfill' => false,
+            'options'  => [
+                'callback_finish' => '()=>{console.log("Finish")}',
+                'use_native'      => 'true',
+                'bad_option'      => 'test',
+            ],
+        ];
+
+        $expected = '<script>
+            window.lazyLoadOptions = {
+                elements_selector: "img,iframe",
+                data_src: "lazy-src",
+                data_srcset: "lazy-srcset",
+                data_sizes: "lazy-sizes",
+                skip_invisible: false,
+                class_loading: "lazyloading",
+                class_loaded: "lazyloaded",
+                threshold: 300,
+                callback_load: function(element) {
+                    if ( element.tagName === "IFRAME" && element.dataset.rocketLazyload == "fitvidscompatible" ) {
+                        if (element.classList.contains("lazyloaded") ) {
+                            if (typeof window.jQuery != "undefined") {
+                                if (jQuery.fn.fitVids) {
+                                    jQuery(element).parent().fitVids();
+                                }
+                            }
+                        }
+                    }
+                },
+callback_finish: ()=>{console.log("Finish")},use_native: true};
+        window.addEventListener(\'LazyLoad::Initialized\', function (e) {
             var lazyLoadInstance = e.detail.instance;
         
             if (window.MutationObserver) {
