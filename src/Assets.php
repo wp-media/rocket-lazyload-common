@@ -40,11 +40,29 @@ class Assets
             'threshold' => 300,
             'version'   => '',
             'polyfill'  => false,
+            'options'   => [],
+        ];
+
+        $allowed_options = [
+            'container'       => 1,
+            'thresholds'      => 1,
+            'data_bg'         => 1,
+            'class_error'     => 1,
+            'load_delay'      => 1,
+            'auto_unobserve'  => 1,
+            'callback_enter'  => 1,
+            'callback_exit'   => 1,
+            'callback_reveal' => 1,
+            'callback_error'  => 1,
+            'callback_finish' => 1,
+            'use_native'      => 1,
         ];
 
         $args   = wp_parse_args($args, $defaults);
         $min    = ( defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ) ? '' : '.min';
         $script = '';
+
+        $args['options'] = array_intersect_key($args['options'], $allowed_options);
 
         if (isset($args['polyfill']) && $args['polyfill']) {
             $script .= '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script>';
@@ -70,12 +88,22 @@ class Assets
                             }
                         }
                     }
-                }
-            };
+                }';
+
+        if (! empty($args['options'])) {
+            $script .= ',' . PHP_EOL;
+
+            foreach ($args['options'] as $option => $value) {
+                $script .= $option . ': ' . $value . ',';
+            }
+
+            $script = rtrim($script, ',');
+        }
+
+        $script .= '};';
         
-        // Listen to the Initialized event
+        $script .= '
         window.addEventListener(\'LazyLoad::Initialized\', function (e) {
-            // Get the instance and puts it in the lazyLoadInstance variable
             var lazyLoadInstance = e.detail.instance;
         
             if (window.MutationObserver) {
