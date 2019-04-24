@@ -70,6 +70,8 @@ class TestExcluded extends TestCase
             'loading="auto"',
             'loading="lazy"',
             'loading="eager"',
+            'swatch-img',
+
         ];
 
         $this->assertSame(
@@ -87,6 +89,7 @@ class TestExcluded extends TestCase
         $expected = [
             '/wpcf7_captcha/',
             'timthumb.php?src',
+            'woocommerce/assets/images/placeholder.png',
         ];
 
         $this->assertSame(
