@@ -283,7 +283,7 @@ class Image
             $height = absint($atts['height']);
         }
 
-        $placeholder_atts = preg_replace('@\ssrc\s*=\s*(\'|")(?<src>.*)\1@iUs', ' src=$1' . $this->getPlaceholder($width, $height) . '$1', $image['atts']);
+        $placeholder_atts = preg_replace('@\ssrc\s*=\s*(\'|")(?<src>.*)\1@iUs', ' src="' . $this->getPlaceholder($width, $height) . '"', $image['atts']);
 
         $image_lazyload = str_replace($image['atts'], $placeholder_atts . ' data-lazy-src="' . $image['src'] . '"', $image[0]);
 
