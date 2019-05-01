@@ -77,7 +77,7 @@ class Assets
                 class_loading: "lazyloading",
                 class_loaded: "lazyloaded",
                 threshold: ' . esc_attr($args['threshold']) . ',
-                callback_load: function(element) {
+                callback_loaded: function(element) {
                     if ( element.tagName === "IFRAME" && element.dataset.rocketLazyload == "fitvidscompatible" ) {
                         if (element.classList.contains("lazyloaded") ) {
                             if (typeof window.jQuery != "undefined") {
