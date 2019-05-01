@@ -235,6 +235,7 @@ class Image
                 'loading="lazy"',
                 'loading="eager"',
                 'swatch-img',
+                'data-height-percentage',
             ]
         );
     }

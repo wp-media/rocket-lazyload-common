@@ -71,6 +71,7 @@ class TestExcluded extends TestCase
             'loading="lazy"',
             'loading="eager"',
             'swatch-img',
+            'data-height-percentage',
 
         ];
 

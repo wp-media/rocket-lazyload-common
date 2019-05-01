@@ -80,6 +80,7 @@ class TestIsExcluded extends TestCase
             'loading="lazy"',
             'loading="eager"',
             'swatch-img',
+            'data-height-percentage',
         ];
 
         return [
@@ -151,6 +152,10 @@ class TestIsExcluded extends TestCase
                 'class="swatch-img" width="200" height="200" alt=""',
                 $excluded_attributes,
             ],
+            [
+                'data-height-percentage="54"',
+                $excluded_attributes,
+            ],
         ];
     }
 
@@ -213,6 +218,7 @@ class TestIsExcluded extends TestCase
             'loading="lazy"',
             'loading="eager"',
             'swatch-img',
+            'data-height-percentage',
         ];
 
         return [
