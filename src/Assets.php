@@ -74,7 +74,6 @@ class Assets
                 data_src: "lazy-src",
                 data_srcset: "lazy-srcset",
                 data_sizes: "lazy-sizes",
-                skip_invisible: false,
                 class_loading: "lazyloading",
                 class_loaded: "lazyloaded",
                 threshold: ' . esc_attr($args['threshold']) . ',
