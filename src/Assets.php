@@ -117,32 +117,32 @@ class Assets
                     
                         // Check all added nodes of the mutations
                         for (i = 0; i < mutation.addedNodes.length; i++) {
-                            if (typeof mutation.addedNodes[i].getElementsByTagName !== 'function') {
-                                return;
-                            }
+				if (typeof mutation.addedNodes[i].getElementsByTagName !== \'function\') {
+				return;
+				}
 
-							if (typeof mutation.addedNodes[i].getElementsByClassName !== 'function') {
-							return;
-							}
-							
-							images = mutation.addedNodes[i].getElementsByTagName('img');
-							is_image = mutation.addedNodes[i].tagName == "IMG";
-							
-							iframes = mutation.addedNodes[i].getElementsByTagName('iframe');
-							is_iframe = mutation.addedNodes[i].tagName == "IFRAME";
-							
-							rocket_lazy = mutation.addedNodes[i].getElementsByClassName('rocket-lazyload');
-							
-							image_count += images.length;
-							iframe_count += iframes.length;
-							rocketlazy_count += rocket_lazy.length;
-							
-							if(is_image){
-								image_count += 1;
-							}
-							if(is_iframe){
-								iframe_count += 1;
-							}
+				if (typeof mutation.addedNodes[i].getElementsByClassName !== \'function\') {
+				return;
+				}
+
+				images = mutation.addedNodes[i].getElementsByTagName(\'img\');
+				is_image = mutation.addedNodes[i].tagName == \'IMG\';
+
+				iframes = mutation.addedNodes[i].getElementsByTagName(\'iframe\');
+				is_iframe = mutation.addedNodes[i].tagName == \'IFRAME\';
+
+				rocket_lazy = mutation.addedNodes[i].getElementsByClassName(\'rocket-lazyload\');
+
+				image_count += images.length;
+				iframe_count += iframes.length;
+				rocketlazy_count += rocket_lazy.length;
+
+				if(is_image){
+					image_count += 1;
+				}
+				if(is_iframe){
+					iframe_count += 1;
+				}
 
                         }
                     } );
