@@ -84,11 +84,10 @@ class TestAssets extends TestCase
                 data_src: "lazy-src",
                 data_srcset: "lazy-srcset",
                 data_sizes: "lazy-sizes",
-                skip_invisible: false,
                 class_loading: "lazyloading",
                 class_loaded: "lazyloaded",
                 threshold: 300,
-                callback_load: function(element) {
+                callback_loaded: function(element) {
                     if ( element.tagName === "IFRAME" && element.dataset.rocketLazyload == "fitvidscompatible" ) {
                         if (element.classList.contains("lazyloaded") ) {
                             if (typeof window.jQuery != "undefined") {
@@ -179,11 +178,10 @@ class TestAssets extends TestCase
                 data_src: "lazy-src",
                 data_srcset: "lazy-srcset",
                 data_sizes: "lazy-sizes",
-                skip_invisible: false,
                 class_loading: "lazyloading",
                 class_loaded: "lazyloaded",
                 threshold: 300,
-                callback_load: function(element) {
+                callback_loaded: function(element) {
                     if ( element.tagName === "IFRAME" && element.dataset.rocketLazyload == "fitvidscompatible" ) {
                         if (element.classList.contains("lazyloaded") ) {
                             if (typeof window.jQuery != "undefined") {
@@ -275,11 +273,10 @@ class TestAssets extends TestCase
                 data_src: "lazy-src",
                 data_srcset: "lazy-srcset",
                 data_sizes: "lazy-sizes",
-                skip_invisible: false,
                 class_loading: "lazyloading",
                 class_loaded: "lazyloaded",
                 threshold: 300,
-                callback_load: function(element) {
+                callback_loaded: function(element) {
                     if ( element.tagName === "IFRAME" && element.dataset.rocketLazyload == "fitvidscompatible" ) {
                         if (element.classList.contains("lazyloaded") ) {
                             if (typeof window.jQuery != "undefined") {
@@ -376,11 +373,10 @@ class TestAssets extends TestCase
                 data_src: "lazy-src",
                 data_srcset: "lazy-srcset",
                 data_sizes: "lazy-sizes",
-                skip_invisible: false,
                 class_loading: "lazyloading",
                 class_loaded: "lazyloaded",
                 threshold: 300,
-                callback_load: function(element) {
+                callback_loaded: function(element) {
                     if ( element.tagName === "IFRAME" && element.dataset.rocketLazyload == "fitvidscompatible" ) {
                         if (element.classList.contains("lazyloaded") ) {
                             if (typeof window.jQuery != "undefined") {
