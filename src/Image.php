@@ -117,16 +117,16 @@ class Image
         $excluded = array_merge($this->getExcludedAttributes(), $this->getExcludedSrc());
 
         foreach ($pictures as $picture) {
+            if ($this->isExcluded($picture[0], $excluded)) {
+                continue;
+            }
+
             if (preg_match_all('#<source(?<atts>\s.+)>#iUs', $picture['sources'], $sources, PREG_SET_ORDER)) {
                 $sources = array_unique($sources, SORT_REGULAR);
 
                 $lazy_sources = 0;
 
                 foreach ($sources as $source) {
-                    if ($this->isExcluded($source['atts'], $excluded)) {
-                        continue;
-                    }
-
                     $lazyload_srcset = preg_replace('/([\s"\'])srcset/i', '\1data-lazy-srcset', $source[0]);
                     $html            = str_replace($source[0], $lazyload_srcset, $html);
 
