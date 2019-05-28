@@ -72,7 +72,7 @@ class Image
      */
     public function lazyloadBackgroundImages($html, $buffer)
     {
-        if (! preg_match_all('#<div\s+(?<before>[^>]+[\'"\s])?style\s*=\s*([\'"])(?<styles>.*?)\2(?<after>[^>]*)>#is', $buffer, $elements, PREG_SET_ORDER)) {
+        if (! preg_match_all('#<(?<tag>div|section|span|li)\s+(?<before>[^>]+[\'"\s])?style\s*=\s*([\'"])(?<styles>.*?)\3(?<after>[^>]*)>#is', $buffer, $elements, PREG_SET_ORDER)) {
             return $html;
         }
 
@@ -93,7 +93,7 @@ class Image
 
             $lazy_bg = $this->addLazyCLass($element[0]);
             $lazy_bg = str_replace($url[0], '', $lazy_bg);
-            $lazy_bg = str_replace('<div', '<div data-bg="url(' . esc_attr($url['url']) . ')"', $lazy_bg);
+            $lazy_bg = str_replace('<' . $element['tag'], '<' . $element['tag'] . ' data-bg="url(' . esc_attr($url['url']) . ')"', $lazy_bg);
 
             $html = str_replace($element[0], $lazy_bg, $html);
             unset($lazy_bg);
@@ -117,7 +117,7 @@ class Image
             return $element;
         }
 
-        return preg_replace('#<(img|div)([^>]*)>#is', '<\1 class="rocket-lazyload"\2>', $element);
+        return preg_replace('#<(img|div|section|li|span)([^>]*)>#is', '<\1 class="rocket-lazyload"\2>', $element);
     }
 
     /**
