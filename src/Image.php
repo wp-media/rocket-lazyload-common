@@ -295,8 +295,8 @@ class Image
      */
     private function replaceImage($image)
     {
-        $width  = 1;
-        $height = 1;
+        $width  = 0;
+        $height = 0;
 
         if (preg_match('@[\s"\']width\s*=\s*(\'|")(?<width>.*)\1@iUs', $image['atts'], $atts)) {
             $width = absint($atts['width']);
@@ -440,17 +440,14 @@ class Image
      * @since 1.2
      * @author Remy Perona
      *
-     * @param int $width  Width of the placeholder image. Default 1.
-     * @param int $height Height of the placeholder image. Default 1.
+     * @param int $width  Width of the placeholder image. Default 0.
+     * @param int $height Height of the placeholder image. Default 0.
      * @return string
      */
-    public function getPlaceholder($width = 1, $height = 1)
+    public function getPlaceholder($width = 0, $height = 0)
     {
-        $width  = absint($width);
-        $height = absint($height);
-
-        $width  = 0 === $width ? 1 : $width;
-        $height = 0 === $height ? 1 : $height;
+        $width  = 0 === $width ? 0 : absint($width);
+        $height = 0 === $height ? 0 : absint($height);
 
         $placeholder = str_replace(' ', '%20', "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $width $height'%3E%3C/svg%3E");
         /**
