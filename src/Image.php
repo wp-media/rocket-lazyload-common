@@ -28,30 +28,10 @@ class Image
         $images = array_unique($images, SORT_REGULAR);
 
         foreach ($images as $image) {
-            if ($this->isExcluded($image['atts'], $this->getExcludedAttributes())) {
+            $image = $this->canLazyload($image);
+    
+            if (! $image) {
                 continue;
-            }
-
-            // Given the previous regex pattern, $image['atts'] starts with a whitespace character.
-            if (! preg_match('@\ssrc\s*=\s*(\'|")(?<src>.*)\1@iUs', $image['atts'], $atts)) {
-                continue;
-            }
-
-            $image['src'] = trim($atts['src']);
-
-            if ('' === $image['src']) {
-                continue;
-            }
-
-            if ($this->isExcluded($image['src'], $this->getExcludedSrc())) {
-                continue;
-            }
-
-            // Don't apply LazyLoad on images from WP Retina x2.
-            if (function_exists('wr2x_picture_rewrite')) {
-                if (wr2x_get_retina(trailingslashit(ABSPATH) . wr2x_get_pathinfo_from_image_src(trim($image['src'], '"')))) {
-                    continue;
-                }
             }
 
             $image_lazyload = $this->replaceImage($image);
@@ -137,16 +117,16 @@ class Image
         $excluded = array_merge($this->getExcludedAttributes(), $this->getExcludedSrc());
 
         foreach ($pictures as $picture) {
+            if ($this->isExcluded($picture[0], $excluded)) {
+                continue;
+            }
+
             if (preg_match_all('#<source(?<atts>\s.+)>#iUs', $picture['sources'], $sources, PREG_SET_ORDER)) {
                 $sources = array_unique($sources, SORT_REGULAR);
 
                 $lazy_sources = 0;
 
                 foreach ($sources as $source) {
-                    if ($this->isExcluded($source['atts'], $excluded)) {
-                        continue;
-                    }
-
                     $lazyload_srcset = preg_replace('/([\s"\'])srcset/i', '\1data-lazy-srcset', $source[0]);
                     $html            = str_replace($source[0], $lazyload_srcset, $html);
 
@@ -159,18 +139,60 @@ class Image
                 continue;
             }
 
-            if (! preg_match('#<img(?:[^>]*)>#is', $picture[0], $img)) {
+            if (! preg_match('#<img(?<atts>\s.+)\s?/?>#is', $picture[0], $img)) {
                 continue;
             }
 
-            $img_lazy = preg_replace('/([\s"\'])srcset/i', '\1data-lazy-src', $img[0]);
+            if (! $this->canLazyload($img)) {
+                continue;
+            }
+
+            $img_lazy = preg_replace('/([\s"\'])src/i', '\1data-lazy-src', $img[0]);
             $img_lazy = $this->addLazyClass($img_lazy);
+            $img_lazy = apply_filters('rocket_lazyload_html', $img_lazy);
             $html     = str_replace($img[0], $img_lazy, $html);
 
             unset($img_lazy);
         }
 
         return $html;
+    }
+
+    /**
+     * Checks if the image can be lazyloaded
+     *
+     * @param Array $image Array of image data coming from Regex.
+     * @return bool|Array
+     */
+    private function canLazyload($image)
+    {
+        if ($this->isExcluded($image['atts'], $this->getExcludedAttributes())) {
+            return false;
+        }
+
+        // Given the previous regex pattern, $image['atts'] starts with a whitespace character.
+        if (! preg_match('@\ssrc\s*=\s*(\'|")(?<src>.*)\1@iUs', $image['atts'], $atts)) {
+            return false;
+        }
+
+        $image['src'] = trim($atts['src']);
+
+        if ('' === $image['src']) {
+            return false;
+        }
+
+        if ($this->isExcluded($image['src'], $this->getExcludedSrc())) {
+            return false;
+        }
+
+        // Don't apply LazyLoad on images from WP Retina x2.
+        if (function_exists('wr2x_picture_rewrite')) {
+            if (wr2x_get_retina(trailingslashit(ABSPATH) . wr2x_get_pathinfo_from_image_src(trim($image['src'], '"')))) {
+                return false;
+            }
+        }
+
+        return $image;
     }
 
     /**
