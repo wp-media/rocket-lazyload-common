@@ -258,6 +258,7 @@ class Image
                 'loading="eager"',
                 'swatch-img',
                 'data-height-percentage',
+                'data-large_image',
             ]
         );
     }
