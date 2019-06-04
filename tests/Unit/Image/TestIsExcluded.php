@@ -82,6 +82,7 @@ class TestIsExcluded extends TestCase
             'swatch-img',
             'data-height-percentage',
             'data-large_image',
+            'avia-bg-style-fixed',
         ];
 
         return [
@@ -161,6 +162,10 @@ class TestIsExcluded extends TestCase
                 'data-caption="" data-large_image="https://tst.japanese-knives.co.il/wp-content/uploads/Tai-400-1200-_DSC4332.jpg" data-large_image_width="1200" data-large_image_height="800" srcset="https://tst.japanese-knives.co.il/wp-content/uploads/Tai-400-1200-_DSC4332-247x165.jpg 247w, https://tst.japanese-knives.co.il/wp-content/uploads/Tai-400-1200-_DSC4332-510x340.jpg 510w, https://tst.japanese-knives.co.il/wp-content/uploads/Tai-400-1200-_DSC4332-350x233.jpg 350w, https://tst.japanese-knives.co.il/wp-content/uploads/Tai-400-1200-_DSC4332-768x512.jpg 768w, https://tst.japanese-knives.co.il/wp-content/uploads/Tai-400-1200-_DSC4332-1024x683.jpg 1024w, https://tst.japanese-knives.co.il/wp-content/uploads/Tai-400-1200-_DSC4332.jpg 1200w" sizes="(max-width: 247px) 100vw, 247px"',
                 $excluded_attributes,
             ],
+            [
+                'class="avia-bg-style-fixed" style="background-image:url(example.jpg)" data-section-bg="repeat"',
+                $excluded_attributes,
+            ],
         ];
     }
 
@@ -225,6 +230,7 @@ class TestIsExcluded extends TestCase
             'swatch-img',
             'data-height-percentage',
             'data-large_image',
+            'avia-bg-style-fixed',
         ];
 
         return [

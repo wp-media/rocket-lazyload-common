@@ -73,6 +73,7 @@ class TestExcluded extends TestCase
             'swatch-img',
             'data-height-percentage',
             'data-large_image',
+            'avia-bg-style-fixed',
 
         ];
 

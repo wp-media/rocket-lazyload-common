@@ -259,6 +259,7 @@ class Image
                 'swatch-img',
                 'data-height-percentage',
                 'data-large_image',
+                'avia-bg-style-fixed',
             ]
         );
     }
