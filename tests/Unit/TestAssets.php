@@ -114,16 +114,28 @@ class TestAssets extends TestCase
                             }
 
                             imgs = mutation.addedNodes[i].getElementsByTagName(\'img\');
+                            is_image = mutation.addedNodes[i].tagName == "IMG";
                             iframes = mutation.addedNodes[i].getElementsByTagName(\'iframe\');
+                            is_iframe = mutation.addedNodes[i].tagName == "IFRAME";
                             rocket_lazy = mutation.addedNodes[i].getElementsByClassName(\'rocket-lazyload\');
 
-                            if ( 0 === imgs.length && 0 === iframes.length && 0 === rocket_lazy.length ) {
-                                return;
+                            image_count += images.length;
+			                iframe_count += iframes.length;
+			                rocketlazy_count += rocket_lazy.length;
+                            
+                            if(is_image){
+                                image_count += 1;
                             }
 
-                            lazyLoadInstance.update();
+                            if(is_iframe){
+                                iframe_count += 1;
+                            }
                         }
                     } );
+
+                    if(image_count > 0 || iframe_count > 0 || rocketlazy_count > 0){
+                        lazyLoadInstance.update();
+                    }
                 } );
                 
                 var b      = document.getElementsByTagName("body")[0];
@@ -208,16 +220,28 @@ class TestAssets extends TestCase
                             }
 
                             imgs = mutation.addedNodes[i].getElementsByTagName(\'img\');
+                            is_image = mutation.addedNodes[i].tagName == "IMG";
                             iframes = mutation.addedNodes[i].getElementsByTagName(\'iframe\');
+                            is_iframe = mutation.addedNodes[i].tagName == "IFRAME";
                             rocket_lazy = mutation.addedNodes[i].getElementsByClassName(\'rocket-lazyload\');
 
-                            if ( 0 === imgs.length && 0 === iframes.length && 0 === rocket_lazy.length ) {
-                                return;
+                            image_count += images.length;
+			                iframe_count += iframes.length;
+			                rocketlazy_count += rocket_lazy.length;
+                            
+                            if(is_image){
+                                image_count += 1;
                             }
 
-                            lazyLoadInstance.update();
+                            if(is_iframe){
+                                iframe_count += 1;
+                            }
                         }
                     } );
+
+                    if(image_count > 0 || iframe_count > 0 || rocketlazy_count > 0){
+                        lazyLoadInstance.update();
+                    }
                 } );
                 
                 var b      = document.getElementsByTagName("body")[0];
@@ -303,16 +327,28 @@ class TestAssets extends TestCase
                             }
 
                             imgs = mutation.addedNodes[i].getElementsByTagName(\'img\');
+                            is_image = mutation.addedNodes[i].tagName == "IMG";
                             iframes = mutation.addedNodes[i].getElementsByTagName(\'iframe\');
+                            is_iframe = mutation.addedNodes[i].tagName == "IFRAME";
                             rocket_lazy = mutation.addedNodes[i].getElementsByClassName(\'rocket-lazyload\');
 
-                            if ( 0 === imgs.length && 0 === iframes.length && 0 === rocket_lazy.length ) {
-                                return;
+                            image_count += images.length;
+			                iframe_count += iframes.length;
+			                rocketlazy_count += rocket_lazy.length;
+                            
+                            if(is_image){
+                                image_count += 1;
                             }
 
-                            lazyLoadInstance.update();
+                            if(is_iframe){
+                                iframe_count += 1;
+                            }
                         }
                     } );
+
+                    if(image_count > 0 || iframe_count > 0 || rocketlazy_count > 0){
+                        lazyLoadInstance.update();
+                    }
                 } );
                 
                 var b      = document.getElementsByTagName("body")[0];
@@ -404,16 +440,28 @@ callback_finish: ()=>{console.log("Finish")},use_native: true};
                             }
 
                             imgs = mutation.addedNodes[i].getElementsByTagName(\'img\');
+                            is_image = mutation.addedNodes[i].tagName == "IMG";
                             iframes = mutation.addedNodes[i].getElementsByTagName(\'iframe\');
+                            is_iframe = mutation.addedNodes[i].tagName == "IFRAME";
                             rocket_lazy = mutation.addedNodes[i].getElementsByClassName(\'rocket-lazyload\');
 
-                            if ( 0 === imgs.length && 0 === iframes.length && 0 === rocket_lazy.length ) {
-                                return;
+                            image_count += images.length;
+			                iframe_count += iframes.length;
+			                rocketlazy_count += rocket_lazy.length;
+                            
+                            if(is_image){
+                                image_count += 1;
                             }
 
-                            lazyLoadInstance.update();
+                            if(is_iframe){
+                                iframe_count += 1;
+                            }
                         }
                     } );
+
+                    if(image_count > 0 || iframe_count > 0 || rocketlazy_count > 0){
+                        lazyLoadInstance.update();
+                    }
                 } );
                 
                 var b      = document.getElementsByTagName("body")[0];
