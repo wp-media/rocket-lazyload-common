@@ -103,6 +103,10 @@ class TestAssets extends TestCase
         
             if (window.MutationObserver) {
                 var observer = new MutationObserver(function(mutations) {
+                    var image_count = 0;
+                    var iframe_count = 0;
+                    var rocketlazy_count = 0;
+
                     mutations.forEach(function(mutation) {
                         for (i = 0; i < mutation.addedNodes.length; i++) {
                             if (typeof mutation.addedNodes[i].getElementsByTagName !== \'function\') {
@@ -113,7 +117,7 @@ class TestAssets extends TestCase
                                 return;
                             }
 
-                            imgs = mutation.addedNodes[i].getElementsByTagName(\'img\');
+                            images = mutation.addedNodes[i].getElementsByTagName(\'img\');
                             is_image = mutation.addedNodes[i].tagName == "IMG";
                             iframes = mutation.addedNodes[i].getElementsByTagName(\'iframe\');
                             is_iframe = mutation.addedNodes[i].tagName == "IFRAME";
@@ -209,6 +213,10 @@ class TestAssets extends TestCase
         
             if (window.MutationObserver) {
                 var observer = new MutationObserver(function(mutations) {
+                    var image_count = 0;
+                    var iframe_count = 0;
+                    var rocketlazy_count = 0;
+
                     mutations.forEach(function(mutation) {
                         for (i = 0; i < mutation.addedNodes.length; i++) {
                             if (typeof mutation.addedNodes[i].getElementsByTagName !== \'function\') {
@@ -219,7 +227,7 @@ class TestAssets extends TestCase
                                 return;
                             }
 
-                            imgs = mutation.addedNodes[i].getElementsByTagName(\'img\');
+                            images = mutation.addedNodes[i].getElementsByTagName(\'img\');
                             is_image = mutation.addedNodes[i].tagName == "IMG";
                             iframes = mutation.addedNodes[i].getElementsByTagName(\'iframe\');
                             is_iframe = mutation.addedNodes[i].tagName == "IFRAME";
@@ -316,6 +324,10 @@ class TestAssets extends TestCase
         
             if (window.MutationObserver) {
                 var observer = new MutationObserver(function(mutations) {
+                    var image_count = 0;
+                    var iframe_count = 0;
+                    var rocketlazy_count = 0;
+
                     mutations.forEach(function(mutation) {
                         for (i = 0; i < mutation.addedNodes.length; i++) {
                             if (typeof mutation.addedNodes[i].getElementsByTagName !== \'function\') {
@@ -326,7 +338,7 @@ class TestAssets extends TestCase
                                 return;
                             }
 
-                            imgs = mutation.addedNodes[i].getElementsByTagName(\'img\');
+                            images = mutation.addedNodes[i].getElementsByTagName(\'img\');
                             is_image = mutation.addedNodes[i].tagName == "IMG";
                             iframes = mutation.addedNodes[i].getElementsByTagName(\'iframe\');
                             is_iframe = mutation.addedNodes[i].tagName == "IFRAME";
@@ -365,7 +377,7 @@ class TestAssets extends TestCase
         );
     }
 
-        /**
+    /**
      * @covers ::getLazyloadScript
      * @runInSeparateProcess
      * @preserveGlobalState disabled
@@ -429,6 +441,10 @@ callback_finish: ()=>{console.log("Finish")},use_native: true};
         
             if (window.MutationObserver) {
                 var observer = new MutationObserver(function(mutations) {
+                    var image_count = 0;
+                    var iframe_count = 0;
+                    var rocketlazy_count = 0;
+
                     mutations.forEach(function(mutation) {
                         for (i = 0; i < mutation.addedNodes.length; i++) {
                             if (typeof mutation.addedNodes[i].getElementsByTagName !== \'function\') {
@@ -439,7 +455,7 @@ callback_finish: ()=>{console.log("Finish")},use_native: true};
                                 return;
                             }
 
-                            imgs = mutation.addedNodes[i].getElementsByTagName(\'img\');
+                            images = mutation.addedNodes[i].getElementsByTagName(\'img\');
                             is_image = mutation.addedNodes[i].tagName == "IMG";
                             iframes = mutation.addedNodes[i].getElementsByTagName(\'iframe\');
                             is_iframe = mutation.addedNodes[i].tagName == "IFRAME";
