@@ -451,7 +451,7 @@ class Image
         $width  = 0 === $width ? 0 : absint($width);
         $height = 0 === $height ? 0 : absint($height);
 
-        $placeholder = str_replace(' ', '%20', "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 $width $height'%3E%3C/svg%3E");
+        $placeholder = str_replace(' ', '%20', "data:image/svg+xml,%3Csvg xmlns='https://www.w3.org/2000/svg' viewBox='0 0 $width $height'%3E%3C/svg%3E");
         /**
          * Filter the image lazyLoad placeholder on src attribute
          *
