@@ -458,7 +458,9 @@ class Image
          * @since 1.1
          *
          * @param string $placeholder Placeholder that will be printed.
+         * @param int    $width Placeholder width.
+         * @param int    $height Placeholder height.
          */
-        return apply_filters('rocket_lazyload_placeholder', $placeholder);
+        return apply_filters('rocket_lazyload_placeholder', $placeholder, $width, $height);
     }
 }
