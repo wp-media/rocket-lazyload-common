@@ -15,7 +15,7 @@ class Assets
     /**
      * Inserts the lazyload script in the HTML
      *
-     * @param array $args Array of arguments to populate the lazyload script options.
+     * @param array $args Array of arguments to populate the lazyload script tag.
      * @return void
      */
     public function insertLazyloadScript($args = [])
@@ -24,22 +24,19 @@ class Assets
     }
 
     /**
-     * Returns the lazyload inline script
+     * Gets the inline lazyload script configuration
      *
      * @param array $args Array of arguments to populate the lazyload script options.
-     * @return string
+     * @return void
      */
-    public function getLazyloadScript($args = [])
+    public function getInlineLazyloadScript($args = [])
     {
         $defaults = [
-            'base_url'  => '',
             'elements'  => [
                 'img',
                 'iframe',
             ],
             'threshold' => 300,
-            'version'   => '',
-            'polyfill'  => false,
             'options'   => [],
         ];
 
@@ -59,17 +56,11 @@ class Assets
         ];
 
         $args   = wp_parse_args($args, $defaults);
-        $min    = ( defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ) ? '' : '.min';
         $script = '';
 
         $args['options'] = array_intersect_key($args['options'], $allowed_options);
 
-        if (isset($args['polyfill']) && $args['polyfill']) {
-            $script .= '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script>';
-        }
-
-        $script .= '<script>
-            window.lazyLoadOptions = {
+        $script .= 'window.lazyLoadOptions = {
                 elements_selector: "' . esc_attr(implode(',', $args['elements'])) . '",
                 data_src: "lazy-src",
                 data_srcset: "lazy-srcset",
@@ -151,8 +142,32 @@ class Assets
                 
                 observer.observe(b, config);
             }
-        }, false);
-        </script>';
+        }, false);';
+
+        return $script;
+    }
+
+    /**
+     * Returns the lazyload inline script
+     *
+     * @param array $args Array of arguments to populate the lazyload script options.
+     * @return string
+     */
+    public function getLazyloadScript($args = [])
+    {
+        $defaults = [
+            'base_url' => '',
+            'version'  => '',
+            'polyfill' => false,
+        ];
+
+        $args   = wp_parse_args($args, $defaults);
+        $min    = ( defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ) ? '' : '.min';
+        $script = '';
+
+        if (isset($args['polyfill']) && $args['polyfill']) {
+            $script .= '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script>';
+        }
 
         /**
          * Filters the script tag for the lazyload script
