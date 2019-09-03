@@ -27,7 +27,7 @@ class Assets
      * Gets the inline lazyload script configuration
      *
      * @param array $args Array of arguments to populate the lazyload script options.
-     * @return void
+     * @return string
      */
     public function getInlineLazyloadScript($args = [])
     {
