@@ -148,7 +148,11 @@ class Image
             }
 
             $img_lazy = preg_replace('/([\s"\'])src/i', '\1data-lazy-src', $img[0]);
-            $img_lazy = $this->addLazyClass($img_lazy);
+
+            if (! preg_match('@\sloading\s*=\s*(\'|")(?:lazy|auto)\1@i', $img_lazy)) {
+                $img_lazy = str_replace('<img', '<img loading="lazy"', $img_lazy);
+            }
+
             $img_lazy = apply_filters('rocket_lazyload_html', $img_lazy);
             $html     = str_replace($img[0], $img_lazy, $html);
 
