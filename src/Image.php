@@ -253,8 +253,6 @@ class Image
                 'class="ls-l',
                 'class="ls-bg',
                 'soliloquy-image',
-                'loading="auto"',
-                'loading="lazy"',
                 'loading="eager"',
                 'swatch-img',
                 'data-height-percentage',
@@ -311,6 +309,10 @@ class Image
         $placeholder_atts = preg_replace('@\ssrc\s*=\s*(\'|")(?<src>.*)\1@iUs', ' src="' . $this->getPlaceholder($width, $height) . '"', $image['atts']);
 
         $image_lazyload = str_replace($image['atts'], $placeholder_atts . ' data-lazy-src="' . $image['src'] . '"', $image[0]);
+
+        if (! preg_match('@\sloading\s*=\s*(\'|")(?:lazy|auto)\1@i', $image_lazyload)) {
+            $image_lazyload = str_replace('<img', '<img loading="lazy"', $image_lazyload);
+        }
 
         /**
          * Filter the LazyLoad HTML output

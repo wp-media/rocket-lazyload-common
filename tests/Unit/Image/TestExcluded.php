@@ -67,8 +67,6 @@ class TestExcluded extends TestCase
             'class="ls-l',
             'class="ls-bg',
             'soliloquy-image',
-            'loading="auto"',
-            'loading="lazy"',
             'loading="eager"',
             'swatch-img',
             'data-height-percentage',
