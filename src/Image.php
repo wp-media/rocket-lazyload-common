@@ -311,7 +311,7 @@ class Image
 
         $image_lazyload = str_replace($image['atts'], $placeholder_atts . ' data-lazy-src="' . $image['src'] . '"', $image[0]);
 
-        if (! preg_match('@\sloading\s*=\s*(\'|")(?:lazy|auto)\1@i', $image_lazyload)) {
+        if (! preg_match('@\sloading\s*=\s*(\'|")(?:lazy|auto)\1@i', $image_lazyload) && apply_filters('rocket_use_native_lazyload', false)) {
             $image_lazyload = str_replace('<img', '<img loading="lazy"', $image_lazyload);
         }
 
