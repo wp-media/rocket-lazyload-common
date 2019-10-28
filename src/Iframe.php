@@ -226,7 +226,7 @@ class Iframe
      * @return string      Cleaned URL
      */
     public function cleanYoutubeUrl ( $url ) {
-        $parsed_url = parse_url( $url );
+        $parsed_url = wp_parse_url( $url, -1 );
         $scheme     = isset( $parsed_url['scheme'] ) ? $parsed_url['scheme'] . '://' : '';
         $host       = isset( $parsed_url['host'] ) ? $parsed_url['host'] : '';
         $path       = isset( $parsed_url['path'] ) ? $parsed_url['path'] : '';
