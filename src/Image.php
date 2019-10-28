@@ -29,7 +29,7 @@ class Image
 
         foreach ($images as $image) {
             $image = $this->canLazyload($image);
-    
+
             if (! $image) {
                 continue;
             }
@@ -65,7 +65,7 @@ class Image
             if (! preg_match('#background-image\s*:\s*(?<attr>\s*url\s*\((?<url>[^)]+)\))\s*;?#is', $element['styles'], $url)) {
                 continue;
             }
- 
+
             $url['url'] = trim($url['url'], '\'" ');
 
             if ($this->isExcluded($url['url'], $this->getExcludedSrc())) {
@@ -218,7 +218,7 @@ class Image
                 return true;
             }
         }
-    
+
         return false;
     }
 
@@ -348,7 +348,7 @@ class Image
     {
         $html = preg_replace('/[\s|"|\'](srcset)\s*=\s*("|\')([^"|\']+)\2/i', ' data-lazy-$1=$2$3$2', $html);
         $html = preg_replace('/[\s|"|\'](sizes)\s*=\s*("|\')([^"|\']+)\2/i', ' data-lazy-$1=$2$3$2', $html);
-    
+
         return $html;
     }
 
