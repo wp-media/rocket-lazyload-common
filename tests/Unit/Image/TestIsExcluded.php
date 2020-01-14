@@ -81,6 +81,8 @@ class TestIsExcluded extends TestCase
             'data-height-percentage',
             'data-large_image',
             'avia-bg-style-fixed',
+            'data-skip-lazy',
+            'skip-lazy',
         ];
 
         return [
@@ -164,6 +166,14 @@ class TestIsExcluded extends TestCase
                 'class="avia-bg-style-fixed" style="background-image:url(example.jpg)" data-section-bg="repeat"',
                 $excluded_attributes,
             ],
+            [
+                'class="skip-lazy" style="background-image:url(example.jpg)" data-section-bg="repeat"',
+                $excluded_attributes,
+            ],
+            [
+                'data-skip-lazy="1" style="background-image:url(example.jpg)" data-section-bg="repeat"',
+                $excluded_attributes,
+            ],
         ];
     }
 
@@ -227,6 +237,8 @@ class TestIsExcluded extends TestCase
             'data-height-percentage',
             'data-large_image',
             'avia-bg-style-fixed',
+            'data-skip-lazy',
+            'skip-lazy',
         ];
 
         return [
