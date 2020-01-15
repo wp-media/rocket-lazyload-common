@@ -107,6 +107,8 @@ class Iframe
                 'data-no-lazy=',
                 'recaptcha/api/fallback',
                 'loading="eager"',
+                'data-skip-lazy',
+                'skip-lazy',
             ]
         );
     }
