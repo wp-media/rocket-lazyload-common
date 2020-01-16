@@ -88,6 +88,20 @@ class TestIsIframeExcluded extends TestCase
                     'width="560" height="315" data-no-lazy="1" src="https://www.youtube.com/embed/Y7pVUaPJeg8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen',
                 ],
             ],
+            [
+                [
+                    '<iframe width="560" height="315" data-skip-lazy="1" src="https://www.youtube.com/embed/Y7pVUaPJeg8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+                    'width="560" height="315" data-skip-lazy="1" src="https://www.youtube.com/embed/Y7pVUaPJeg8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen',
+                    'width="560" height="315" data-skip-lazy="1" src="https://www.youtube.com/embed/Y7pVUaPJeg8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen',
+                ],
+            ],
+            [
+                [
+                    '<iframe width="560" height="315" class="skip-lazy" src="https://www.youtube.com/embed/Y7pVUaPJeg8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+                    'width="560" height="315" class="skip-lazy" src="https://www.youtube.com/embed/Y7pVUaPJeg8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen',
+                    'width="560" height="315" class="skip-lazy" src="https://www.youtube.com/embed/Y7pVUaPJeg8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen',
+                ],
+            ],
         ];
     }
 

@@ -72,6 +72,8 @@ class TestExcluded extends TestCase
             'data-height-percentage',
             'data-large_image',
             'avia-bg-style-fixed',
+            'data-skip-lazy',
+            'skip-lazy'
 
         ];
 
