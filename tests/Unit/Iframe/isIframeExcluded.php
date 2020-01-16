@@ -1,20 +1,20 @@
 <?php
 /**
- * Unit tests for the Iframe::isIframeExcluded method
+ * Unit tests for the RocketLazyload\Iframe::isIframeExcluded method
  *
  * @package RocketLazyload
  */
 
 namespace RocketLazyload\Tests\Unit\Iframe;
 
-use PHPUnit\Framework\TestCase;
-use Brain\Monkey;
+use RocketLazyload\Tests\Unit\TestCase;
 use RocketLazyload\Iframe;
 
 /**
- * Unit tests for the Iframe::isIframeExcluded method
+ * Unit tests for the RocketLazyload\Iframe::isIframeExcluded method
  *
- * @coversDefaultClass RocketLazyload\Iframe
+ * @covers RocketLazyload\Iframe::isIframeExcluded
+ * @group Iframe
  */
 class TestIsIframeExcluded extends TestCase
 {
@@ -33,24 +33,15 @@ class TestIsIframeExcluded extends TestCase
     public function setUp()
     {
         parent::setUp();
-        Monkey\setUp();
         $this->iframe = new Iframe();
     }
 
     /**
-     * Do this after each test
+     * Test should return true when the iframe contains an excluded pattern
      *
-     * @return void
-     */
-    public function tearDown()
-    {
-        Monkey\tearDown();
-        parent::tearDown();
-    }
-
-    /**
-     * @covers ::isIframeExcluded
      * @dataProvider iframeExcludedPatternProvider
+     *
+     * @param array $iframe Array containing the iframe HTML and iframe attributes.
      */
     public function testShouldReturnTrueWhenExcludedPattern($iframe)
     {
@@ -106,8 +97,10 @@ class TestIsIframeExcluded extends TestCase
     }
 
     /**
-     * @covers ::isIframeExcluded
+     * Test should return false when no excluded pattern in the iframe
+     *
      * @dataProvider iframeProvider
+     * @param array $iframe Array containing the iframe HTML and iframe attributes.
      */
     public function testShouldReturnFalseWhenNotExcludedPattern($iframe)
     {

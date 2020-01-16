@@ -7,15 +7,15 @@
 
 namespace RocketLazyload\Tests\Unit\Image;
 
-use PHPUnit\Framework\TestCase;
-use Brain\Monkey;
-use Brain\Monkey\Functions;
+use RocketLazyload\Tests\Unit\TestCase;
 use RocketLazyload\Image;
+use Brain\Monkey\Functions;
 
 /**
  * Tests for the RocketLazyload\Image::lazyloadImages method
  *
- * @coversDefaultClass RocketLazyload\Image
+ * @covers RocketLazyload\Image::lazyloadImages
+ * @group Image
  */
 class TestLazyloadImages extends TestCase
 {
@@ -34,28 +34,15 @@ class TestLazyloadImages extends TestCase
     public function setUp()
     {
         parent::setUp();
-        Monkey\setUp();
         $this->image = new Image();
     }
 
     /**
-     * Do this after each test
-     *
-     * @return void
-     */
-    public function tearDown()
-    {
-        Monkey\tearDown();
-        parent::tearDown();
-    }
-
-    /**
-     * @covers ::lazyloadImages
-     * @author Remy Perona
+     * Test should return same HTML when there is no images
      */
     public function testShouldReturnSameWhenNoImage()
     {
-        $noimage = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Image/noimage.html');
+        $noimage = file_get_contents(RLL_COMMON_ROOT . 'tests/Fixtures/image/noimage.html');
 
         $this->assertSame(
             $noimage,
@@ -64,8 +51,7 @@ class TestLazyloadImages extends TestCase
     }
 
     /**
-     * @covers ::lazyloadImages
-     * @author Remy Perona
+     * Test should return HTML with images lazyloaded
      */
     public function testShouldReturnImagesLazyloaded()
     {
@@ -73,8 +59,8 @@ class TestLazyloadImages extends TestCase
             return abs(intval($value));
         });
 
-        $original = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Image/images.html');
-        $expected = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Image/imageslazyloaded.html');
+        $original = file_get_contents(RLL_COMMON_ROOT . 'tests/Fixtures/image/images.html');
+        $expected = file_get_contents(RLL_COMMON_ROOT . 'tests/Fixtures/image/imageslazyloaded.html');
 
         $this->assertSame(
             $expected,

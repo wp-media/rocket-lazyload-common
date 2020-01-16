@@ -1,21 +1,21 @@
 <?php
 /**
- * Unit tests for the Iframe::lazyloadIframes method
+ * Unit tests for the RocketLazyload\Iframe::lazyloadIframes method
  *
  * @package RocketLazyload
  */
 
 namespace RocketLazyload\Tests\Unit\Iframe;
 
-use PHPUnit\Framework\TestCase;
-use Brain\Monkey;
-use Brain\Monkey\Functions;
+use RocketLazyload\Tests\Unit\TestCase;
 use RocketLazyload\Iframe;
+use Brain\Monkey\Functions;
 
 /**
- * Unit tests for the Iframe::lazyloadIframes method
+ * Unit tests for the RocketLazyload\Iframe::lazyloadIframes method
  *
- * @coversDefaultClass RocketLazyload\Iframe
+ * @covers RocketLazyload\Iframe::lazyloadIframes
+ * @group Iframe
  */
 class TestLazyloadIframe extends TestCase
 {
@@ -34,23 +34,11 @@ class TestLazyloadIframe extends TestCase
     public function setUp()
     {
         parent::setUp();
-        Monkey\setUp();
         $this->iframe = new Iframe();
     }
 
     /**
-     * Do this after each test
-     *
-     * @return void
-     */
-    public function tearDown()
-    {
-        Monkey\tearDown();
-        parent::tearDown();
-    }
-
-    /**
-     * @covers ::lazyloadIframes
+     * Test should return same HTML when no iframe
      */
     public function testShouldReturnSameWhenNoIframe()
     {
@@ -71,7 +59,7 @@ class TestLazyloadIframe extends TestCase
             return $r;
         });
 
-        $noiframe = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Iframe/noiframe.html');
+        $noiframe = file_get_contents(RLL_COMMON_ROOT . 'tests/Fixtures/iframe/noiframe.html');
 
         $this->assertSame(
             $noiframe,
@@ -80,7 +68,7 @@ class TestLazyloadIframe extends TestCase
     }
 
     /**
-     * @covers ::lazyloadIframes
+     * Test should return HTML with iframes lazyloaded
      */
     public function testShouldReturnIframeLazyloaded()
     {
@@ -101,8 +89,8 @@ class TestLazyloadIframe extends TestCase
             return $r;
         });
 
-        $original = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Iframe/youtube.html');
-        $expected = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Iframe/iframelazyloaded.html');
+        $original = file_get_contents(RLL_COMMON_ROOT . 'tests/Fixtures/iframe/youtube.html');
+        $expected = file_get_contents(RLL_COMMON_ROOT . 'tests/Fixtures/iframe/iframelazyloaded.html');
 
         $this->assertSame(
             $expected,
@@ -111,7 +99,7 @@ class TestLazyloadIframe extends TestCase
     }
 
     /**
-     * @covers ::lazyloadIframes
+     * Test should return HTML with youtube iframes lazyloaded
      */
     public function testShouldReturnYoutubeLazyloaded()
     {
@@ -138,8 +126,8 @@ class TestLazyloadIframe extends TestCase
         $args     = [
             'youtube' => true,
         ];
-        $original = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Iframe/youtube.html');
-        $expected = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Iframe/youtubelazyloaded.html');
+        $original = file_get_contents(RLL_COMMON_ROOT . 'tests/Fixtures/iframe/youtube.html');
+        $expected = file_get_contents(RLL_COMMON_ROOT . 'tests/Fixtures/iframe/youtubelazyloaded.html');
 
         $this->assertSame(
             $expected,

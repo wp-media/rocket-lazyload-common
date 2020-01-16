@@ -7,15 +7,15 @@
 
 namespace RocketLazyload\Tests\Unit\Image;
 
-use PHPUnit\Framework\TestCase;
-use Brain\Monkey;
-use Brain\Monkey\Functions;
+use RocketLazyload\Tests\Unit\TestCase;
 use RocketLazyload\Image;
+use Brain\Monkey\Functions;
 
 /**
  * Tests for the RocketLazyload\Image::lazyloadBackgroundImages method
  *
- * @coversDefaultClass RocketLazyload\Image
+ * @covers RocketLazyload\Image::lazyloadBackgroundImages
+ * @group Image
  */
 class TestLazyloadBackgroundImages extends TestCase
 {
@@ -34,28 +34,15 @@ class TestLazyloadBackgroundImages extends TestCase
     public function setUp()
     {
         parent::setUp();
-        Monkey\setUp();
         $this->image = new Image();
     }
 
     /**
-     * Do this after each test
-     *
-     * @return void
-     */
-    public function tearDown()
-    {
-        Monkey\tearDown();
-        parent::tearDown();
-    }
-
-    /**
-     * @covers ::lazyloadBackgroundImages
-     * @author Remy Perona
+     * Test should return same HTML when there is no background images
      */
     public function testShouldReturnSameWhenNoBackgroundImage()
     {
-        $noimage = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Image/noimage.html');
+        $noimage = file_get_contents(RLL_COMMON_ROOT . 'tests/Fixtures/image/noimage.html');
 
         $this->assertSame(
             $noimage,
@@ -64,15 +51,14 @@ class TestLazyloadBackgroundImages extends TestCase
     }
 
     /**
-     * @covers ::lazyloadBackgroundImages
-     * @author Remy Perona
+     * Test should return HTML with lazyloaded background images
      */
     public function testShouldReturnBackgroundImagesLazyloaded()
     {
         Functions\when('esc_attr')->returnArg();
 
-        $original = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Image/bgimages.html');
-        $expected = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Image/bgimageslazyloaded.html');
+        $original = file_get_contents(RLL_COMMON_ROOT . 'tests/Fixtures/image/bgimages.html');
+        $expected = file_get_contents(RLL_COMMON_ROOT . 'tests/Fixtures/image/bgimageslazyloaded.html');
 
         $this->assertSame(
             $expected,

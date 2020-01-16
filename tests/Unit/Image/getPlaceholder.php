@@ -1,21 +1,21 @@
 <?php
 /**
- * Unit tests for Image::getPlaceholder method
+ * Unit tests for RocketLazyload\Image::getPlaceholder method
  *
  * @package RocketLazyload
  */
 
 namespace RocketLazyload\Tests\Unit\Image;
 
-use PHPUnit\Framework\TestCase;
+use RocketLazyload\Tests\Unit\TestCase;
 use RocketLazyload\Image;
-use Brain\Monkey;
 use Brain\Monkey\Functions;
 
 /**
- * Tests for the mage::getPlaceholder method
+ * Tests for the RocketLazyload\Image::getPlaceholder method
  *
- * @coversDefaultClass RocketLazyload\Image
+ * @covers \RocketLazyload\Image::getPlaceholder
+ * @group Image
  */
 class TestGetPlaceholder extends TestCase
 {
@@ -33,24 +33,12 @@ class TestGetPlaceholder extends TestCase
      */
     public function setUp()
     {
-        $this->image = new Image();
         parent::setUp();
-        Monkey\setUp();
+        $this->image = new Image();
     }
 
     /**
-     * Do this after each test
-     *
-     * @return void
-     */
-    public function tearDown()
-    {
-        Monkey\TearDown();
-        parent::tearDown();
-    }
-
-    /**
-     * @covers ::getPlaceholder
+     * Test should return default SVG placeholder when there is no arguments
      */
     public function testShouldReturnSVGPlaceholderWhenNoArguments()
     {
@@ -67,7 +55,8 @@ class TestGetPlaceholder extends TestCase
     }
 
     /**
-     * @covers ::getPlaceholder
+     * Test should return SVG placeholder with custom width & height
+     *
      * @dataProvider widthHeightProvider
      *
      * @param int    $width    Width of the placeholder.

@@ -1,19 +1,20 @@
 <?php
 /**
- * Unit tests for the Iframe::getYoutubeIDFromURL method
+ * Unit tests for the RocketLazyload\Iframe::getYoutubeIDFromURL method
  *
  * @package RocketLazyload
  */
 
 namespace RocketLazyload\Tests\Unit\Iframe;
 
-use PHPUnit\Framework\TestCase;
+use RocketLazyload\Tests\Unit\TestCase;
 use RocketLazyload\Iframe;
 
 /**
- * Unit tests for the Iframe::getYoutubeIDFromURL method
+ * Unit tests for the RocketLazyload\Iframe::getYoutubeIDFromURL method
  *
- * @coversDefaultClass RocketLazyload\Iframe
+ * @covers RocketLazyload\Iframe::getYoutubeIDFromURL
+ * @group Iframe
  */
 class TestGetYoutubeIDFromURL extends TestCase
 {
@@ -31,12 +32,17 @@ class TestGetYoutubeIDFromURL extends TestCase
      */
     public function setUp()
     {
+        parent::setUp();
         $this->iframe = new Iframe();
     }
 
     /**
-     * @covers ::getYoutubeIDfromURL
+     * Test should return the ID from the Youtube URL
+     *
      * @dataProvider youtubeURLProvider
+     *
+     * @param string $youtube_url Youtube URL.
+     * @param string $expected    Expected ID.
      */
     public function testShouldReturnIDWhenYoutubeURL($youtube_url, $expected)
     {
@@ -63,7 +69,7 @@ class TestGetYoutubeIDFromURL extends TestCase
     }
 
     /**
-     * @covers ::getYoutubeIDFromURL
+     * Test should return false when the Youtube URL is a playlist
      */
     public function testShouldReturnFalseWhenYoutubePlaylist()
     {
@@ -75,7 +81,7 @@ class TestGetYoutubeIDFromURL extends TestCase
     }
 
     /**
-     * @covers ::getYoutubeIDFromURL
+     * Test should return false when the URL is not a Youtube URL
      */
     public function testShouldReturnFalseWhenNotYoutubeURL()
     {

@@ -1,19 +1,20 @@
 <?php
 /**
- * Unit tests for Image:lazyloadResponsiveAttributes method
+ * Unit tests for RocketLazyload\Image::lazyloadResponsiveAttributes method
  *
  * @package RocketLazyload
  */
 
 namespace RocketLazyload\Tests\Unit\Image;
 
-use PHPUnit\Framework\TestCase;
+use RocketLazyload\Tests\Unit\TestCase;
 use RocketLazyload\Image;
 
 /**
- * Tests for the Image::lazyloadResponsiveAttributes method
+ * Tests for the RocketLazyload\Image::lazyloadResponsiveAttributes method
  *
- * @coversDefaultClass RocketLazyload\Image
+ * @covers RocketLazyload\Image::lazyloadResponsiveAttributes
+ * @group Image
  */
 class TestLazyloadResponsiveAttributes extends TestCase
 {
@@ -31,11 +32,12 @@ class TestLazyloadResponsiveAttributes extends TestCase
      */
     public function setUp()
     {
+        parent::setUp();
         $this->image = new Image();
     }
 
     /**
-     * @covers ::lazyloadResponsiveAttributes
+     * Test should lazyload responsive attributes when they exists in the image
      */
     public function testShouldLazyloadResponsiveAttributesWhenPresent()
     {
@@ -49,9 +51,9 @@ class TestLazyloadResponsiveAttributes extends TestCase
     }
 
     /**
-     * @covers ::lazyloadResponsiveAttributes
+     * Test should do nothing when there is no responsive attributes
      */
-    public function testShouldDoNothingWhenNoResponsiveAttribute()
+    public function testShouldDoNothingWhenNoResponsiveAttributes()
     {
         $image    = '<img width="300" height="580" src="http://wordpress.test/wp-content/uploads/2013/03/image-a-la-une-verticale-1.jpg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="Image à la une verticale" />';
         $expected = '<img width="300" height="580" src="http://wordpress.test/wp-content/uploads/2013/03/image-a-la-une-verticale-1.jpg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="Image à la une verticale" />';
