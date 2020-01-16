@@ -2,11 +2,11 @@
 <ruleset name="Rocket Lazyload">
 	<description>Rocket Lazyload Coding Standards</description>
 
-	<config name="testVersion" value="5.4-" />
+	<config name="testVersion" value="5.6-" />
 	<rule ref="PHPCompatibilityWP">
     	<include-pattern>*\.php$</include-pattern>
 	</rule>
-	<rule ref="PSR2">
+	<rule ref="PSR12">
 		<exclude name="Generic.Files.LineLength.TooLong" />
 	</rule>
 	<rule ref="WordPress">
