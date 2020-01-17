@@ -9,7 +9,7 @@ namespace Rocketlazyload\Tests\Integration;
 
 use function Rocketlazyload\Tests\init_test_suite;
 
-require_once dirname( dirname( __FILE__ ) ) . '/boostrap-functions.php';
+require_once dirname( dirname( __FILE__ ) ) . '/bootstrap-functions.php';
 init_test_suite( 'Integration' );
 
 /**
