@@ -1,9 +1,4 @@
 <?php
-/**
- * Bootstraps the Rocket Lazyload integration tests
- *
- * @package Rocketlazyload\Tests\Integration
- */
 
 namespace Rocketlazyload\Tests\Integration;
 
@@ -40,7 +35,7 @@ function get_wp_tests_dir() {
 }
 
 /**
- * Bootstraps the integration testing environment with WordPress and WP Rocket.
+ * Bootstraps the integration testing environment with WordPress and this plugin.
  *
  * @param string $wp_tests_dir The directory path to the WordPress testing environment.
  */

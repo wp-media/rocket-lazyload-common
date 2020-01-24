@@ -1,9 +1,4 @@
 <?php
-/**
- * Bootstraps the Rocket Lazyload Common Unit Tests
- *
- * @package RocketLazyload\Tests\Unit
- */
 
 namespace RocketLazyload\Tests\Unit;
 

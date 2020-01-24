@@ -1,9 +1,4 @@
 <?php
-/**
- * Common bootstrap functionality.
- *
- * @package RocketLazyload\Tests
- */
 
 namespace RocketLazyload\Tests;
 
@@ -20,7 +15,7 @@ function init_test_suite( $test_suite = 'Unit' ) {
     // Load the Composer autoloader.
     require_once RLL_COMMON_ROOT . '/vendor/autoload.php';
 
-    // Load Patchwork before everything else in order to allow us to redefine WordPress, 3rd party, and WP Rocket functions.
+    // Load Patchwork before everything else in order to allow us to redefine WordPress, 3rd party, etc. functions.
     require_once RLL_COMMON_ROOT . '/vendor/antecedent/patchwork/Patchwork.php';
 }
 
@@ -29,7 +24,7 @@ function init_test_suite( $test_suite = 'Unit' ) {
  */
 function check_readiness() {
     if ( version_compare( phpversion(), '5.6.0', '<' ) ) {
-        trigger_error( 'WP Rocket Unit Tests require PHP 5.6 or higher.', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error -- Valid use case for our testing suite.
+        trigger_error( 'Unit Tests require PHP 5.6 or higher.', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error -- Valid use case for our testing suite.
     }
 
     if ( ! file_exists( dirname( __DIR__ ) . '/vendor/autoload.php' ) ) {

@@ -1,146 +1,116 @@
 <?php
-/**
- * Unit tests for the RocketLazyload\Assets::getLazyloadScript method
- *
- * @package RocketLazyload
- */
 
-namespace RocketLazyload\Tests\Unit;
+namespace RocketLazyload\Tests\Unit\Assets;
 
-use RocketLazyload\Tests\Unit\TestCase;
-use RocketLazyload\Assets;
 use Brain\Monkey\Functions;
+use RocketLazyload\Assets;
+use RocketLazyload\Tests\Unit\TestCase;
 
 /**
- * Unit test for the RocketLazyload\Assets::getLazyloadScript method
- *
  * @covers RocketLazyload\Assets::getLazyloadScript
  */
-class TestGetLazyloadScript extends TestCase
-{
-    /**
-     * Assets instance
-     *
-     * @var Assets
-     */
-    private $assets;
+class Test_GetLazyloadScript extends TestCase {
+	private $assets;
 
-    /**
-     * Do this before each test
-     *
-     * @return void
-     */
-    public function setUp()
-    {
-        parent::setUp();
-        $this->assets = new Assets();
-    }
-    
-    /**
-     * Test should return lazyload script HTML without minified extension
-     *
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
-    public function testShouldReturnLazyloadScriptWhenScriptDebug()
-    {
-        Functions\when('wp_parse_args')->alias(function ($args, $defaults) {
-            if (is_object($args)) {
-                $r = get_object_vars($args);
-            } elseif (is_array($args)) {
-                $r =& $args;
-            } else {
-                parse_str($args, $r);
-            }
+	public function setUp() {
+		parent::setUp();
+		$this->assets = new Assets();
+	}
 
-            if (is_array($defaults)) {
-                return array_merge($defaults, $r);
-            }
+	/**
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function testShouldReturnLazyloadScriptWhenScriptDebug() {
+		Functions\when( 'wp_parse_args' )->alias( function( $args, $defaults ) {
+			if ( is_object( $args ) ) {
+				$r = get_object_vars( $args );
+			} elseif ( is_array( $args ) ) {
+				$r =& $args;
+			} else {
+				parse_str( $args, $r );
+			}
 
-            return $r;
-        });
+			if ( is_array( $defaults ) ) {
+				return array_merge( $defaults, $r );
+			}
 
-        define('SCRIPT_DEBUG', true);
+			return $r;
+		} );
 
-        $args = [
-            'base_url' => 'http://example.org/',
-            'version'  => '11.0.2',
-        ];
+		define( 'SCRIPT_DEBUG', true );
 
-        $expected = '<script data-no-minify="1" async src="http://example.org/11.0.2/lazyload.js"></script>';
+		$args = [
+			'base_url' => 'http://example.org/',
+			'version'  => '11.0.2',
+		];
 
-        $this->assertSame(
-            $expected,
-            $this->assets->getLazyloadScript($args)
-        );
-    }
+		$expected = '<script data-no-minify="1" async src="http://example.org/11.0.2/lazyload.js"></script>';
 
-    /**
-     * Test should return lazyload script HTML with minified extension
-     */
-    public function testShouldReturnMinLazyloadScriptWhenNoScriptDebug()
-    {
-        Functions\when('wp_parse_args')->alias(function ($args, $defaults) {
-            if (is_object($args)) {
-                $r = get_object_vars($args);
-            } elseif (is_array($args)) {
-                $r =& $args;
-            } else {
-                parse_str($args, $r);
-            }
+		$this->assertSame(
+			$expected,
+			$this->assets->getLazyloadScript( $args )
+		);
+	}
 
-            if (is_array($defaults)) {
-                return array_merge($defaults, $r);
-            }
+	public function testShouldReturnMinLazyloadScriptWhenNoScriptDebug() {
+		Functions\when( 'wp_parse_args' )->alias( function( $args, $defaults ) {
+			if ( is_object( $args ) ) {
+				$r = get_object_vars( $args );
+			} elseif ( is_array( $args ) ) {
+				$r =& $args;
+			} else {
+				parse_str( $args, $r );
+			}
 
-            return $r;
-        });
+			if ( is_array( $defaults ) ) {
+				return array_merge( $defaults, $r );
+			}
 
-        $args = [
-            'base_url' => 'http://example.org/',
-            'version'  => '11.0.2',
-        ];
+			return $r;
+		} );
 
-        $expected = '<script data-no-minify="1" async src="http://example.org/11.0.2/lazyload.min.js"></script>';
+		$args = [
+			'base_url' => 'http://example.org/',
+			'version'  => '11.0.2',
+		];
 
-        $this->assertSame(
-            $expected,
-            $this->assets->getLazyloadScript($args)
-        );
-    }
+		$expected = '<script data-no-minify="1" async src="http://example.org/11.0.2/lazyload.min.js"></script>';
 
-    /**
-     * Test should return lazyload script HTML with the polyfill for intersection observer
-     */
-    public function testShouldReturnLazyloadScriptWithPolyfill()
-    {
-        Functions\when('wp_parse_args')->alias(function ($args, $defaults) {
-            if (is_object($args)) {
-                $r = get_object_vars($args);
-            } elseif (is_array($args)) {
-                $r =& $args;
-            } else {
-                parse_str($args, $r);
-            }
+		$this->assertSame(
+			$expected,
+			$this->assets->getLazyloadScript( $args )
+		);
+	}
 
-            if (is_array($defaults)) {
-                return array_merge($defaults, $r);
-            }
+	public function testShouldReturnLazyloadScriptWithPolyfill() {
+		Functions\when( 'wp_parse_args' )->alias( function( $args, $defaults ) {
+			if ( is_object( $args ) ) {
+				$r = get_object_vars( $args );
+			} elseif ( is_array( $args ) ) {
+				$r =& $args;
+			} else {
+				parse_str( $args, $r );
+			}
 
-            return $r;
-        });
+			if ( is_array( $defaults ) ) {
+				return array_merge( $defaults, $r );
+			}
 
-        $args = [
-            'base_url' => 'http://example.org/',
-            'version'  => '11.0.2',
-            'polyfill' => true,
-        ];
+			return $r;
+		} );
 
-        $expected = '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script><script data-no-minify="1" async src="http://example.org/11.0.2/lazyload.min.js"></script>';
+		$args = [
+			'base_url' => 'http://example.org/',
+			'version'  => '11.0.2',
+			'polyfill' => true,
+		];
 
-        $this->assertSame(
-            $expected,
-            $this->assets->getLazyloadScript($args)
-        );
-    }
+		$expected = '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script><script data-no-minify="1" async src="http://example.org/11.0.2/lazyload.min.js"></script>';
+
+		$this->assertSame(
+			$expected,
+			$this->assets->getLazyloadScript( $args )
+		);
+	}
 }

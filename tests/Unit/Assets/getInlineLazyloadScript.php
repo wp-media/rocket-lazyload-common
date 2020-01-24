@@ -1,72 +1,49 @@
 <?php
-/**
- * Unit tests for the RocketLazyload\Assets::getInlineLazyloadScript method
- *
- * @package RocketLazyload
- */
 
-namespace RocketLazyload\Tests\Unit;
+namespace RocketLazyload\Tests\Unit\Assets;
 
-use RocketLazyload\Tests\Unit\TestCase;
-use RocketLazyload\Assets;
 use Brain\Monkey\Functions;
+use RocketLazyload\Assets;
+use RocketLazyload\Tests\Unit\TestCase;
 
 /**
- * Unit test for the RocketLazyload\Assets::getInlineLazyloadScript method
- *
  * @covers RocketLazyload\Assets::getInlineLazyloadScript
  */
-class TestGetInlineLazyloadScript extends TestCase
-{
-    /**
-     * Assets instance
-     *
-     * @var Assets
-     */
-    private $assets;
+class Test_GetInlineLazyloadScript extends TestCase {
+	private $assets;
 
-    /**
-     * Do this before each test
-     *
-     * @return void
-     */
-    public function setUp()
-    {
-        parent::setUp();
-        $this->assets = new Assets();
-    }
-    
-    /**
-     * Test should return the inline lazyload script HTML based on the options provided
-     */
-    public function testShouldReturnInlineLazyloadScriptWithOptions()
-    {
-        Functions\when('esc_attr')->returnArg();
-        Functions\when('wp_parse_args')->alias(function ($args, $defaults) {
-            if (is_object($args)) {
-                $r = get_object_vars($args);
-            } elseif (is_array($args)) {
-                $r =& $args;
-            } else {
-                parse_str($args, $r);
-            }
+	public function setUp() {
+		parent::setUp();
+		$this->assets = new Assets();
+	}
 
-            if (is_array($defaults)) {
-                return array_merge($defaults, $r);
-            }
+	public function testShouldReturnInlineLazyloadScriptWithOptions() {
+		Functions\when( 'esc_attr' )->returnArg();
+		Functions\when( 'wp_parse_args' )->alias( function( $args, $defaults ) {
+			if ( is_object( $args ) ) {
+				$r = get_object_vars( $args );
+			} elseif ( is_array( $args ) ) {
+				$r =& $args;
+			} else {
+				parse_str( $args, $r );
+			}
 
-            return $r;
-        });
+			if ( is_array( $defaults ) ) {
+				return array_merge( $defaults, $r );
+			}
 
-        $args = [
-            'options' => [
-                'callback_finish' => '()=>{console.log("Finish")}',
-                'use_native'      => 'true',
-                'bad_option'      => 'test',
-            ],
-        ];
+			return $r;
+		} );
 
-        $expected = 'window.lazyLoadOptions = {
+		$args = [
+			'options' => [
+				'callback_finish' => '()=>{console.log("Finish")}',
+				'use_native'      => 'true',
+				'bad_option'      => 'test',
+			],
+		];
+
+		$expected = 'window.lazyLoadOptions = {
                 elements_selector: "img,iframe",
                 data_src: "lazy-src",
                 data_srcset: "lazy-srcset",
@@ -136,9 +113,9 @@ class TestGetInlineLazyloadScript extends TestCase
             }
         }, false);';
 
-        $this->assertSame(
-            $expected,
-            $this->assets->getInlineLazyloadScript($args)
-        );
-    }
+		$this->assertSame(
+			$expected,
+			$this->assets->getInlineLazyloadScript( $args )
+		);
+	}
 }
