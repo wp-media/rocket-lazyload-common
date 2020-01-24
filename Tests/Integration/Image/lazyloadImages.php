@@ -18,7 +18,7 @@ class Test_lazyLoadImages extends TestCase {
 	}
 
 	public function testShouldReturnSameWhenNoImage() {
-		$noimage = file_get_contents( RLL_COMMON_ROOT . 'tests/Fixtures/image/noimage.html' );
+		$noimage = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/noimage.html' );
 
 		$this->assertSame(
 			$noimage,
@@ -30,8 +30,8 @@ class Test_lazyLoadImages extends TestCase {
 	 * Test should return HTML with images lazyloaded
 	 */
 	public function testShouldReturnImagesLazyloaded() {
-		$original = file_get_contents( RLL_COMMON_ROOT . 'tests/Fixtures/image/images.html' );
-		$expected = file_get_contents( RLL_COMMON_ROOT . 'tests/Fixtures/image/imageslazyloaded.html' );
+		$original = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/images.html' );
+		$expected = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/imageslazyloaded.html' );
 
 		$this->assertSame(
 			$expected,
