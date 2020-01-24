@@ -14,15 +14,10 @@
     ],
     "minimum-stability": "stable",
     "autoload": {
-        "psr-4": {
-            "RocketLazyload\\": "src"
-        }
+        "psr-4": { "RocketLazyload\\": "src" }
     },
     "autoload-dev": {
-        "psr-4": {
-            "RocketLazyload\\Tests\\Unit\\": "tests/Unit",
-            "RocketLazyload\\Tests\\Integration\\": "tests/Integration"
-        }
+        "psr-4": { "RocketLazyload\\Tests\\": "Tests/" }
     },
     "config": {
 		"sort-packages": true
@@ -43,7 +38,11 @@
         "wp-coding-standards/wpcs": "^2.0.0"
     },
     "scripts": {
-        "test-unit":"\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration tests/Unit/phpunit.xml.dist",
-        "test-integration": "\"vendor/bin/phpunit\" --testsuite integration --colors=always --configuration tests/Integration/phpunit.xml.dist"
+        "test-unit":"\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist",
+        "test-integration": "\"vendor/bin/phpunit\" --testsuite integration --colors=always --configuration Tests/Integration/phpunit.xml.dist",
+        "run-tests": [
+			"@test-unit",
+			"@test-integration"
+        ]
     }
 }
