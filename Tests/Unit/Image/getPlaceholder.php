@@ -18,13 +18,13 @@ class Test_GetPlaceholder extends TestCase {
 	public function setUp() {
 		parent::setUp();
 		$this->image = new Image();
-	}
 
-	public function testShouldReturnSVGPlaceholderWhenNoArguments() {
 		Functions\when( 'absint' )->alias( function( $value ) {
 			return abs( intval( $value ) );
 		} );
+	}
 
+	public function testShouldReturnSVGPlaceholderWhenNoArguments() {
 		$placeholder = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E";
 
 		$this->assertSame(
@@ -41,10 +41,6 @@ class Test_GetPlaceholder extends TestCase {
 	 * @param string $expected Expected value.
 	 */
 	public function testShouldReturnSVGPlaceholderWhenWidthHeight( $width, $height, $expected ) {
-		Functions\when( 'absint' )->alias( function( $value ) {
-			return abs( intval( $value ) );
-		} );
-
 		$this->assertSame(
 			$expected,
 			$this->image->getPlaceholder( $width, $height )
