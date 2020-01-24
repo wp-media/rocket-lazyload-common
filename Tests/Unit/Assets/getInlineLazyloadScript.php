@@ -18,30 +18,29 @@ class Test_GetInlineLazyloadScript extends TestCase {
 	}
 
 	public function testShouldReturnInlineLazyloadScriptWithOptions() {
-		Functions\when( 'esc_attr' )->returnArg();
-		Functions\when( 'wp_parse_args' )->alias( function( $args, $defaults ) {
-			if ( is_object( $args ) ) {
-				$r = get_object_vars( $args );
-			} elseif ( is_array( $args ) ) {
-				$r =& $args;
-			} else {
-				parse_str( $args, $r );
-			}
-
-			if ( is_array( $defaults ) ) {
-				return array_merge( $defaults, $r );
-			}
-
-			return $r;
-		} );
-
-		$args = [
+        $args = [
 			'options' => [
 				'callback_finish' => '()=>{console.log("Finish")}',
 				'use_native'      => 'true',
 				'bad_option'      => 'test',
 			],
-		];
+        ];
+
+        $parsed_args = [
+            'elements'  => [
+                'img',
+                'iframe',
+            ],
+            'threshold' => 300,
+            'options' => [
+				'callback_finish' => '()=>{console.log("Finish")}',
+				'use_native'      => 'true',
+				'bad_option'      => 'test',
+			],
+        ];
+
+		Functions\when( 'esc_attr' )->returnArg();
+		Functions\when( 'wp_parse_args' )->justReturn( $parsed_args );
 
 		$expected = 'window.lazyLoadOptions = {
                 elements_selector: "img,iframe",

@@ -22,21 +22,18 @@ class Test_GetLazyloadScript extends TestCase {
 	 * @preserveGlobalState disabled
 	 */
 	public function testShouldReturnLazyloadScriptWhenScriptDebug() {
-		Functions\when( 'wp_parse_args' )->alias( function( $args, $defaults ) {
-			if ( is_object( $args ) ) {
-				$r = get_object_vars( $args );
-			} elseif ( is_array( $args ) ) {
-				$r =& $args;
-			} else {
-				parse_str( $args, $r );
-			}
+		$args = [
+			'base_url' => 'http://example.org/',
+			'version'  => '11.0.2',
+		];
 
-			if ( is_array( $defaults ) ) {
-				return array_merge( $defaults, $r );
-			}
+		$parsed_args = [
+            'base_url' => 'http://example.org/',
+			'version'  => '11.0.2',
+            'polyfill' => false,
+		];
 
-			return $r;
-		} );
+		Functions\when( 'wp_parse_args' )->justReturn( $parsed_args );
 
 		define( 'SCRIPT_DEBUG', true );
 
@@ -54,26 +51,18 @@ class Test_GetLazyloadScript extends TestCase {
 	}
 
 	public function testShouldReturnMinLazyloadScriptWhenNoScriptDebug() {
-		Functions\when( 'wp_parse_args' )->alias( function( $args, $defaults ) {
-			if ( is_object( $args ) ) {
-				$r = get_object_vars( $args );
-			} elseif ( is_array( $args ) ) {
-				$r =& $args;
-			} else {
-				parse_str( $args, $r );
-			}
-
-			if ( is_array( $defaults ) ) {
-				return array_merge( $defaults, $r );
-			}
-
-			return $r;
-		} );
-
 		$args = [
 			'base_url' => 'http://example.org/',
 			'version'  => '11.0.2',
 		];
+
+		$parsed_args = [
+            'base_url' => 'http://example.org/',
+			'version'  => '11.0.2',
+            'polyfill' => false,
+		];
+
+		Functions\when( 'wp_parse_args' )->justReturn( $parsed_args );
 
 		$expected = '<script data-no-minify="1" async src="http://example.org/11.0.2/lazyload.min.js"></script>';
 
@@ -84,27 +73,19 @@ class Test_GetLazyloadScript extends TestCase {
 	}
 
 	public function testShouldReturnLazyloadScriptWithPolyfill() {
-		Functions\when( 'wp_parse_args' )->alias( function( $args, $defaults ) {
-			if ( is_object( $args ) ) {
-				$r = get_object_vars( $args );
-			} elseif ( is_array( $args ) ) {
-				$r =& $args;
-			} else {
-				parse_str( $args, $r );
-			}
-
-			if ( is_array( $defaults ) ) {
-				return array_merge( $defaults, $r );
-			}
-
-			return $r;
-		} );
-
 		$args = [
 			'base_url' => 'http://example.org/',
 			'version'  => '11.0.2',
 			'polyfill' => true,
 		];
+
+		$parsed_args = [
+            'base_url' => 'http://example.org/',
+			'version'  => '11.0.2',
+            'polyfill' => true,
+		];
+
+		Functions\when( 'wp_parse_args' )->justReturn( $parsed_args );
 
 		$expected = '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script><script data-no-minify="1" async src="http://example.org/11.0.2/lazyload.min.js"></script>';
 

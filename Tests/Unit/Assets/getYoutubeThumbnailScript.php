@@ -24,20 +24,13 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 	 * @param string $expected the expected HTML.
 	 */
 	public function testShouldReturnYoutubeThumbnailScript( $args, $expected ) {
+		$defaults = [
+            'resolution' => 'hqdefault',
+            'lazy_image' => false,
+		];
+
 		Functions\when( 'wp_parse_args' )->alias( function( $args, $defaults ) {
-			if ( is_object( $args ) ) {
-				$r = get_object_vars( $args );
-			} elseif ( is_array( $args ) ) {
-				$r =& $args;
-			} else {
-				parse_str( $args, $r );
-			}
-
-			if ( is_array( $defaults ) ) {
-				return array_merge( $defaults, $r );
-			}
-
-			return $r;
+			return array_merge( $defaults, $args );
 		} );
 
 		$this->assertSame(
