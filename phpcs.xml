@@ -21,4 +21,11 @@
 		<exclude name="PEAR.Functions.FunctionCallSignature" />
 		<exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterOpen" />
 	</rule>
+	<rule ref="WordPress-Extra">
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+		<exclude name="WordPress.PHP.DisallowShortTernary.Found"/>
+	</rule>
+
+	<!-- Enforce short array syntax: `[]` in place of `array()`. -->
+	<rule ref="Generic.Arrays.DisallowLongArraySyntax" />
 </ruleset>
