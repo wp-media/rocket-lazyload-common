@@ -137,10 +137,10 @@ class Image
                     unset($lazyload_srcset);
                     $lazy_sources++;
                 }
-            }
 
-            if (0 === $lazy_sources) {
-                continue;
+                if (0 === $lazy_sources) {
+                    continue;
+                }
             }
 
             if (! preg_match('#<img(?<atts>\s.+)\s?/?>#iUs', $picture[0], $img)) {
@@ -206,12 +206,8 @@ class Image
      * @param array  $excluded_values Patterns to match against.
      * @return boolean
      */
-    public function isExcluded($string, $excluded_values)
+    public function isExcluded($string, array $excluded_values = [])
     {
-        if (! is_array($excluded_values)) {
-            (array) $excluded_values;
-        }
-
         if (empty($excluded_values)) {
             return false;
         }
@@ -240,7 +236,7 @@ class Image
          *
          * @param array $excluded_attributes An array of excluded attributes.
          */
-        return apply_filters(
+        return (array) apply_filters(
             'rocket_lazyload_excluded_attributes',
             [
                 'data-src=',
@@ -283,7 +279,7 @@ class Image
          *
          * @param array $excluded_src An array of excluded src.
          */
-        return apply_filters(
+        return (array) apply_filters(
             'rocket_lazyload_excluded_src',
             [
                 '/wpcf7_captcha/',
