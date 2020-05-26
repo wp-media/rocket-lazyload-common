@@ -72,7 +72,7 @@ class Image {
 
 			$lazy_bg = $this->addLazyCLass( $element[0] );
 			$lazy_bg = str_replace( $url[0], '', $lazy_bg );
-			$lazy_bg = str_replace( '<' . $element['tag'], '<' . $element['tag'] . ' data-bg="url(' . esc_attr( $url['url'] ) . ')"', $lazy_bg );
+			$lazy_bg = str_replace( '<' . $element['tag'], '<' . $element['tag'] . ' data-bg="' . esc_attr( $url['url'] ) . '"', $lazy_bg );
 
 			$html = str_replace( $element[0], $lazy_bg, $html );
 			unset( $lazy_bg );
