@@ -1,60 +1,32 @@
 <?php
-/**
- * Unit tests for RocketLazyload\Image::lazyloadBackgroundImages method
- *
- * @package RocketLazyload
- */
 
 namespace RocketLazyload\Tests\Unit\Image;
 
-use PHPUnit\Framework\TestCase;
 use Brain\Monkey;
 use Brain\Monkey\Functions;
+use PHPUnit\Framework\TestCase;
 use RocketLazyload\Image;
 
 /**
- * Tests for the RocketLazyload\Image::lazyloadBackgroundImages method
+ * @covers RocketLazyload\Image::lazyloadBackgroundImages
  *
- * @coversDefaultClass RocketLazyload\Image
+ * @group Image
  */
-class TestLazyloadBackgroundImages extends TestCase
-{
-    /**
-     * Instance of Image
-     *
-     * @var Image
-     */
+class TestLazyloadBackgroundImages extends TestCase {
     private $image;
 
-    /**
-     * Do this before each test
-     *
-     * @return void
-     */
-    public function setUp()
-    {
+    public function setUp() {
         parent::setUp();
         Monkey\setUp();
         $this->image = new Image();
     }
 
-    /**
-     * Do this after each test
-     *
-     * @return void
-     */
-    public function tearDown()
-    {
+    public function tearDown() {
         Monkey\tearDown();
         parent::tearDown();
     }
 
-    /**
-     * @covers ::lazyloadBackgroundImages
-     * @author Remy Perona
-     */
-    public function testShouldReturnSameWhenNoBackgroundImage()
-    {
+    public function testShouldReturnSameWhenNoBackgroundImage() {
         $noimage = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Image/noimage.html');
 
         $this->assertSame(
@@ -63,12 +35,7 @@ class TestLazyloadBackgroundImages extends TestCase
         );
     }
 
-    /**
-     * @covers ::lazyloadBackgroundImages
-     * @author Remy Perona
-     */
-    public function testShouldReturnBackgroundImagesLazyloaded()
-    {
+    public function testShouldReturnBackgroundImagesLazyloaded() {
         Functions\when('esc_attr')->returnArg();
 
         $original = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Image/bgimages.html');
