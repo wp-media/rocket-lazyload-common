@@ -37,6 +37,9 @@ class TestLazyloadBackgroundImages extends TestCase {
 
     public function testShouldReturnBackgroundImagesLazyloaded() {
         Functions\when('esc_attr')->returnArg();
+        Functions\expect('esc_url')->andReturnUsing( function ( $url ){
+            return str_replace(['"', "'"], ["&quot;", "&#39;"], $url );
+        } );
 
         $original = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Image/bgimages.html');
         $expected = \file_get_contents( RLL_COMMON_TESTS_ROOT . '/fixtures/Image/bgimageslazyloaded.html');
