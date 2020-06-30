@@ -93,14 +93,42 @@ class Image {
 			return preg_replace( '#<(img|div|figure|section|li|span|a)([^>]*)>#is', '<\1 class="rocket-lazyload"\2>', $element );
 		}
 
-		$original_classes = $class['classes'];
-		$class['classes'] = str_replace( [ '"', '\'' ], '', $original_classes );
-		if ( empty( trim( $class['classes'] ) ) ) {
-			return str_replace( $class[0], 'class="rocket-lazyload"', $element );
+		if ( empty( $class['attribute'] ) || empty( $class['classes'] ) ) {
+			return str_replace( $class['attribute'], 'class="rocket-lazyload"', $element );
 		}
-		$quotes  = ( ! preg_match( '#^(\'|").+(\'|")$#', $original_classes ) ? '"' : '' );
-		$classes = str_replace( $class['classes'], $quotes . trim( $class['classes'] ) . ' rocket-lazyload' . $quotes, $class[0] );
-		return str_replace( $class[0], $classes, $element );
+
+		$quotes  = $this->getAttributeQuotes( $class['classes'] );
+		$classes = $this->trimOuterQuotes( $class['classes'], $quotes );
+
+		if ( empty( $classes ) ) {
+			return str_replace( $class['attribute'], 'class="rocket-lazyload"', $element );
+		}
+
+		$classes .= ' rocket-lazyload';
+
+		return str_replace(
+			$class['attribute'],
+			'class=' . $this->normalizeClasses( $classes, $quotes ),
+			$element
+		);
+	}
+
+	/**
+	 * Gets the attribute value's outer quotation mark, if one exists, i.e. " or '.
+	 *
+	 * @param string $attribute_value The target attribute's value.
+	 *
+	 * @return bool|string quotation character; else false when no quotation mark.
+	 */
+	private function getAttributeQuotes( $attribute_value ) {
+		$attribute_value = trim( $attribute_value );
+		$first_char = $attribute_value[0];
+
+		if ( '"' === $first_char || "'" === $first_char ) {
+			return $first_char;
+		}
+
+		return false;
 	}
 
 	/**
@@ -109,9 +137,8 @@ class Image {
 	 * @param string $element Given HTML element to extract classes from.
 	 *
 	 * @return bool|string[] {
-	 *      @type string 0          Class attribute and value, e.g. class="value"
+	 *      @type string $attribute Class attribute and value, e.g. class="value"
 	 *      @type string $classes   String of class attribute's value(s)
-	 *      @type string 1          String of class attribute's value(s)
 	 * }; else, false when no class attribute exists.
 	 */
 	private function getClasses( $element ) {
@@ -123,7 +150,80 @@ class Image {
 			return false;
 		}
 
-		return $class;
+		if ( ! isset( $class['classes'] ) ) {
+			return false;
+		}
+
+		return [
+			'attribute' => $class[0],
+			'classes'   => $class['classes'],
+		];
+	}
+
+	/**
+	 * Removes outer single or double quotations.
+	 *
+	 * @param string $string String to strip quotes from.
+	 * @param string $quotes The outer quotes to remove.
+	 *
+	 * @return string string without quotes.
+	 */
+	private function trimOuterQuotes( $string, $quotes ) {
+		$string = trim( $string );
+		if ( empty( $string ) ) {
+			return '';
+		}
+
+		if ( empty( $quotes ) ) {
+			return $string;
+		}
+
+		$string = ltrim( $string, $quotes );
+		$string = rtrim( $string, $quotes );
+		return trim( $string );
+	}
+
+	/**
+	 * Normalizes the class attribute values to ensure well-formed.
+	 *
+	 * @param string      $classes String of class attribute value(s).
+	 * @param string|bool $quotes  Optional. Quotation mark to wrap around the classes.
+	 *
+	 * @return string well-formed class attributes.
+	 */
+	private function normalizeClasses( $classes, $quotes = '"' ) {
+		$array_of_classes = $this->stringToArray( $classes );
+		$classes          = implode( ' ', $array_of_classes );
+
+		if ( false === $quotes ) {
+			$quotes = '"';
+		}
+
+		return $quotes . $classes . $quotes;
+	}
+
+	/**
+	 * Converts the given string into an array of strings.
+	 *
+	 * Note:
+	 *  1. Removes empties.
+	 *  2. Trims each string.
+	 *
+	 * @param string $string    The target string to convert.
+	 * @param string $delimiter Optional. Default: ' ' empty string.
+	 *
+	 * @return array An array of trimmed strings.
+	 */
+	private function stringToArray( $string, $delimiter = ' ' ) {
+		if ( empty( $string ) ) {
+			return [];
+		}
+
+		$array = explode( $delimiter, $string );
+		$array = array_map('trim', $array );
+
+		// Remove empties.
+		return array_filter( $array );
 	}
 
 	/**
