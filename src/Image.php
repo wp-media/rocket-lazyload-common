@@ -89,11 +89,12 @@ class Image {
 	 */
 	private function addLazyClass( $element ) {
 		if ( preg_match( '#class\s*=\s*(?<classes>["\'].*?["\']|[^\s]+)#is', $element, $class ) ) {
-			$quotes           = ( ! preg_match( '#^(\'|").+(\'|")$#', $class['classes'] ) ? '"' : '' );
-			$class['classes'] = str_replace( [ '"', '\'' ], '', $class['classes'] );
+			$original_classes = $class['classes'];
+			$class['classes'] = str_replace( [ '"', '\'' ], '', $original_classes );
 			if ( empty( trim( $class['classes'] ) ) ) {
 				return str_replace( $class[0], 'class="rocket-lazyload"', $element );
 			}
+			$quotes  = ( ! preg_match( '#^(\'|").+(\'|")$#', $original_classes ) ? '"' : '' );
 			$classes = str_replace( $class['classes'], $quotes . trim( $class['classes'] ) . ' rocket-lazyload' . $quotes, $class[0] );
 			return str_replace( $class[0], $classes, $element );
 		}
