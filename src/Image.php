@@ -90,6 +90,7 @@ class Image {
 	private function addLazyClass( $element ) {
 		if ( preg_match( '#class\s*=\s*(?<classes>["\'].*?["\']|[^\s]+)#is', $element, $class ) ) {
 			$class['classes'] = str_replace( [ '"', '\'' ], '', $class['classes'] );
+			$class['classes'] = trim( $class['classes'] );
 			if ( empty( $class['classes'] ) ) {
 				return str_replace( $class[0], 'class="rocket-lazyload"', $element );
 			}
