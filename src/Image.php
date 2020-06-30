@@ -88,7 +88,8 @@ class Image {
 	 * @return string
 	 */
 	private function addLazyClass( $element ) {
-		if ( ! preg_match( '#class\s*=\s*(?<classes>["\'].*?["\']|[^\s]+)#is', $element, $class ) ) {
+		$class = $this->getClasses( $element );
+		if ( empty( $class )  ) {
 			return preg_replace( '#<(img|div|figure|section|li|span|a)([^>]*)>#is', '<\1 class="rocket-lazyload"\2>', $element );
 		}
 
@@ -100,6 +101,29 @@ class Image {
 		$quotes  = ( ! preg_match( '#^(\'|").+(\'|")$#', $original_classes ) ? '"' : '' );
 		$classes = str_replace( $class['classes'], $quotes . trim( $class['classes'] ) . ' rocket-lazyload' . $quotes, $class[0] );
 		return str_replace( $class[0], $classes, $element );
+	}
+
+	/**
+	 * Gets the class attribute and values from the given element, if it exists.
+	 *
+	 * @param string $element Given HTML element to extract classes from.
+	 *
+	 * @return bool|string[] {
+	 *      @type string 0          Class attribute and value, e.g. class="value"
+	 *      @type string $classes   String of class attribute's value(s)
+	 *      @type string 1          String of class attribute's value(s)
+	 * }; else, false when no class attribute exists.
+	 */
+	private function getClasses( $element ) {
+		if ( ! preg_match( '#class\s*=\s*(?<classes>["\'].*?["\']|[^\s]+)#is', $element, $class ) ) {
+			return false;
+		}
+
+		if ( empty( $class ) ) {
+			return false;
+		}
+
+		return $class;
 	}
 
 	/**
