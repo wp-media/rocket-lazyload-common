@@ -91,11 +91,10 @@ class Image {
 		if ( preg_match( '#class\s*=\s*(?<classes>["\'].*?["\']|[^\s]+)#is', $element, $class ) ) {
 			$quotes           = ( ! preg_match( '#^(\'|").+(\'|")$#', $class['classes'] ) ? '"' : '' );
 			$class['classes'] = str_replace( [ '"', '\'' ], '', $class['classes'] );
-			$class['classes'] = trim( $class['classes'] );
-			if ( empty( $class['classes'] ) ) {
+			if ( empty( trim( $class['classes'] ) ) ) {
 				return str_replace( $class[0], 'class="rocket-lazyload"', $element );
 			}
-			$classes = str_replace( $class['classes'], $quotes . $class['classes'] . ' rocket-lazyload' . $quotes, $class[0] );
+			$classes = str_replace( $class['classes'], $quotes . trim( $class['classes'] ) . ' rocket-lazyload' . $quotes, $class[0] );
 			return str_replace( $class[0], $classes, $element );
 		}
 
