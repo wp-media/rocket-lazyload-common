@@ -153,7 +153,7 @@ class Image {
 
 			$img_lazy  = $this->replaceImage( $img );
 			$img_lazy .= $this->noscript( $img[0] );
-            $html = preg_replace('#<noscript[^>]*>.*'.$img[0].'.*<\/noscript>(*SKIP)(*FAIL)|'.$img[0].'#iUs', $img_lazy, $html);
+			$html      = preg_replace( '#<noscript[^>]*>.*' . $img[0] . '.*<\/noscript>(*SKIP)(*FAIL)|' . $img[0] . '#iUs', $img_lazy, $html );
 
 			unset( $img_lazy );
 		}
