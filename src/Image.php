@@ -20,7 +20,9 @@ class Image {
 	 * @return string
 	 */
 	public function lazyloadImages( $html, $buffer ) {
-		if ( ! preg_match_all( '#<img(?<atts>\s.+)\s?/?>#iUs', $buffer, $images, PREG_SET_ORDER ) ) {
+		$clean_buffer = preg_replace( '/<script\b(?:[^>]*)>(?:.+)?<\/script>/Umsi', '', $html );
+		$clean_buffer = preg_replace( '#<noscript>(?:.+)</noscript>#Umsi', '', $clean_buffer );
+		if (! preg_match_all('#<img(?<atts>\s.+)\s?/?>#iUs', $clean_buffer, $images, PREG_SET_ORDER)) {
 			return $html;
 		}
 
@@ -149,8 +151,9 @@ class Image {
 				continue;
 			}
 
-			$img_lazy = $this->replaceImage( $img );
-			$html     = str_replace( $img[0], $img_lazy, $html );
+			$img_lazy  = $this->replaceImage( $img );
+			$img_lazy .= $this->noscript( $img[0] );
+			$html      = preg_replace( '#<noscript[^>]*>.*' . $img[0] . '.*<\/noscript>(*SKIP)(*FAIL)|' . $img[0] . '#iUs', $img_lazy, $html );
 
 			unset( $img_lazy );
 		}
