@@ -64,7 +64,7 @@ class Image {
 				continue;
 			}
 
-			$url['url'] = esc_url( trim( html_entity_decode($url['url'], ENT_QUOTES), '\'" ' ) );
+			$url['url'] = esc_url( trim( html_entity_decode($url['url'], ENT_QUOTES|ENT_HTML5), '\'" ' ) );
 
 			if ( $this->isExcluded( $url['url'], $this->getExcludedSrc() ) ) {
 				continue;
