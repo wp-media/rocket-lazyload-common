@@ -114,6 +114,15 @@ img.emoji {
 <div class="avia-bg-style-fixed" style="background-image:url(example.jpg)" data-section-bg="repeat"></div>
 <a href="#" style="background-image: url(test.jpg)">Test a</a>
 <a href="###">Without Background Image.</a>
-<a class=" " id="empty_class_test" href="#" style="background-image: url(test.jpg)">Test a</a>
+<a foo="foo" class=   meh  bar="bar" href="#" style="background-image: url(test1.jpg)">Test a</a>
+<a foo=foo class=   meh  bar=bar href="#" style="background-image: url(test2.jpg)">Test a</a>
+<a foo="foo" class = " meh " bar="bar" href="#" style="background-image: url(test3.jpg)">Test a</a>
+<a foo="foo" class = ' meh ' bar="bar" href="#" style="background-image: url(test4.jpg)">Test a</a>
+<a class=" " id="empty_class_test" href="#" style="background-image: url(test5.jpg)">Test a</a>
+<div style="background-image: url(&#39;https://www.example.com/wp-content/uploads/2018/04/&#39;telephonie-ip-couleur.jpg&#39;);" class="image_article bkgd-img"></div>
+<div style="background-image: url(&quot;https://www.example.com/wp-content/uploads/2018/04/&#39;telephonie-ip-couleur.jpg&quot;);" class="image_article bkgd-img"></div>
+<div style="background-image: url(&#39;/wp-content/uploads/2018/04/&#39;telephonie-ip-couleur.jpg&#39;);" class="image_article bkgd-img"></div>
+<div style="background-image: url(&quot;/wp-content/uploads/2018/04/&#39;telephonie-ip-couleur.jpg&quot;);" class="image_article bkgd-img"></div>
+<div style="background-image: url(&#39;&apos;/wp-content/<br/><br%2F><p>&#x3C;br/&#x3E;</p>uploads/2018/04/&#39;telephonie-ip-couleur.jpg&quot;);" class="image_article bkgd-img"></div>
 </body>
 </html>
