@@ -289,8 +289,6 @@ class Image {
 			$safe_img = str_replace('/', '\/', preg_quote( $img[0], '#' ));
 			$html      = preg_replace( '#<noscript[^>]*>.*' . $safe_img . '.*<\/noscript>(*SKIP)(*FAIL)|' . $safe_img . '#iU', $img_lazy, $html );
 
-			echo '#<noscript[^>]*>.*' . $safe_img . '.*<\/noscript>(*SKIP)(*FAIL)|' . $safe_img . '#iU'."\n\n";
-
 			unset( $img_lazy );
 		}
 
