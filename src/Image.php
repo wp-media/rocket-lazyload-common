@@ -287,7 +287,7 @@ class Image {
 			$img_lazy  = $this->replaceImage( $img );
 			$img_lazy .= $this->noscript( $img[0] );
 			$safe_img = str_replace('/', '\/', preg_quote( $img[0], '#' ));
-			$html      = preg_replace( '#<noscript[^>]*>.*' . $safe_img . '.*<\/noscript>(*SKIP)(*FAIL)|' . $safe_img . '#iU', $img_lazy, $html );
+			$html      = preg_replace( '#<noscript[^>]*>.*' . $safe_img . '.*<\/noscript>(*SKIP)(*FAIL)|' . $safe_img . '#i', $img_lazy, $html );
 
 			unset( $img_lazy );
 		}
