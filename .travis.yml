@@ -31,9 +31,6 @@ matrix:
   - name: Legacy
     php: 5.6
     env: WP_VERSION=4.9.11
-  - name: Coding Standards
-    php: 7.3
-    env: WP_TRAVISCI=phpcs
 before_install:
   # Unless we need XDebug, disable it for improved performance.
   - phpenv config-rm xdebug.ini || true
