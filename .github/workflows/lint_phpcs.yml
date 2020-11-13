@@ -1,0 +1,36 @@
+name: PHP CodeSniffer lint
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+
+jobs:
+  run:
+    runs-on: ${{ matrix.operating-system }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        operating-system: [ubuntu-latest]
+        php-versions: ['7.4']
+    
+    name: WPRocket lint with PHPCS. PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}.
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+        coverage: none  # XDebug can be enabled here 'coverage: xdebug'
+        tools: composer:v1
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-interaction
+
+    - name: Lint with phpcs
+      run: |
+        composer phpcs
