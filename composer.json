@@ -15,13 +15,12 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "RocketLazyload\\": "src"
+            "RocketLazyload\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "RocketLazyload\\Tests\\Unit\\": "tests/Unit",
-            "RocketLazyload\\Tests\\Integration\\": "tests/Integration"
+            "RocketLazyload\\Tests\\": "tests/"
         }
     },
     "config": {
@@ -31,19 +30,20 @@
         "php": ">=5.6"
     },
     "require-dev": {
+        "php": "^5.6 || ^7",
         "brain/monkey": "^2.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
-        "doctrine/instantiator": "1.0.*",
-        "myclabs/deep-copy": "1.6.*",
         "phpcompatibility/phpcompatibility-wp": "^2.0",
-        "phpdocumentor/reflection-docblock": "^3.3",
-        "phpunit/php-token-stream": "^1.4",
-        "phpunit/phpunit": "^5.7",
-        "symfony/yaml": "2.8.*",
-        "wp-coding-standards/wpcs": "^2.0.0"
+        "phpunit/phpunit": "^5.7 || ^7",
+        "wp-coding-standards/wpcs": "^2.0"
     },
     "scripts": {
         "test-unit":"\"vendor/bin/phpunit\" --testsuite unit --colors=always",
-        "test-integration": "\"vendor/bin/phpunit\" --testsuite integration --colors=always --configuration tests/Integration/phpunit.xml.dist"
+        "test-integration": "\"vendor/bin/phpunit\" --testsuite integration --colors=always --configuration tests/Integration/phpunit.xml.dist",
+        "run-tests": [
+			"@test-unit",
+			"@test-integration"
+		],
+        "phpcs": "phpcs --basepath=."
     }
 }
