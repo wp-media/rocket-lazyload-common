@@ -62,7 +62,7 @@ class Image {
 				continue;
 			}
 
-			if ( ! preg_match( '#background-image\s*:\s*(?<attr>\s*url\s*\((?<url>[^)]+)\))\s*;?#is', $element['styles'], $url ) ) {
+			if ( ! preg_match( '#(?<property>background(?:-image)?)\s*:(?<before>[\w,\s*,-]*)(?<attr>\s*url\s*\((?<url>[^)]+)\))(?<after>[\w,\s*,-]*);?#is', $element['styles'], $url ) ) {
 				continue;
 			}
 
@@ -81,7 +81,20 @@ class Image {
 			}
 
 			$lazy_bg = $this->addLazyCLass( $element[0] );
-			$lazy_bg = str_replace( $url[0], '', $lazy_bg );
+			switch ( $url['property'] ) {
+				case 'background-image':
+					$lazy_bg = str_replace( $url[0], '', $lazy_bg );
+					break;
+
+				case 'background':
+					if ( empty( trim( $url['before'] ) ) && empty( trim( $url['after'] ) ) ) {
+						$lazy_bg = str_replace( $url[0], '', $lazy_bg );
+					}else{
+						$lazy_bg = str_replace( $url['attr'], '', $lazy_bg );
+					}
+					break;
+			}
+
 			$lazy_bg = str_replace( '<' . $element['tag'], '<' . $element['tag'] . ' data-bg="' . esc_attr( $url['url'] ) . '"', $lazy_bg );
 
 			$html = str_replace( $element[0], $lazy_bg, $html );
