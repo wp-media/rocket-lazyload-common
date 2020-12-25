@@ -68,7 +68,7 @@ class Image {
 
 			$url['url'] = esc_url(
 				trim(
-					strip_tags(
+					wp_strip_all_tags(
 						html_entity_decode(
 							$url['url'],
 							ENT_QUOTES | ENT_HTML5
