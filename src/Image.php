@@ -22,7 +22,7 @@ class Image {
 	public function lazyloadImages( $html, $buffer ) {
 		$clean_buffer = preg_replace( '/<script\b(?:[^>]*)>(?:.+)?<\/script>/Umsi', '', $html );
 		$clean_buffer = preg_replace( '#<noscript>(?:.+)</noscript>#Umsi', '', $clean_buffer );
-		if (! preg_match_all('#<img(?<atts>\s.+)\s?/?>#iUs', $clean_buffer, $images, PREG_SET_ORDER)) {
+		if ( ! preg_match_all( '#<img(?<atts>\s.+)\s?/?>#iUs', $clean_buffer, $images, PREG_SET_ORDER ) ) {
 			return $html;
 		}
 
@@ -70,9 +70,11 @@ class Image {
 				trim(
 					strip_tags(
 						html_entity_decode(
-							$url['url'], ENT_QUOTES|ENT_HTML5
+							$url['url'],
+							ENT_QUOTES | ENT_HTML5
 						)
-					), '\'" '
+					),
+					'\'" '
 				)
 			);
 
@@ -89,7 +91,7 @@ class Image {
 				case 'background':
 					if ( empty( trim( $url['before'] ) ) && empty( trim( $url['after'] ) ) ) {
 						$lazy_bg = str_replace( $url[0], '', $lazy_bg );
-					}else{
+					}else {
 						$lazy_bg = str_replace( $url['attr'], '', $lazy_bg );
 					}
 					break;
@@ -112,7 +114,7 @@ class Image {
 	 */
 	private function addLazyClass( $element ) {
 		$class = $this->getClasses( $element );
-		if ( empty( $class )  ) {
+		if ( empty( $class ) ) {
 			return preg_replace( '#<(img|div|figure|section|li|span|a)([^>]*)>#is', '<\1 class="rocket-lazyload"\2>', $element );
 		}
 
@@ -145,7 +147,7 @@ class Image {
 	 */
 	private function getAttributeQuotes( $attribute_value ) {
 		$attribute_value = trim( $attribute_value );
-		$first_char = $attribute_value[0];
+		$first_char      = $attribute_value[0];
 
 		if ( '"' === $first_char || "'" === $first_char ) {
 			return $first_char;
@@ -243,7 +245,7 @@ class Image {
 		}
 
 		$array = explode( $delimiter, $string );
-		$array = array_map('trim', $array );
+		$array = array_map( 'trim', $array );
 
 		// Remove empties.
 		return array_filter( $array );
@@ -299,7 +301,7 @@ class Image {
 
 			$img_lazy  = $this->replaceImage( $img );
 			$img_lazy .= $this->noscript( $img[0] );
-			$safe_img = str_replace('/', '\/', preg_quote( $img[0], '#' ));
+			$safe_img  = str_replace( '/', '\/', preg_quote( $img[0], '#' ) );
 			$html      = preg_replace( '#<noscript[^>]*>.*' . $safe_img . '.*<\/noscript>(*SKIP)(*FAIL)|' . $safe_img . '#i', $img_lazy, $html );
 
 			unset( $img_lazy );
