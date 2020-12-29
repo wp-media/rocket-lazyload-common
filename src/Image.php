@@ -62,7 +62,7 @@ class Image {
 				continue;
 			}
 
-			if ( ! preg_match( '#(?<property>background(?:-image)?)\s*:(?<before>[\w,\s*,-]*)(?<attr>\s*url\s*\((?<url>[^)]+)\))(?<after>[\w,\s*,-]*);?#is', $element['styles'], $url ) ) {
+			if ( ! preg_match( '#(?<property>background(?:-image)?)\s*:(?<before>.*)(?<attr>\s*url\s*\((?<url>[^)]+)\))(?<after>[\w,\s*,-]*);?#is', $element['styles'], $url ) ) {
 				continue;
 			}
 
