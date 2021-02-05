@@ -255,7 +255,7 @@ img.emoji {
 
 
 
-<figure class="wp-block-image"><picture><source data-no-lazy="1" srcset="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-580x300-1.jpg" media="(max-width: 580px)"><img src="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-580x300-1.jpg" alt="Image Alignment 580x300" class="wp-image-906" /></picture></figure>
+<figure class="wp-block-image"><picture><source data-no-lazy="1" srcset="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-580x300-1.jpg" media="(max-width: 580px)"><img data-skip-lazy="" src="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-580x300-1.jpg" alt="Image Alignment 580x300" class="wp-image-906" /></picture></figure>
 
 
 
@@ -285,7 +285,10 @@ img.emoji {
 
 <div class="wp-block-image size-full wp-image-905"><figure class="alignright"><picture><source data-lazy-srcset="" media=""><img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="Image Alignment 300x200" class="wp-image-905" data-lazy-src="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-300x200-1.jpg" /><noscript><img src="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-300x200-1.jpg" alt="Image Alignment 300x200" class="wp-image-905" /></noscript></picture><figcaption> Trop bien vu, cet alignement à droite.</figcaption></figure></div>
 
-
+<picture data-skip-lazy="">
+	<source srcset="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-580x300-1.jpg" media="(max-width: 580px)">
+	<img data-skip-lazy="" src="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-580x300-1.jpg" alt="Image Alignment 580x300" class="wp-image-906" />
+</picture>
 
 <p>Et maintenant tribord toute avec un alignement&nbsp;<em>à droite.</em>À nouveau il devrait y avoir suffisament d&#8217;espace au-dessus, en-dessous et à gauche de l&#8217;image. Ça semble tout bon tout ça. Et ne laissez personne vous dire le contraire.</p>
 
@@ -296,6 +299,7 @@ img.emoji {
 
 
 <p>Et voilà jeune Jack Sparrow ! Vous avez survécu aux eaux tumultueuses de l&#8217;alignement. Vous pouvez passer au prochain test !</p>
+
 
 
 
