@@ -44,6 +44,7 @@
 			"@test-unit",
 			"@test-integration"
 		],
-        "phpcs": "phpcs --basepath=."
+        "phpcs": "phpcs --basepath=.",
+        "phpcs:fix": "phpcbf"
     }
 }
