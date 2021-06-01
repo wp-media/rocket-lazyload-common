@@ -7,6 +7,7 @@ use RocketLazyload\Iframe;
 
 /**
  * @covers RocketLazyload\Iframe::isIframeExcluded
+ * @uses RocketLazyload\Iframe::getExcludedPatterns
  * @group  Iframe
  */
 class Test_IsIframeExcluded extends TestCase {

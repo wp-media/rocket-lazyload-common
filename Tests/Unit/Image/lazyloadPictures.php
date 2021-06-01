@@ -8,6 +8,13 @@ use RocketLazyload\Tests\Unit\TestCase;
 
 /**
  * @covers RocketLazyload\Image::lazyloadPictures
+ * @uses RocketLazyload\Image::canLazyload
+ * @uses RocketLazyload\Image::getExcludedAttributes
+ * @uses RocketLazyload\Image::getExcludedSrc
+ * @uses RocketLazyload\Image::getPlaceholder
+ * @uses RocketLazyload\Image::isExcluded
+ * @uses RocketLazyload\Image::noscript
+ * @uses RocketLazyload\Image::replaceImage
  * @group  Image
  */
 class TestLazyloadPictures extends TestCase {

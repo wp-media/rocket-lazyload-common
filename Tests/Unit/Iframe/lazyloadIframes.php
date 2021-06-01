@@ -8,6 +8,13 @@ use RocketLazyload\Tests\Unit\TestCase;
 
 /**
  * @covers RocketLazyload\Iframe::lazyloadIframes
+ * @uses RocketLazyload\Iframe::getExcludedPatterns
+ * @uses RocketLazyload\Iframe::isIframeExcluded
+ * @uses RocketLazyload\Iframe::replaceIframe
+ * @uses RocketLazyload\Iframe::changeYoutubeUrlForYoutuDotBe
+ * @uses RocketLazyload\Iframe::cleanYoutubeUrl
+ * @uses RocketLazyload\Iframe::getYoutubeIDFromURL
+ * @uses RocketLazyload\Iframe::replaceYoutubeThumbnail
  * @group  Iframe
  */
 class Test_LazyloadIframe extends TestCase {

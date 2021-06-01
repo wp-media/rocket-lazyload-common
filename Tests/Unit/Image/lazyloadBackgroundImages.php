@@ -8,6 +8,15 @@ use RocketLazyload\Tests\Unit\TestCase;
 
 /**
  * @covers RocketLazyload\Image::lazyloadBackgroundImages
+ * @uses RocketLazyload\Image::addLazyClass
+ * @uses RocketLazyload\Image::getAttributeQuotes
+ * @uses RocketLazyload\Image::getClasses
+ * @uses RocketLazyload\Image::getExcludedAttributes
+ * @uses RocketLazyload\Image::getExcludedSrc
+ * @uses RocketLazyload\Image::isExcluded
+ * @uses RocketLazyload\Image::normalizeClasses
+ * @uses RocketLazyload\Image::stringToArray
+ * @uses RocketLazyload\Image::trimOuterQuotes
  * @group  Image
  */
 class Test_LazyloadBackgroundImages extends TestCase {
