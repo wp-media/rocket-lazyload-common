@@ -49,6 +49,6 @@
 			"@test-unit",
 			"@test-integration"
         ],
-		"code-coverage": "\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration tests/Unit/phpunit.xml.dist --coverage-clover=tests/report/coverage.clover"
+		"code-coverage": "\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist --coverage-clover=tests/report/coverage.clover"
     }
 }
