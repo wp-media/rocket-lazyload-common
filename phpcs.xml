@@ -5,7 +5,6 @@
 	<file>.</file>
 	<exclude-pattern>/Tests/Unit/</exclude-pattern>
 	<exclude-pattern>/Tests/Integration/</exclude-pattern>
-	<exclude-pattern>/Tests/bootstrap-functions.php</exclude-pattern>
 	<exclude-pattern>/vendor/*</exclude-pattern>
 
 	<arg name="basepath" value="src"/>
