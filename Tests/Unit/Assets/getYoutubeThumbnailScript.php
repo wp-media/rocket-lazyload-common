@@ -12,9 +12,13 @@ use RocketLazyload\Tests\Unit\TestCase;
 class Test_GetYoutubeThumbnaiScript extends TestCase {
 	private $assets;
 
-	public function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 		$this->assets = new Assets();
+
+		Functions\when( 'wp_parse_args' )->alias( static function ( $parsed_args, $defaults ) {
+			return \array_merge( $defaults, $parsed_args );
+		} );
 	}
 
 	/**
@@ -24,15 +28,6 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 	 * @param string $expected the expected HTML.
 	 */
 	public function testShouldReturnYoutubeThumbnailScript( $args, $expected ) {
-		$defaults = [
-            'resolution' => 'hqdefault',
-            'lazy_image' => false,
-		];
-
-		Functions\when( 'wp_parse_args' )->alias( function( $args, $defaults ) {
-			return array_merge( $defaults, $args );
-		} );
-
 		$this->assertSame(
 			$expected,
 			$this->assets->getYoutubeThumbnailScript( $args )

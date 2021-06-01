@@ -42,8 +42,8 @@ class Test_IsExcluded extends TestCase {
 		'skip-lazy',
 	];
 
-	public function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 		$this->image = new Image();
 	}
 

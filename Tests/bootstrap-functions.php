@@ -23,8 +23,8 @@ function init_test_suite( $test_suite = 'Unit' ) {
  * Check the system's readiness to run the tests.
  */
 function check_readiness() {
-    if ( version_compare( phpversion(), '5.6.0', '<' ) ) {
-        trigger_error( 'Unit Tests require PHP 5.6 or higher.', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error -- Valid use case for our testing suite.
+    if ( version_compare( phpversion(), '7.0', '<' ) ) {
+        trigger_error( 'Unit Tests require PHP 7.0 or higher.', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error -- Valid use case for our testing suite.
     }
 
     if ( ! file_exists( dirname( __DIR__ ) . '/vendor/autoload.php' ) ) {

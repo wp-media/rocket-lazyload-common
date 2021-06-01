@@ -13,18 +13,21 @@ use RocketLazyload\Tests\Unit\TestCase;
 class Test_LazyloadIframe extends TestCase {
 	private $iframe;
 
-	public function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 		$this->iframe = new Iframe();
+
+		$this->stubEscapeFunctions();
+
+		Functions\when( 'wp_parse_args' )->alias( static function ( $parsed_args, $defaults ) {
+			return \array_merge( $defaults, $parsed_args );
+		} );
 	}
 
 	public function testShouldReturnSameWhenNoIframe() {
 		$defaults = [
             'youtube' => false,
 		];
-
-		Functions\when( 'esc_url' )->returnArg();
-		Functions\when( 'wp_parse_args' )->justReturn( $defaults );
 
 		$noiframe = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/iframe/noiframe.html' );
 
@@ -38,9 +41,6 @@ class Test_LazyloadIframe extends TestCase {
 		$defaults = [
             'youtube' => false,
 		];
-
-		Functions\when( 'esc_url' )->returnArg();
-		Functions\when( 'wp_parse_args' )->justReturn( $defaults );
 
 		$original = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/iframe/youtube.html' );
 		$expected = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/iframe/iframelazyloaded.html' );
@@ -56,8 +56,6 @@ class Test_LazyloadIframe extends TestCase {
 			'youtube' => true,
 		];
 
-		Functions\when( 'esc_attr' )->returnArg();
-		Functions\when( 'wp_parse_args' )->justReturn( $args );
 		Functions\when( 'wp_parse_url' )->alias( function( $url, $component ) {
 			return parse_url( $url, $component );
 		} );

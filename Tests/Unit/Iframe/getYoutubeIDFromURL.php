@@ -12,8 +12,8 @@ use RocketLazyload\Tests\Unit\TestCase;
 class Test_GetYoutubeIDFromURL extends TestCase {
 	private $iframe;
 
-	public function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 		$this->iframe = new Iframe();
 	}
 

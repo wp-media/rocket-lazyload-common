@@ -12,9 +12,13 @@ use RocketLazyload\Tests\Unit\TestCase;
 class Test_GetLazyloadScript extends TestCase {
 	private $assets;
 
-	public function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 		$this->assets = new Assets();
+
+		Functions\when( 'wp_parse_args' )->alias( static function ( $parsed_args, $defaults ) {
+			return \array_merge( $defaults, $parsed_args );
+		} );
 	}
 
 	/**
@@ -26,14 +30,6 @@ class Test_GetLazyloadScript extends TestCase {
 			'base_url' => 'http://example.org/',
 			'version'  => '11.0.2',
 		];
-
-		$parsed_args = [
-            'base_url' => 'http://example.org/',
-			'version'  => '11.0.2',
-            'polyfill' => false,
-		];
-
-		Functions\when( 'wp_parse_args' )->justReturn( $parsed_args );
 
 		define( 'SCRIPT_DEBUG', true );
 
@@ -56,14 +52,6 @@ class Test_GetLazyloadScript extends TestCase {
 			'version'  => '11.0.2',
 		];
 
-		$parsed_args = [
-            'base_url' => 'http://example.org/',
-			'version'  => '11.0.2',
-            'polyfill' => false,
-		];
-
-		Functions\when( 'wp_parse_args' )->justReturn( $parsed_args );
-
 		$expected = '<script data-no-minify="1" async src="http://example.org/11.0.2/lazyload.min.js"></script>';
 
 		$this->assertSame(
@@ -78,14 +66,6 @@ class Test_GetLazyloadScript extends TestCase {
 			'version'  => '11.0.2',
 			'polyfill' => true,
 		];
-
-		$parsed_args = [
-            'base_url' => 'http://example.org/',
-			'version'  => '11.0.2',
-            'polyfill' => true,
-		];
-
-		Functions\when( 'wp_parse_args' )->justReturn( $parsed_args );
 
 		$expected = '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script><script data-no-minify="1" async src="http://example.org/11.0.2/lazyload.min.js"></script>';
 

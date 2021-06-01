@@ -13,8 +13,8 @@ use RocketLazyload\Tests\Unit\TestCase;
 class TestLazyloadPictures extends TestCase {
 	private $image;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 		$this->image = new Image();
 	}
 

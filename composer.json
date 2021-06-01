@@ -12,33 +12,38 @@
             "email": "contact@wp-media.me"
         }
     ],
-    "minimum-stability": "stable",
-    "autoload": {
-        "psr-4": { "RocketLazyload\\": "src" }
-    },
-    "autoload-dev": {
-        "psr-4": { "RocketLazyload\\Tests\\": "Tests/" }
-    },
-    "config": {
+	"config": {
 		"sort-packages": true
 	},
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "RocketLazyload\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "RocketLazyload\\Tests\\": "Tests/"
+        }
+    },
     "require": {
-        "php": ">=5.6"
+        "php": ">=7.0"
     },
     "require-dev": {
-        "php": "^5.6 || ^7",
+        "php": "^7",
         "brain/monkey": "^2.0",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
         "phpcompatibility/phpcompatibility-wp": "^2.0",
         "phpstan/phpstan": "^0.12.3",
-        "phpunit/phpunit": "^5.7 || ^7",
+        "phpunit/phpunit": "^7",
         "szepeviktor/phpstan-wordpress": "^0.5.0",
-        "wp-coding-standards/wpcs": "^2.0.0",
-        "wp-media/phpunit": "^1.1"
+        "wp-coding-standards/wpcs": "^2.0",
+        "wp-media/phpunit": "^2.0"
     },
     "scripts": {
         "test-unit": "\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist",
         "test-integration": "\"vendor/bin/phpunit\" --testsuite integration --colors=always --configuration Tests/Integration/phpunit.xml.dist",
+		"phpcs": "phpcs --basepath=.",
         "run-stan": "vendor/bin/phpstan analyze --memory-limit=2G --no-progress",
         "run-tests": [
 			"@test-unit",

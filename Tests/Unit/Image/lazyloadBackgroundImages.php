@@ -13,8 +13,8 @@ use RocketLazyload\Tests\Unit\TestCase;
 class Test_LazyloadBackgroundImages extends TestCase {
 	private $image;
 
-	public function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 		$this->image = new Image();
 	}
 
@@ -28,7 +28,18 @@ class Test_LazyloadBackgroundImages extends TestCase {
 	}
 
 	public function testShouldReturnBackgroundImagesLazyloaded() {
-		Functions\when( 'esc_attr' )->returnArg();
+		$this->stubEscapeFunctions();
+
+		Functions\when( 'wp_strip_all_tags' )->alias( static function( $string, $remove_breaks = false ) {
+			$string = \preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', $string );
+			$string = \strip_tags( $string );
+
+			if ( $remove_breaks ) {
+				$string = \preg_replace( '/[\r\n\t ]+/', ' ', $string );
+			}
+
+			return \trim( $string );
+		} );
 
 		$original = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/bgimages.html' );
 		$expected = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/bgimageslazyloaded.html' );

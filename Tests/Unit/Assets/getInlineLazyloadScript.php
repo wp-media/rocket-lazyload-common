@@ -12,12 +12,14 @@ use RocketLazyload\Tests\Unit\TestCase;
 class Test_GetInlineLazyloadScript extends TestCase {
 	private $assets;
 
-	public function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 		$this->assets = new Assets();
 	}
 
 	public function testShouldReturnInlineLazyloadScriptWithOptions() {
+		$this->stubEscapeFunctions();
+
         $args = [
 			'options' => [
 				'callback_finish' => '()=>{console.log("Finish")}',
@@ -26,21 +28,9 @@ class Test_GetInlineLazyloadScript extends TestCase {
 			],
         ];
 
-        $parsed_args = [
-            'elements'  => [
-                'img',
-                'iframe',
-            ],
-            'threshold' => 300,
-            'options' => [
-				'callback_finish' => '()=>{console.log("Finish")}',
-				'use_native'      => 'true',
-				'bad_option'      => 'test',
-			],
-        ];
-
-		Functions\when( 'esc_attr' )->returnArg();
-		Functions\when( 'wp_parse_args' )->justReturn( $parsed_args );
+		Functions\when( 'wp_parse_args' )->alias( static function ( $parsed_args, $defaults ) {
+			return \array_merge( $defaults, $parsed_args );
+		} );
 
 		$expected = 'window.lazyLoadOptions = {
                 elements_selector: "img,iframe",
@@ -73,11 +63,11 @@ class Test_GetInlineLazyloadScript extends TestCase {
                     mutations.forEach(function(mutation) {
                         for (i = 0; i < mutation.addedNodes.length; i++) {
                             if (typeof mutation.addedNodes[i].getElementsByTagName !== \'function\') {
-                                return;
+                                continue;
                             }
 
                            if (typeof mutation.addedNodes[i].getElementsByClassName !== \'function\') {
-                                return;
+                                continue;
                             }
 
                             images = mutation.addedNodes[i].getElementsByTagName(\'img\');

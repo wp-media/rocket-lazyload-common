@@ -2,29 +2,14 @@
 
 namespace RocketLazyload\Tests\Unit;
 
-use Brain\Monkey;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use PHPUnit\Framework\TestCase as PHPUnitTestCase;
+use WPMedia\PHPUnit\Unit\TestCase as BaseTestCase;
 
-/**
- * Test Case for all of the unit tests.
- */
-abstract class TestCase extends PHPUnitTestCase {
-	use MockeryPHPUnitIntegration;
+abstract class TestCase extends BaseTestCase {
+	protected function set_up() {
+        parent::set_up();
+    }
 
-	/**
-	 * Prepares the test environment before each test.
-	 */
-	protected function setUp() {
-		parent::setUp();
-		Monkey\setUp();
-	}
-
-	/**
-	 * Cleans up the test environment after each test.
-	 */
-	protected function tearDown() {
-		Monkey\tearDown();
-		parent::tearDown();
-	}
+	protected function tear_down() {
+        parent::tear_down();
+    }
 }
