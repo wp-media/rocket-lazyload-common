@@ -45,10 +45,6 @@ class Test_LazyloadIframe extends TestCase {
 	}
 
 	public function testShouldReturnIframeLazyloaded() {
-		$defaults = [
-            'youtube' => false,
-		];
-
 		$original = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/iframe/youtube.html' );
 		$expected = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/iframe/iframelazyloaded.html' );
 
