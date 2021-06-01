@@ -22,7 +22,7 @@ class Image {
 	public function lazyloadImages( $html, $buffer ) {
 		$clean_buffer = preg_replace( '/<script\b(?:[^>]*)>(?:.+)?<\/script>/Umsi', '', $html );
 		$clean_buffer = preg_replace( '#<noscript>(?:.+)</noscript>#Umsi', '', $clean_buffer );
-		if (! preg_match_all('#<img(?<atts>\s.+)\s?/?>#iUs', $clean_buffer, $images, PREG_SET_ORDER)) {
+		if ( ! preg_match_all( '#<img(?<atts>\s.+)\s?/?>#iUs', $clean_buffer, $images, PREG_SET_ORDER ) ) {
 			return $html;
 		}
 
@@ -68,11 +68,13 @@ class Image {
 
 			$url['url'] = esc_url(
 				trim(
-					strip_tags(
+					wp_strip_all_tags(
 						html_entity_decode(
-							$url['url'], ENT_QUOTES|ENT_HTML5
+							$url['url'],
+							ENT_QUOTES | ENT_HTML5
 						)
-					), '\'" '
+					),
+					'\'" '
 				)
 			);
 
@@ -99,7 +101,7 @@ class Image {
 	 */
 	private function addLazyClass( $element ) {
 		$class = $this->getClasses( $element );
-		if ( empty( $class )  ) {
+		if ( empty( $class ) ) {
 			return preg_replace( '#<(img|div|figure|section|li|span|a)([^>]*)>#is', '<\1 class="rocket-lazyload"\2>', $element );
 		}
 
@@ -132,7 +134,7 @@ class Image {
 	 */
 	private function getAttributeQuotes( $attribute_value ) {
 		$attribute_value = trim( $attribute_value );
-		$first_char = $attribute_value[0];
+		$first_char      = $attribute_value[0];
 
 		if ( '"' === $first_char || "'" === $first_char ) {
 			return $first_char;
@@ -230,7 +232,7 @@ class Image {
 		}
 
 		$array = explode( $delimiter, $string );
-		$array = array_map('trim', $array );
+		$array = array_map( 'trim', $array );
 
 		// Remove empties.
 		return array_filter( $array );
@@ -256,9 +258,9 @@ class Image {
 				if ( ! preg_match( '#<img(?<atts>\s.+)\s?/?>#iUs', $picture[0], $img ) ) {
 					continue;
 				}
-	
+
 				$img = $this->canLazyload( $img );
-	
+
 				if ( ! $img ) {
 					continue;
 				}
@@ -301,7 +303,7 @@ class Image {
 
 			$img_lazy  = $this->replaceImage( $img );
 			$img_lazy .= $this->noscript( $img[0] );
-			$safe_img = str_replace('/', '\/', preg_quote( $img[0], '#' ));
+			$safe_img  = str_replace( '/', '\/', preg_quote( $img[0], '#' ) );
 			$html      = preg_replace( '#<noscript[^>]*>.*' . $safe_img . '.*<\/noscript>(*SKIP)(*FAIL)|' . $safe_img . '#i', $img_lazy, $html );
 
 			unset( $img_lazy );
@@ -579,7 +581,7 @@ class Image {
 		 * @param string $img        Filename for the smiley image.
 		 * @param string $site_url   Site URL, as returned by site_url().
 		 */
-		$src_url = apply_filters( 'smilies_src', includes_url( "images/smilies/$img" ), $img, site_url() );
+		$src_url = apply_filters( 'smilies_src', includes_url( "images/smilies/$img" ), $img, site_url() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 		// Don't LazyLoad if process is stopped for these reasons.
 		if ( is_feed() || is_preview() ) {

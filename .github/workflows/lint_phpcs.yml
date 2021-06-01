@@ -3,19 +3,19 @@ name: PHPCS linting
 on:
   pull_request:
     branches:
-      - master
+      - trunk
       - develop
 
 jobs:
   run:
     runs-on: ${{ matrix.operating-system }}
-    
+
     strategy:
       fail-fast: false
       matrix:
         operating-system: [ubuntu-latest]
         php-versions: ['7.4']
-    
+
     name: PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}.
     steps:
     - name: Checkout
@@ -26,7 +26,7 @@ jobs:
       with:
         php-version: ${{ matrix.php-versions }}
         coverage: none  # XDebug can be enabled here 'coverage: xdebug'
-        tools: composer:v1
+        tools: composer:v2
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-interaction

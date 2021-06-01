@@ -19,7 +19,7 @@ class Assets {
 	 * @return void
 	 */
 	public function insertLazyloadScript( $args = [] ) {
-		echo $this->getLazyloadScript( $args );
+		echo $this->getLazyloadScript( $args ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -163,7 +163,7 @@ class Assets {
 		$script = '';
 
 		if ( isset( $args['polyfill'] ) && $args['polyfill'] ) {
-			$script .= '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script>';
+			$script .= '<script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CIntersectionObserver%2CIntersectionObserverEntry"></script>'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 		}
 
 		/**
@@ -173,7 +173,7 @@ class Assets {
 		 *
 		 * @param $script_tag HTML tag for the lazyload script.
 		 */
-		$script .= apply_filters( 'rocket_lazyload_script_tag', '<script data-no-minify="1" async src="' . $args['base_url'] . $args['version'] . '/lazyload' . $min . '.js"></script>' );
+		$script .= apply_filters( 'rocket_lazyload_script_tag', '<script data-no-minify="1" async src="' . $args['base_url'] . $args['version'] . '/lazyload' . $min . '.js"></script>' ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 
 		return $script;
 	}
@@ -185,7 +185,7 @@ class Assets {
 	 * @return void
 	 */
 	public function insertYoutubeThumbnailScript( $args = [] ) {
-		echo $this->getYoutubeThumbnailScript( $args );
+		echo $this->getYoutubeThumbnailScript( $args ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -244,7 +244,7 @@ class Assets {
 	 * @return void
 	 */
 	public function insertYoutubeThumbnailCSS( $args = [] ) {
-		wp_register_style( 'rocket-lazyload', false );
+		wp_register_style( 'rocket-lazyload', false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 		wp_enqueue_style( 'rocket-lazyload' );
 		wp_add_inline_style( 'rocket-lazyload', $this->getYoutubeThumbnailCSS( $args ) );
 	}
@@ -276,7 +276,7 @@ class Assets {
 	 * Inserts the CSS needed when Javascript is not enabled to keep the display correct
 	 */
 	public function insertNoJSCSS() {
-		echo $this->getNoJSCSS();
+		echo $this->getNoJSCSS(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
