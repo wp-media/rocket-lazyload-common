@@ -21,7 +21,7 @@ class Image {
 	 */
 	public function lazyloadImages( $html, $buffer ) {
 		$clean_buffer = preg_replace( '/<script\b(?:[^>]*)>(?:.+)?<\/script>/Umsi', '', $html );
-		$clean_buffer = preg_replace( '#<noscript>(?:.+)</noscript>#Umsi', '', $clean_buffer );
+		$clean_buffer = preg_replace( '/<noscript>(?:.+)?<\/noscript>/Umsi', '', $clean_buffer );
 		if (! preg_match_all('#<img(?<atts>\s.+)\s?/?>#iUs', $clean_buffer, $images, PREG_SET_ORDER)) {
 			return $html;
 		}
