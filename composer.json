@@ -36,6 +36,7 @@
         "phpcompatibility/phpcompatibility-wp": "^2.0",
         "phpstan/phpstan": "^0.12.3",
         "phpunit/phpunit": "^7.5",
+		"phpunit/php-file-iterator": "^2.0.3",
         "szepeviktor/phpstan-wordpress": "^0.5.0",
         "wp-coding-standards/wpcs": "^2.0",
         "wp-media/phpunit": "^2.0"
