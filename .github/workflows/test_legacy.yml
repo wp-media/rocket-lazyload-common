@@ -15,7 +15,7 @@ jobs:
       matrix:
         operating-system: [ubuntu-latest]
         php-versions: ['7.1', '7.2']
-        wp-versions: ['5.3.6']
+        wp-versions: ['5.4.7']
 
     name: WP ${{ matrix.wp-versions }} with PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}.
 
@@ -56,10 +56,10 @@ jobs:
         restore-keys: ${{ runner.os }}-composer-
 
     - name: Remove unmet dependencies by legacy versions
-      run: composer remove --dev --no-scripts phpstan/phpstan szepeviktor/phpstan-wordpress
+      run: composer remove --dev phpstan/phpstan szepeviktor/phpstan-wordpress
 
     - name: Install dependencies
-      run: composer install --no-interaction --no-scripts
+      run: composer install --no-interaction
 
     - name: Install tests
       run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1:3306 ${{ matrix.wp-versions }}
