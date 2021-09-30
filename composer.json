@@ -30,13 +30,12 @@
         "php": ">=7.0"
     },
     "require-dev": {
-        "php": "^7",
+        "php": ">=7.0",
         "brain/monkey": "^2.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
         "phpcompatibility/phpcompatibility-wp": "^2.0",
-        "phpstan/phpstan": "^0.12.3",
         "phpunit/phpunit": "^7.5",
-        "szepeviktor/phpstan-wordpress": "^0.5.0",
+        "szepeviktor/phpstan-wordpress": "^0.7.0",
         "wp-coding-standards/wpcs": "^2.0",
         "wp-media/phpunit": "^2.0"
     },
