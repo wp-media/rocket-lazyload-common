@@ -15,7 +15,7 @@ jobs:
       matrix:
         operating-system: [ubuntu-latest]
         php-versions: ['8.0', '8.1']
-        wp-versions: ['trunk']
+        wp-versions: ['latest']
 
     name: WP ${{ matrix.wp-versions }} with PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}.
 
@@ -55,7 +55,7 @@ jobs:
         restore-keys: ${{ runner.os }}-composer-
 
     - name: Update PHPUnit to compatible version
-      run: composer require --dev --no-install "phpunit/phpunit:^9.0"
+      run: composer require --dev --no-install -W "phpunit/phpunit:^9.0"
 
     - name: Install dependencies
       run: composer install --no-interaction
