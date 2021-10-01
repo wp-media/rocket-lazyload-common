@@ -33,7 +33,7 @@ class Test_GetInlineLazyloadScript extends TestCase {
 		} );
 
 		$expected = 'window.lazyLoadOptions = {
-                elements_selector: "img,iframe",
+                elements_selector: "iframe",
                 data_src: "lazy-src",
                 data_srcset: "lazy-srcset",
                 data_sizes: "lazy-sizes",
@@ -61,7 +61,7 @@ class Test_GetInlineLazyloadScript extends TestCase {
                     var rocketlazy_count = 0;
 
                     mutations.forEach(function(mutation) {
-                        for (i = 0; i < mutation.addedNodes.length; i++) {
+                        for (var i = 0; i < mutation.addedNodes.length; i++) {
                             if (typeof mutation.addedNodes[i].getElementsByTagName !== \'function\') {
                                 continue;
                             }

@@ -12,8 +12,8 @@ use RocketLazyload\Tests\Integration\TestCase;
 class Test_InsertYoutubeThumbnailCSS extends TestCase {
 	private $assets;
 
-	public function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 		$this->assets = new Assets();
 	}
 

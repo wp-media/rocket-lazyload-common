@@ -5,11 +5,11 @@ namespace RocketLazyload\Tests\Integration;
 use WPMedia\PHPUnit\Integration\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase {
-	public function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 	}
 
-	public function tearDown() {
-		parent::tearDown();
+	protected function tear_down() {
+		parent::tear_down();
 	}
 }

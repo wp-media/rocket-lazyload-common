@@ -1,4 +1,4 @@
-name: Unit/Integration tests - Legacy
+name: Unit/Integration tests - Bleeding Edge
 
 on:
   pull_request:
@@ -14,8 +14,8 @@ jobs:
       fail-fast: false
       matrix:
         operating-system: [ubuntu-latest]
-        php-versions: ['7.1', '7.2']
-        wp-versions: ['5.4.7']
+        php-versions: ['8.0']
+        wp-versions: ['latest']
 
     name: WP ${{ matrix.wp-versions }} with PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}.
 
@@ -31,9 +31,8 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-versions }}
-        extensions: mysqli
         coverage: none  # XDebug can be enabled here 'coverage: xdebug'
-        tools: composer:v2, phpunit
+        tools: composer:v2
 
     - name: Start mysql service
       run: sudo /etc/init.d/mysql start
@@ -55,11 +54,8 @@ jobs:
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
         restore-keys: ${{ runner.os }}-composer-
 
-    - name: Remove unmet dependencies by legacy versions
-      run: composer remove --dev phpstan/phpstan szepeviktor/phpstan-wordpress
-
     - name: Install dependencies
-      run: composer install --no-interaction
+      run: composer install --no-interaction --ignore-platform-reqs
 
     - name: Install tests
       run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1:3306 ${{ matrix.wp-versions }}

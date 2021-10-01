@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Handles lazyloading of images
  *
@@ -17,11 +19,13 @@ class Image {
 	 *
 	 * @param string $html   Original HTML.
 	 * @param string $buffer Content to parse.
+	 * @param bool   $use_native Use native lazyload.
 	 * @return string
 	 */
-	public function lazyloadImages( $html, $buffer ) {
+	public function lazyloadImages( $html, $buffer, $use_native = true ) {
 		$clean_buffer = preg_replace( '/<script\b(?:[^>]*)>(?:.+)?<\/script>/Umsi', '', $html );
 		$clean_buffer = preg_replace( '#<noscript>(?:.+)</noscript>#Umsi', '', $clean_buffer );
+
 		if ( ! preg_match_all( '#<img(?<atts>\s.+)\s?/?>#iUs', $clean_buffer, $images, PREG_SET_ORDER ) ) {
 			return $html;
 		}
@@ -35,9 +39,13 @@ class Image {
 				continue;
 			}
 
-			$image_lazyload  = $this->replaceImage( $image );
-			$image_lazyload .= $this->noscript( $image[0] );
-			$html            = str_replace( $image[0], $image_lazyload, $html );
+			$image_lazyload = $this->replaceImage( $image, $use_native );
+
+			if ( ! $use_native ) {
+				$image_lazyload .= $this->noscript( $image[0] );
+			}
+
+			$html = str_replace( $image[0], $image_lazyload, $html );
 
 			unset( $image_lazyload );
 		}
@@ -265,7 +273,7 @@ class Image {
 					continue;
 				}
 
-				$nolazy_picture = str_replace( '<img', '<img data-skip-lazy=""', $picture[0] );
+				$nolazy_picture = str_replace( '<img', '<img data-no-lazy=""', $picture[0] );
 				$html           = str_replace( $picture[0], $nolazy_picture, $html );
 
 				continue;
@@ -301,7 +309,7 @@ class Image {
 				continue;
 			}
 
-			$img_lazy  = $this->replaceImage( $img );
+			$img_lazy  = $this->replaceImage( $img, false );
 			$img_lazy .= $this->noscript( $img[0] );
 			$safe_img  = str_replace( '/', '\/', preg_quote( $img[0], '#' ) );
 			$html      = preg_replace( '#<noscript[^>]*>.*' . $safe_img . '.*<\/noscript>(*SKIP)(*FAIL)|' . $safe_img . '#i', $img_lazy, $html );
@@ -336,13 +344,6 @@ class Image {
 
 		if ( $this->isExcluded( $image['src'], $this->getExcludedSrc() ) ) {
 			return false;
-		}
-
-		// Don't apply LazyLoad on images from WP Retina x2.
-		if ( function_exists( 'wr2x_picture_rewrite' ) ) {
-			if ( wr2x_get_retina( trailingslashit( ABSPATH ) . wr2x_get_pathinfo_from_image_src( trim( $image['src'], '"' ) ) ) ) {
-				return false;
-			}
 		}
 
 		return $image;
@@ -383,7 +384,6 @@ class Image {
 		 * Filters the attributes used to prevent lazylad from being applied
 		 *
 		 * @since 1.0
-		 * @author Remy Perona
 		 *
 		 * @param array $excluded_attributes An array of excluded attributes.
 		 */
@@ -409,8 +409,6 @@ class Image {
 				'data-height-percentage',
 				'data-large_image',
 				'avia-bg-style-fixed',
-				'data-skip-lazy',
-				'skip-lazy',
 				'image-compare__',
 			]
 		);
@@ -426,7 +424,6 @@ class Image {
 		 * Filters the src used to prevent lazylad from being applied
 		 *
 		 * @since 1.0
-		 * @author Remy Perona
 		 *
 		 * @param array $excluded_src An array of excluded src.
 		 */
@@ -444,26 +441,32 @@ class Image {
 	 * Replaces the original image by the lazyload one
 	 *
 	 * @param array $image Array of matches elements.
+	 * @param bool  $use_native Use native lazyload.
+	 *
 	 * @return string
 	 */
-	private function replaceImage( $image ) {
-		$width  = 0;
-		$height = 0;
+	private function replaceImage( $image, $use_native = true ) {
+		if ( $use_native ) {
+			if ( preg_match( '@\sloading\s*=\s*(\'|")(?:lazy|auto)\1@i', $image[0] ) ) {
+				return $image[0];
+			}
 
-		if ( preg_match( '@[\s"\']width\s*=\s*(\'|")(?<width>.*)\1@iUs', $image['atts'], $atts ) ) {
-			$width = absint( $atts['width'] );
-		}
+			$image_lazyload = str_replace( '<img', '<img loading="lazy"', $image[0] );
+		} else {
+			$width  = 0;
+			$height = 0;
 
-		if ( preg_match( '@[\s"\']height\s*=\s*(\'|")(?<height>.*)\1@iUs', $image['atts'], $atts ) ) {
-			$height = absint( $atts['height'] );
-		}
+			if ( preg_match( '@[\s"\']width\s*=\s*(\'|")(?<width>.*)\1@iUs', $image['atts'], $atts ) ) {
+				$width = absint( $atts['width'] );
+			}
 
-		$placeholder_atts = preg_replace( '@\ssrc\s*=\s*(\'|")(?<src>.*)\1@iUs', ' src="' . $this->getPlaceholder( $width, $height ) . '"', $image['atts'] );
+			if ( preg_match( '@[\s"\']height\s*=\s*(\'|")(?<height>.*)\1@iUs', $image['atts'], $atts ) ) {
+				$height = absint( $atts['height'] );
+			}
 
-		$image_lazyload = str_replace( $image['atts'], $placeholder_atts . ' data-lazy-src="' . $image['src'] . '"', $image[0] );
+			$placeholder_atts = preg_replace( '@\ssrc\s*=\s*(\'|")(?<src>.*)\1@iUs', ' src="' . $this->getPlaceholder( $width, $height ) . '"', $image['atts'] );
 
-		if ( ! preg_match( '@\sloading\s*=\s*(\'|")(?:lazy|auto)\1@i', $image_lazyload ) && apply_filters( 'rocket_use_native_lazyload', false ) ) {
-			$image_lazyload = str_replace( '<img', '<img loading="lazy"', $image_lazyload );
+			$image_lazyload = str_replace( $image['atts'], $placeholder_atts . ' data-lazy-src="' . $image['src'] . '"', $image[0] );
 		}
 
 		/**
@@ -595,7 +598,6 @@ class Image {
 	 * Returns the placeholder for the src attribute
 	 *
 	 * @since 1.2
-	 * @author Remy Perona
 	 *
 	 * @param int $width  Width of the placeholder image. Default 0.
 	 * @param int $height Height of the placeholder image. Default 0.

@@ -12,8 +12,8 @@ use RocketLazyload\Tests\Integration\TestCase;
 class Test_lazyLoadImages extends TestCase {
 	private $image;
 
-	public function setUp() {
-		parent::setUp();
+	protected function set_up() {
+		parent::set_up();
 		$this->image = new Image();
 	}
 
@@ -26,12 +26,19 @@ class Test_lazyLoadImages extends TestCase {
 		);
 	}
 
-	/**
-	 * Test should return HTML with images lazyloaded
-	 */
-	public function testShouldReturnImagesLazyloaded() {
+	public function testShouldReturnImagesLazyloadedNoNative() {
 		$original = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/images.html' );
 		$expected = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/imageslazyloaded.html' );
+
+		$this->assertSame(
+			$expected,
+			$this->image->lazyloadImages( $original, $original, false )
+		);
+	}
+
+	public function testShouldReturnImagesLazyloadedNative() {
+		$original = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/images.html' );
+		$expected = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/imageslazyloadednative.html' );
 
 		$this->assertSame(
 			$expected,
