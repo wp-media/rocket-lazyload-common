@@ -1,0 +1,31 @@
+<!-- picture with multiple srcset and sizes, fallback image with srcset and sizes -->
+<picture><source srcset="https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-500x333.jpg.webp 500w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-768x512.jpg.webp 768w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-820x547.jpg.webp 820w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-300x200.jpg.webp 300w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-320x213.jpg.webp 320w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-360x240.jpg.webp 360w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-375x250.jpg.webp 375w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-480x320.jpg.webp 480w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-640x427.jpg.webp 640w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-800x534.jpg.webp 800w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-1024x683.jpg.webp 1024w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609.jpg.webp 1280w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-235x157.jpg.webp 235w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-820x547-180x120.jpg.webp 180w" sizes="(max-width: 500px) 100vw, 500px" type="image/webp"><img class="size-medium wp-image-207884 webpexpress-processed" src="https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-500x333.jpg" alt="Katzenspielzeug ist wichtig von klein auf" width="500" height="333" srcset="https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-500x333.jpg 500w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-768x512.jpg 768w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-820x547.jpg 820w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-300x200.jpg 300w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-320x213.jpg 320w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-360x240.jpg 360w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-375x250.jpg 375w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-480x320.jpg 480w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-640x427.jpg 640w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-800x534.jpg 800w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-1024x683.jpg 1024w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609.jpg 1280w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-235x157.jpg 235w, https://www.spielzeug-katze.de/wp-content/uploads/2019/06/bigstock-269887609-820x547-180x120.jpg 180w" sizes="(max-width: 500px) 100vw, 500px"></picture>
+
+<!-- picture with srcset and media, image with srcset only -->
+<picture><source srcset="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-580x300-1.jpg" media="(max-width: 580px)"><source srcset="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-580x300-1-510x264.jpg" media="(max-width: 510px)"><source srcset="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-580x300-1-300x155.jpg" media="(max-width: 300px)"><img srcset="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-580x300-1.jpg" alt="Image Alignment 580x300" /></picture>
+
+<!-- picture with srcset and media, fallback image with src -->
+<picture class="test"><source srcset="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-150x150-1.jpg" media="(max-width: 150px)"><source srcset="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-150x150-1-80x80.jpg" media="(max-width: 80px)"><img src="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-150x150-1.jpg" alt="Image Alignment 150x150" class="wp-image-904" /></picture>
+
+<!-- picture with srcset, sizes and media, fallback image with src -->
+<picture class="responsive-featured-image">
+	<source media="(max-width: 1152px)" sizes="(max-width: 800px) 100vw,(max-width: 1152px) 100vw, 1240px" srcset="https://example.org/wp-content/files15/2020/07/OperaHouseSliderImage06162019-512x300.jpg 512w">
+	<source media="(max-width: 800px)" sizes="(max-width: 800px) 100vw,(max-width: 1152px) 100vw, 1240px" srcset="https://example.org/wp-content/files15/2020/07/OperaHouseSliderImage06162019-800x300.jpg 800w">
+	<source sizes="(max-width: 800px) 100vw,(max-width: 1152px) 100vw, 1240px" srcset="https://example.org/wp-content/files15/2020/07/OperaHouseSliderImage06162019-928x300.jpg 1240w">
+	<img alt="Random Non-Sequiturs &#038; Photography" itemprop="url" src="https://example.org/wp-content/files15/2020/07/OperaHouseSliderImage06162019-421x300.jpg" />
+</picture>
+
+<!-- source with data-no-lazy attribute -->
+<picture><source data-no-lazy="1" srcset="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-580x300-1.jpg" media="(max-width: 580px)"><img src="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-580x300-1.jpg" alt="Image Alignment 580x300" class="wp-image-906" /></picture>
+
+<!-- picture with no source -->
+<picture><img src="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-150x150-1.jpg" alt="Image Alignment 150x150" class="wp-image-904" /></picture>
+
+<!-- source with empty srcset -->
+<picture><source srcset="" media=""><img src="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-300x200-1.jpg" alt="Image Alignment 300x200" class="wp-image-905" /></picture>
+
+<!-- picture with data-no-lazy attribute -->
+<picture data-no-lazy="">
+	<source srcset="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-580x300-1.jpg" media="(max-width: 580px)">
+	<img src="http://wordpress.test/wp-content/uploads/2013/03/image-alignement-580x300-1.jpg" alt="Image Alignment 580x300" class="wp-image-906" />
+</picture>
