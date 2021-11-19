@@ -513,7 +513,7 @@ class Image {
 	public function convertSmilies( $text ) {
 		global $wp_smiliessearch;
 
-		if ( empty( $text ) ) {
+		if ( empty( $text ) || ! is_string( $text ) ) {
 			return $text;
 		}
 
