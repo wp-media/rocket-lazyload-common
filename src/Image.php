@@ -450,7 +450,7 @@ class Image {
 				return $image[0];
 			}
 
-			$image_lazyload = str_replace( '<img', '<img loading="lazy"', $image[0] );
+			$image_lazyload = str_replace( '<img', '<img loading="lazy" decoding="async"', $image[0] );
 		} else {
 			$width  = 0;
 			$height = 0;
@@ -465,7 +465,7 @@ class Image {
 
 			$placeholder_atts = preg_replace( '@\ssrc\s*=\s*(\'|")(?<src>.*)\1@iUs', ' src="' . $this->getPlaceholder( $width, $height ) . '"', $image['atts'] );
 
-			$image_lazyload = str_replace( $image['atts'], $placeholder_atts . ' data-lazy-src="' . $image['src'] . '"', $image[0] );
+			$image_lazyload = str_replace( $image['atts'], $placeholder_atts . ' decoding="async" data-lazy-src="' . $image['src'] . '"', $image[0] );
 		}
 
 		/**
