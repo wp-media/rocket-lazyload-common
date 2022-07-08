@@ -66,7 +66,7 @@ class Test_GetInlineLazyloadScript extends TestCase {
                                 continue;
                             }
 
-                           if (typeof mutation.addedNodes[i].getElementsByClassName !== \'function\') {
+                            if (typeof mutation.addedNodes[i].getElementsByClassName !== \'function\') {
                                 continue;
                             }
 

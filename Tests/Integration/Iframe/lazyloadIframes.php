@@ -12,7 +12,7 @@ use RocketLazyload\Tests\Integration\TestCase;
 class Test_LazyloadIframes extends TestCase {
 	private $iframe;
 
-	protected function set_up() {
+	public function set_up() {
 		parent::set_up();
 		$this->iframe = new Iframe();
 	}
