@@ -36,11 +36,10 @@
         "php": ">=7.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
         "phpcompatibility/phpcompatibility-wp": "^2.0",
-        "phpunit/phpunit": "^7.5",
-		"phpunit/php-file-iterator": "2.0.3",
+        "phpunit/phpunit": "^7.5 || ^8 || ^9",
         "szepeviktor/phpstan-wordpress": "^0.7.0",
         "wp-coding-standards/wpcs": "^2.0",
-        "wp-media/phpunit": "^2.0"
+        "wp-media/phpunit": "^3.0"
     },
     "scripts": {
         "test-unit": "\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist",
