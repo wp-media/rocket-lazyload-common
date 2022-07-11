@@ -58,7 +58,7 @@ jobs:
     - name: Remove unmet dependencies by legacy versions
       run: composer remove --dev phpstan/phpstan szepeviktor/phpstan-wordpress
 
-     - name: Require PHPUnit 7.5 for WP compatibility
+    - name: Require PHPUnit 7.5 for WP compatibility
       run: composer require --dev --no-scripts phpunit/phpunit "^7.5" -W
 
     - name: Install dependencies
