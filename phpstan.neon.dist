@@ -16,5 +16,3 @@ parameters:
         - '#^Function apply_filters(_ref_array)? invoked with [34567] parameters, 2 required\.$#'
         # https://core.trac.wordpress.org/ticket/43304
         #- '/^Parameter #2 \$deprecated of function load_plugin_textdomain expects string, false given\.$/'
-        # TODO #1 Define properties.
-        - '#^Access to an undefined property WP_Rocket\\\S+\.$#'
