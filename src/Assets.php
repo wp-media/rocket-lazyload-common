@@ -251,11 +251,11 @@ class Assets {
 
 		$args = wp_parse_args( $args, $defaults );
 
-		$image = '<img src="https://i.ytimg.com/vi/ID/' . $args['resolution'] . '.' . $args['extension'] . '" alt="" width="' . $allowed_resolutions[ $args['resolution'] ]['width'] . '" height="' . $allowed_resolutions[ $args['resolution'] ]['height'] . '">';
+		$image = '<img src="https://i.ytimg.com/' . ( 'webp' === $args['extension'] ? 'vi_webp' : 'vi' ) . '/ID/' . $args['resolution'] . '.' . $args['extension'] . '" alt="" width="' . $allowed_resolutions[ $args['resolution'] ]['width'] . '" height="' . $allowed_resolutions[ $args['resolution'] ]['height'] . '">';
 
 		if ( isset( $args['lazy_image'] ) && $args['lazy_image'] ) {
 			$attributes = 'alt="" width="' . $allowed_resolutions[ $args['resolution'] ]['width'] . '" height="' . $allowed_resolutions[ $args['resolution'] ]['height'] . '"';
-			$image_url  = 'https://i.ytimg.com/' . ( $args['extension'] === 'webp' ? 'vi_webp' : 'vi' ) . '/ID/' . $args['resolution'] . '.' . $args['extension'];
+			$image_url  = 'https://i.ytimg.com/' . ( 'webp' === $args['extension'] ? 'vi_webp' : 'vi' ) . '/ID/' . $args['resolution'] . '.' . $args['extension'];
 
 			$image = '<img data-lazy-src="' . $image_url . '" ' . $attributes . '><noscript><img src="' . $image_url . '" ' . $attributes . '></noscript>';
 
