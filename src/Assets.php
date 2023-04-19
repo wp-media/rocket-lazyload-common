@@ -251,7 +251,9 @@ class Assets {
 
 		$args = wp_parse_args( $args, $defaults );
 
-		$image_url = 'https://i.ytimg.com/' . ( 'webp' === $args['extension'] ? 'vi_webp' : 'vi' ) . '/ID/' . $args['resolution'] . '.' . $args['extension'];
+		$extension_uri = 'webp' === $args['extension'] ? 'vi_webp' : 'vi';
+
+		$image_url = 'https://i.ytimg.com/' . $extension_uri . '/ID/' . $args['resolution'] . '.' . $args['extension'];
 
 		$image = '<img src="' . $image_url . '" alt="" width="' . $allowed_resolutions[ $args['resolution'] ]['width'] . '" height="' . $allowed_resolutions[ $args['resolution'] ]['height'] . '">';
 
