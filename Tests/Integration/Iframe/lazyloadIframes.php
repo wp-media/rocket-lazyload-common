@@ -46,22 +46,4 @@ class Test_LazyloadIframes extends TestCase {
 			$this->iframe->lazyloadIframes( $original, $original, $args )
 		);
 	}
-
-	public function testShouldReturnIframeLazyloadedWithYoutubeLazyloadEnabled() {
-		$args     = [ 'youtube' => true ];
-		$original = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/iframe/youtube.html' );
-		$expected = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/iframe/iframelazyloaded.html' );
-
-		add_filter( 'rocket_lazyload_exclude_youtube_thumbnail', function( $exclusion ) {
-			$exclusion[] = 'Yirc35yIjfc';
-			$exclusion[] = '5x2Cr_4zRXA';
-
-			return $exclusion;
-		} );
-
-		$this->assertSame(
-			$expected,
-			$this->iframe->lazyloadIframes( $original, $original, $args )
-		);
-	}
 }

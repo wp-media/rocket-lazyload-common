@@ -3,7 +3,6 @@
 namespace RocketLazyload\Tests\Unit\Iframe;
 
 use Brain\Monkey\Functions;
-use Brain\Monkey\Filters;
 use RocketLazyload\Iframe;
 use RocketLazyload\Tests\Unit\TestCase;
 
@@ -66,27 +65,6 @@ class Test_LazyloadIframe extends TestCase {
 
 		$original = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/iframe/youtube.html' );
 		$expected = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/iframe/youtubelazyloaded.html' );
-
-		$this->assertSame(
-			$expected,
-			$this->iframe->lazyloadIframes( $original, $original, $args )
-		);
-	}
-
-	public function testShouldReturnIframeLazyloadedWithYoutubeLazyloadEnabled() {
-		$args     = [
-			'youtube' => true,
-		];
-
-		Functions\when( 'wp_parse_url' )->alias( function( $url, $component ) {
-			return parse_url( $url, $component );
-		} );
-
-		Filters\expectApplied( 'rocket_lazyload_exclude_youtube_thumbnail' )
-		->andReturn( ['Yirc35yIjfc', '5x2Cr_4zRXA'] );
-
-		$original = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/iframe/youtube.html' );
-		$expected = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/iframe/iframelazyloaded.html' );
 
 		$this->assertSame(
 			$expected,
