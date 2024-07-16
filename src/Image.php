@@ -245,8 +245,8 @@ class Image {
 	 *  1. Removes empties.
 	 *  2. Trims each string.
 	 *
-	 * @param string $string    The target string to convert.
-	 * @param string $delimiter Optional. Default: ' ' empty string.
+	 * @param string           $string    The target string to convert.
+	 * @param non-empty-string $delimiter Optional. Default: ' ' (one space).
 	 *
 	 * @return array<string> An array of trimmed strings.
 	 */
@@ -594,7 +594,7 @@ class Image {
 			return $text;
 		}
 
-		$stop    = count( $textarr );// loop stuff.
+		$stop = count( $textarr );// loop stuff.
 
 		// Ignore proessing of specific tags.
 		$tags_to_ignore       = 'code|pre|style|script|textarea';
