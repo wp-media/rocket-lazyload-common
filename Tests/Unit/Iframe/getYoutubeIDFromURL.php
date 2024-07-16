@@ -45,18 +45,20 @@ class Test_GetYoutubeIDFromURL extends TestCase {
 		];
 	}
 
-	public function testShouldReturnFalseWhenYoutubePlaylist() {
+	public function testShouldReturnEmptyStringWhenYoutubePlaylist() {
 		$playlist = 'https://www.youtube.com/embed/videoseries?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG';
 
-		$this->assertFalse(
+		$this->assertSame(
+			'',
 			$this->iframe->getYoutubeIDFromURL( $playlist )
 		);
 	}
 
-	public function testShouldReturnFalseWhenNotYoutubeURL() {
+	public function testShouldReturnEmptryStringWhenNotYoutubeURL() {
 		$vimeo_url = 'https://vimeo.com/279775261';
 
-		$this->assertFalse(
+		$this->assertSame(
+			'',
 			$this->iframe->getYoutubeIDFromURL( $vimeo_url )
 		);
 	}
