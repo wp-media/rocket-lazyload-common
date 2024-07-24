@@ -38,7 +38,7 @@ class Image {
 
 			$image_lazyload = $this->replaceImage( $image, $use_native );
 
-			if ( ! $use_native ) {
+			if ( ! $use_native && $this->noscriptEnabled() ) {
 				$image_lazyload .= $this->noscript( $image[0] );
 			}
 
@@ -335,8 +335,12 @@ class Image {
 				continue;
 			}
 
-			$img_lazy  = $this->replaceImage( $img, false );
-			$img_lazy .= $this->noscript( $img[0] );
+			$img_lazy = $this->replaceImage( $img, false );
+
+			if ( $this->noscriptEnabled() ) {
+				$img_lazy .= $this->noscript( $img[0] );
+			}
+
 			$safe_img  = str_replace( '/', '\/', preg_quote( $img[0], '#' ) );
 
 			$new_html = preg_replace( '#<noscript[^>]*>.*' . $safe_img . '.*<\/noscript>(*SKIP)(*FAIL)|' . $safe_img . '#i', $img_lazy, $html );
@@ -533,6 +537,20 @@ class Image {
 		$image_lazyload = apply_filters( 'rocket_lazyload_html', $image_lazyload );
 
 		return $image_lazyload;
+	}
+
+	/**
+	 * Checks if the noscript tag is enabled
+	 *
+	 * @return bool
+	 */
+	private function noscriptEnabled(): bool {
+		/**
+		 * Filter to enable or disable noscript tag
+		 *
+		 * @param bool $enable_noscript Enable or disable noscript tag.
+		 */
+		return apply_filters( 'rocket_lazyload_noscript', true );
 	}
 
 	/**
