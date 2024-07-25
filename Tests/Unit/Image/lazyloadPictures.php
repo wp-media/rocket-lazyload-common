@@ -1,13 +1,15 @@
 <?php
+declare(strict_types=1);
 
 namespace RocketLazyload\Tests\Unit\Image;
 
-use Brain\Monkey\Functions;
+use Brain\Monkey\{Filters, Functions};
 use RocketLazyload\Image;
 use RocketLazyload\Tests\Unit\TestCase;
 
 /**
  * @covers RocketLazyload\Image::lazyloadPictures
+ *
  * @uses RocketLazyload\Image::canLazyload
  * @uses RocketLazyload\Image::getExcludedAttributes
  * @uses RocketLazyload\Image::getExcludedSrc
@@ -15,32 +17,28 @@ use RocketLazyload\Tests\Unit\TestCase;
  * @uses RocketLazyload\Image::isExcluded
  * @uses RocketLazyload\Image::noscript
  * @uses RocketLazyload\Image::replaceImage
- * @group  Image
+ *
+ * @group Image
  */
 class TestLazyloadPictures extends TestCase {
 	private $image;
 
 	public function set_up() {
 		parent::set_up();
+
 		$this->image = new Image();
 	}
 
-	public function testShouldReturnSameWhenNoPicture() {
-		$noimage = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/noimage.html' );
-
-		$this->assertSame(
-			$noimage,
-			$this->image->lazyloadPictures( $noimage, $noimage )
-		);
-	}
-
-	public function testShouldReturnPicturesLazyloaded() {
+	/**
+	 * @dataProvider configTestData
+	 */
+	public function testShouldReturnExpected( $config, $original, $expected ) {
 		Functions\when( 'absint' )->alias( function( $value ) {
 			return abs( intval( $value ) );
 		} );
 
-		$original = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/pictures.html' );
-		$expected = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/pictureslazyloaded.html' );
+		Filters\expectApplied( 'rocket_lazyload_noscript' )
+			->andReturn( $config['noscript_filter'] );
 
 		$this->assertSame(
 			$expected,

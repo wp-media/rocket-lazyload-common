@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Rocketlazyload\Tests\Integration\Image;
 
@@ -7,42 +8,39 @@ use RocketLazyload\Tests\Integration\TestCase;
 
 /**
  * @covers RocketLazyload\Iframe::lazyloadImages
- * @group  Image
+ *
+ * @group Image
  */
 class Test_lazyLoadImages extends TestCase {
 	private $image;
+	private $noscript;
 
 	public function set_up() {
 		parent::set_up();
 		$this->image = new Image();
 	}
 
-	public function testShouldReturnSameWhenNoImage() {
-		$noimage = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/noimage.html' );
+	public function tear_down() {
+		remove_filter( 'rocket_lazyload_noscript', [ $this, 'noscript' ] );
 
-		$this->assertSame(
-			$noimage,
-			$this->image->lazyloadImages( $noimage, $noimage )
-		);
+		parent::tear_down();
 	}
 
-	public function testShouldReturnImagesLazyloadedNoNative() {
-		$original = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/images.html' );
-		$expected = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/imageslazyloaded.html' );
+	/**
+	 * @dataProvider configTestData
+	 */
+	public function testShouldReturnExpected( $config, $original, $expected ) {
+		$this->noscript = $config['noscript_filter'];
+
+		add_filter( 'rocket_lazyload_noscript', [ $this, 'noscript' ] );
 
 		$this->assertSame(
 			$expected,
-			$this->image->lazyloadImages( $original, $original, false )
+			$this->image->lazyloadImages( $original, $original, $config['native'] )
 		);
 	}
 
-	public function testShouldReturnImagesLazyloadedNative() {
-		$original = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/images.html' );
-		$expected = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/imageslazyloadednative.html' );
-
-		$this->assertSame(
-			$expected,
-			$this->image->lazyloadImages( $original, $original )
-		);
+	public function noscript() {
+		return $this->noscript;
 	}
 }
