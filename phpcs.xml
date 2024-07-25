@@ -3,6 +3,7 @@
 	<description>The custom ruleset for WP Media.</description>
 
 	<file>.</file>
+	<exclude-pattern>/Tests/Fixtures/</exclude-pattern>
 	<exclude-pattern>/Tests/Unit/</exclude-pattern>
 	<exclude-pattern>/Tests/Integration/</exclude-pattern>
 	<exclude-pattern>/vendor/*</exclude-pattern>
