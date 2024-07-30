@@ -542,9 +542,9 @@ class Image {
 	/**
 	 * Checks if the noscript tag is enabled
 	 *
-	 * @return bool
+	 * @return mixed
 	 */
-	private function noscriptEnabled(): bool {
+	private function noscriptEnabled() {
 		/**
 		 * Filter to enable or disable noscript tag
 		 *
