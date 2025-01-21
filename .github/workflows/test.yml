@@ -37,6 +37,9 @@ jobs:
     - name: Install SVN
       run: sudo apt-get install subversion
 
+    - name: Install SVN
+      run: sudo apt-get install subversion
+
     - name: Start mysql service
       run: sudo /etc/init.d/mysql start
 
