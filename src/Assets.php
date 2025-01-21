@@ -268,7 +268,7 @@ class Assets {
 			}
 		}
 
-		$button_aria_label = $args['button_arial_label'];
+		$button_aria_label = $args['button_aria_label'];
 
 		/**
 		 * Filters the patterns excluded from lazyload for youtube thumbnails.
