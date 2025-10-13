@@ -523,7 +523,7 @@ class Image {
 				$height = absint( $atts['height'] );
 			}
 
-			// Only match src attributes with safe values (no spaces, quotes, or angle brackets)
+			// Only match src attributes with safe values (no spaces, quotes, or angle brackets).
 			$placeholder_atts = preg_replace(
 				'@\ssrc\s*=\s*(\'|")(?<src>[^\s"\'>]+)\1@iUs',
 				' src="' . $this->getPlaceholder( $width, $height ) . '"',
