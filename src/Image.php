@@ -529,7 +529,7 @@ class Image {
 				' src="' . $this->getPlaceholder( $width, $height ) . '"',
 				$image['atts']
 			);
-			
+
 			$image_lazyload = str_replace(
 				$image['atts'],
 				$placeholder_atts . ' data-lazy-src="' . esc_url( $image['src'] ) . '"',
