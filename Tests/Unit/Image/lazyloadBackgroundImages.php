@@ -9,13 +9,13 @@ use RocketLazyload\Tests\Unit\TestCase;
 /**
  * @covers RocketLazyload\Image::lazyloadBackgroundImages
  * @uses RocketLazyload\Image::addLazyClass
+ * @uses RocketLazyload\Image::advanceQuoteState
  * @uses RocketLazyload\Image::findRealAttribute
  * @uses RocketLazyload\Image::getAttributeQuotes
  * @uses RocketLazyload\Image::getClasses
  * @uses RocketLazyload\Image::getExcludedAttributes
  * @uses RocketLazyload\Image::getExcludedSrc
  * @uses RocketLazyload\Image::isExcluded
- * @uses RocketLazyload\Image::isOffsetInsideQuotedValue
  * @uses RocketLazyload\Image::normalizeClasses
  * @uses RocketLazyload\Image::stringToArray
  * @uses RocketLazyload\Image::trimOuterQuotes
@@ -225,6 +225,10 @@ class Test_LazyloadBackgroundImages extends TestCase {
 				"<div class\t=\t\"my-class\" style=\"background-image:url(https://example.com/a.png)\">bg</div>",
 				'<div data-bg="https://example.com/a.png" class="my-class rocket-lazyload" style="">bg</div>',
 			],
+			'newline between attribute name and ='         => [
+				"<div class\n=\n\"my-class\" style=\"background-image:url(https://example.com/a.png)\">bg</div>",
+				'<div data-bg="https://example.com/a.png" class="my-class rocket-lazyload" style="">bg</div>',
+			],
 			'entity-encoded quote inside another value'    => [
 				'<div title="a &quot;quoted&quot; word" class="my-class" style="background-image:url(https://example.com/a.png)">bg</div>',
 				'<div data-bg="https://example.com/a.png" title="a &quot;quoted&quot; word" class="my-class rocket-lazyload" style="">bg</div>',
@@ -238,6 +242,40 @@ class Test_LazyloadBackgroundImages extends TestCase {
 				'<div title=\'never closes class="my-class" style="background-image:url(https://example.com/a.png)">bg</div>',
 			],
 		];
+	}
+
+	/**
+	 * A tag whose title attribute holds a very long run of `style="d" `-shaped
+	 * tokens (none of them real) must still resolve in time roughly
+	 * proportional to its length, not to length squared: the per-candidate
+	 * quote-state walk must not re-scan the tag from the start for every
+	 * candidate it rejects. Exercised through the public method with a
+	 * generous time budget so it isn't flaky on CI, while still failing hard
+	 * if quadratic behaviour is reintroduced.
+	 */
+	public function testShouldProcessLongAttributeValuesInLinearTime() {
+		$this->stubEscapeFunctions();
+		Functions\stubs( [ 'wp_strip_all_tags' ] );
+
+		$tokens = str_repeat( 'style="d" ', 4000 ); // ~40KB of never-real tokens.
+		$tag    = '<div title="' . $tokens . '" style="background-image:url(https://example.com/a.png)">bg</div>';
+
+		$start    = microtime( true );
+		$single   = $this->image->lazyloadBackgroundImages( $tag, $tag );
+		$single_s = microtime( true ) - $start;
+
+		$this->assertNotSame( $tag, $single, 'the genuine style attribute must still be found and lazyloaded' );
+		$this->assertStringContainsString( 'data-bg="https://example.com/a.png"', $single );
+		$this->assertLessThan( 2.0, $single_s, 'a single ~40KB tag must resolve well within budget' );
+
+		$buffer = str_repeat( $tag . "\n", 20 );
+
+		$start      = microtime( true );
+		$many       = $this->image->lazyloadBackgroundImages( $buffer, $buffer );
+		$many_s     = microtime( true ) - $start;
+
+		$this->assertSame( 20, substr_count( $many, 'data-bg="https://example.com/a.png"' ) );
+		$this->assertLessThan( 2.0, $many_s, '20 such tags in one buffer must still resolve well within budget' );
 	}
 
 	/**
