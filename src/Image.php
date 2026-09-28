@@ -67,12 +67,30 @@ class Image {
 	 * @return string
 	 */
 	public function lazyloadBackgroundImages( $html, $buffer ) {
-		if ( ! preg_match_all( '#<(?<tag>div|figure|section|aside|span|li|a)\s+(?<before>[^>]+[\'"\s])?style\s*=\s*([\'"])(?<styles>.*?)\3(?<after>[^>]*)>#is', $buffer, $elements, PREG_SET_ORDER ) ) {
+		// Candidate opening tags for the allowed tag names. The quoted-value
+		// alternatives let a `>` character inside an attribute's value (e.g. raw
+		// markup stored in an attribute) be skipped over instead of
+		// prematurely ending the tag match.
+		if ( ! preg_match_all( '#<(?<tag>div|figure|section|aside|span|li|a)\b(?:[^>"\']|"[^"]*"|\'[^\']*\')*>#is', $buffer, $elements, PREG_SET_ORDER ) ) {
 			return $html;
 		}
 
 		foreach ( $elements as $element ) {
-			if ( $this->isExcluded( $element['before'] . $element['after'], $this->getExcludedAttributes() ) ) {
+			$style = $this->findRealAttribute( $element[0], 'style' );
+
+			if ( ! $style ) {
+				continue;
+			}
+
+			// Only strip the outer quote characters themselves here, without
+			// trimming whitespace: the value must stay byte-for-byte identical
+			// to what is inside the original tag, so the background-image match
+			// found against it can still be located and removed from that tag.
+			$element['styles'] = $this->stripOuterQuoteChars( $style['value'] );
+
+			$attributes_without_style = str_replace( $style['attribute'], '', $element[0] );
+
+			if ( $this->isExcluded( $attributes_without_style, $this->getExcludedAttributes() ) ) {
 				continue;
 			}
 
@@ -111,7 +129,7 @@ class Image {
 				continue;
 			}
 
-			$lazy_bg = $this->addLazyCLass( $element[0] );
+			$lazy_bg = $this->addLazyClass( $element[0] );
 			$lazy_bg = str_replace( $url[0], '', $lazy_bg );
 			$lazy_bg = str_replace( '<' . $element['tag'], '<' . $element['tag'] . ' data-bg="' . esc_attr( $url['url'] ) . '"', $lazy_bg );
 
@@ -180,6 +198,36 @@ class Image {
 	}
 
 	/**
+	 * Removes a matching pair of leading/trailing quote characters from an
+	 * attribute value, without trimming any whitespace.
+	 *
+	 * Unlike trimOuterQuotes(), this preserves the value byte-for-byte
+	 * (aside from the two quote characters themselves), which matters when the
+	 * result must still be located as a substring of the original, untouched
+	 * tag text.
+	 *
+	 * @param string $value Attribute value, as returned by findRealAttribute().
+	 *
+	 * @return string
+	 */
+	private function stripOuterQuoteChars( $value ) {
+		$length = strlen( $value );
+
+		if ( $length < 2 ) {
+			return $value;
+		}
+
+		$first = $value[0];
+		$last  = $value[ $length - 1 ];
+
+		if ( ( '"' === $first || "'" === $first ) && $first === $last ) {
+			return substr( $value, 1, -1 );
+		}
+
+		return $value;
+	}
+
+	/**
 	 * Gets the class attribute and values from the given element, if it exists.
 	 *
 	 * @param string $element Given HTML element to extract classes from.
@@ -190,18 +238,83 @@ class Image {
 	 * }; else, false when no class attribute exists.
 	 */
 	private function getClasses( $element ) {
-		if ( ! preg_match( '#class\s*=\s*(?<classes>["\'].*?["\']|[^\s]+)#is', $element, $class ) ) {
-			return false;
-		}
+		$found = $this->findRealAttribute( $element, 'class' );
 
-		if ( empty( $class['classes'] ) ) {
+		if ( ! $found ) {
 			return false;
 		}
 
 		return [
-			'attribute' => $class[0],
-			'classes'   => $class['classes'],
+			'attribute' => $found['attribute'],
+			'classes'   => $found['value'],
 		];
+	}
+
+	/**
+	 * Finds the first genuine, non-nested occurrence of the given attribute on an HTML tag string.
+	 *
+	 * Unlike a plain `name\s*=` search, this ignores any occurrence of that literal text found
+	 * inside the still-open value of another attribute (e.g. a `class=` token nested inside a
+	 * `title="..."` value), so only a real attribute on the tag itself is ever returned.
+	 *
+	 * @param string $tag  HTML tag string to search in, e.g. `<div class="a">`.
+	 * @param string $name Attribute name to look for, e.g. `class` or `style`.
+	 *
+	 * @return false|array{attribute: string, value: string} The matched attribute text and its
+	 *         (still-quoted, if applicable) value; false when no genuine attribute is found.
+	 */
+	private function findRealAttribute( $tag, $name ) {
+		$pattern = '#(?<=\s)' . preg_quote( $name, '#' ) . '\s*=\s*(?<value>"[^"]*"|\'[^\']*\'|[^\s>]+)#is';
+
+		if ( ! preg_match_all( $pattern, $tag, $matches, PREG_OFFSET_CAPTURE ) ) {
+			return false;
+		}
+
+		foreach ( $matches[0] as $index => $match ) {
+			$offset = $match[1];
+
+			if ( $this->isOffsetInsideQuotedValue( $tag, $offset ) ) {
+				continue;
+			}
+
+			return [
+				'attribute' => $match[0],
+				'value'     => $matches['value'][ $index ][0],
+			];
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks whether a given offset in a tag string falls inside the still-open value of a
+	 * preceding quoted attribute (single or double quotes).
+	 *
+	 * @param string $tag    HTML tag string to walk.
+	 * @param int    $offset Offset to check, as returned by PREG_OFFSET_CAPTURE.
+	 *
+	 * @return bool True when a quote opened before $offset is still open at $offset.
+	 */
+	private function isOffsetInsideQuotedValue( $tag, $offset ) {
+		$open_quote = null;
+
+		for ( $i = 0; $i < $offset; $i++ ) {
+			$char = $tag[ $i ];
+
+			if ( null === $open_quote ) {
+				if ( '"' === $char || "'" === $char ) {
+					$open_quote = $char;
+				}
+
+				continue;
+			}
+
+			if ( $char === $open_quote ) {
+				$open_quote = null;
+			}
+		}
+
+		return null !== $open_quote;
 	}
 
 	/**
