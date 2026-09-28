@@ -299,7 +299,7 @@ class Image {
 	}
 
 	/**
-	 * Advances a quote-state walk over $tag[$from..$to), updating $open_quote by reference.
+	 * Advances a quote-state walk over $tag[$from..$end), updating $open_quote by reference.
 	 *
 	 * Tracks whichever of `"`/`'` is currently open (if any), the same way
 	 * isOffsetInsideQuotedValue() used to from byte 0 on every call. Callers resume from
@@ -307,14 +307,14 @@ class Image {
 	 *
 	 * @param string      $tag        HTML tag string being walked.
 	 * @param int         $from       Start offset to resume scanning from (inclusive).
-	 * @param int         $to         End offset to scan up to (exclusive).
+	 * @param int         $end        End offset to scan up to (exclusive).
 	 * @param string|null $open_quote Currently open quote character, if any; passed by
 	 *                                reference and updated in place.
 	 *
 	 * @return void
 	 */
-	private function advanceQuoteState( $tag, $from, $to, &$open_quote ) {
-		for ( $i = $from; $i < $to; $i++ ) {
+	private function advanceQuoteState( $tag, $from, $end, &$open_quote ) {
+		for ( $i = $from; $i < $end; $i++ ) {
 			$char = $tag[ $i ];
 
 			if ( null === $open_quote ) {
