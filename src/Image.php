@@ -70,8 +70,9 @@ class Image {
 		// Candidate opening tags for the allowed tag names. The quoted-value
 		// alternatives let a `>` character inside an attribute's value (e.g. raw
 		// markup stored in an attribute) be skipped over instead of
-		// prematurely ending the tag match.
-		if ( ! preg_match_all( '#<(?<tag>div|figure|section|aside|span|li|a)\b(?:[^>"\']|"[^"]*"|\'[^\']*\')*>#is', $buffer, $elements, PREG_SET_ORDER ) ) {
+		// prematurely ending the tag match. Quantifiers are possessive (`*+`) so
+		// a long, quote-free value can't be re-walked by backtracking once matched.
+		if ( ! preg_match_all( '#<(?<tag>div|figure|section|aside|span|li|a)\b(?:[^>"\']++|"[^"]*+"|\'[^\']*+\')*+>#is', $buffer, $elements, PREG_SET_ORDER ) ) {
 			return $html;
 		}
 
@@ -88,9 +89,9 @@ class Image {
 			// found against it can still be located and removed from that tag.
 			$element['styles'] = $this->stripOuterQuoteChars( $style['value'] );
 
-			$attributes_without_style = str_replace( $style['attribute'], '', $element[0] );
+			$attrs_no_style = str_replace( $style['attribute'], '', $element[0] );
 
-			if ( $this->isExcluded( $attributes_without_style, $this->getExcludedAttributes() ) ) {
+			if ( $this->isExcluded( $attrs_no_style, $this->getExcludedAttributes() ) ) {
 				continue;
 			}
 
@@ -257,6 +258,11 @@ class Image {
 	 * inside the still-open value of another attribute (e.g. a `class=` token nested inside a
 	 * `title="..."` value), so only a real attribute on the tag itself is ever returned.
 	 *
+	 * The quote-state walk is carried across candidates via $pos/$open_quote instead of
+	 * re-scanning the tag from byte 0 for every candidate: preg_match_all() returns matches
+	 * in ascending offset order, so each byte of the tag only needs to be visited once in
+	 * total, keeping this O(tag length) instead of O(candidates x tag length).
+	 *
 	 * @param string $tag  HTML tag string to search in, e.g. `<div class="a">`.
 	 * @param string $name Attribute name to look for, e.g. `class` or `style`.
 	 *
@@ -264,16 +270,22 @@ class Image {
 	 *         (still-quoted, if applicable) value; false when no genuine attribute is found.
 	 */
 	private function findRealAttribute( $tag, $name ) {
-		$pattern = '#(?<=\s)' . preg_quote( $name, '#' ) . '\s*=\s*(?<value>"[^"]*"|\'[^\']*\'|[^\s>]+)#is';
+		$pattern = '#(?<=\s)' . preg_quote( $name, '#' ) . '\s*=\s*(?<value>"[^"]*+"|\'[^\']*+\'|[^\s>]++)#is';
 
 		if ( ! preg_match_all( $pattern, $tag, $matches, PREG_OFFSET_CAPTURE ) ) {
 			return false;
 		}
 
+		$pos        = 0;
+		$open_quote = null;
+
 		foreach ( $matches[0] as $index => $match ) {
 			$offset = $match[1];
 
-			if ( $this->isOffsetInsideQuotedValue( $tag, $offset ) ) {
+			$this->advanceQuoteState( $tag, $pos, $offset, $open_quote );
+			$pos = $offset;
+
+			if ( null !== $open_quote ) {
 				continue;
 			}
 
@@ -287,18 +299,22 @@ class Image {
 	}
 
 	/**
-	 * Checks whether a given offset in a tag string falls inside the still-open value of a
-	 * preceding quoted attribute (single or double quotes).
+	 * Advances a quote-state walk over $tag[$from..$to), updating $open_quote by reference.
 	 *
-	 * @param string $tag    HTML tag string to walk.
-	 * @param int    $offset Offset to check, as returned by PREG_OFFSET_CAPTURE.
+	 * Tracks whichever of `"`/`'` is currently open (if any), the same way
+	 * isOffsetInsideQuotedValue() used to from byte 0 on every call. Callers resume from
+	 * their own cursor instead of restarting at 0, so a tag is only walked once in total.
 	 *
-	 * @return bool True when a quote opened before $offset is still open at $offset.
+	 * @param string      $tag        HTML tag string being walked.
+	 * @param int         $from       Start offset to resume scanning from (inclusive).
+	 * @param int         $to         End offset to scan up to (exclusive).
+	 * @param string|null $open_quote Currently open quote character, if any; passed by
+	 *                                reference and updated in place.
+	 *
+	 * @return void
 	 */
-	private function isOffsetInsideQuotedValue( $tag, $offset ) {
-		$open_quote = null;
-
-		for ( $i = 0; $i < $offset; $i++ ) {
+	private function advanceQuoteState( $tag, $from, $to, &$open_quote ) {
+		for ( $i = $from; $i < $to; $i++ ) {
 			$char = $tag[ $i ];
 
 			if ( null === $open_quote ) {
@@ -313,8 +329,6 @@ class Image {
 				$open_quote = null;
 			}
 		}
-
-		return null !== $open_quote;
 	}
 
 	/**
