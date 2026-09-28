@@ -26,16 +26,24 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 	 * @dataProvider youtubeDataProvider
 	 *
 	 * @param array  $args     An array of arguments to configure the inline script.
+	 * @param string $excluded the excluded patterns returned by the filter.
 	 * @param string $expected the expected HTML.
 	 */
 	public function testShouldReturnYoutubeThumbnailScript( $args, $excluded, $expected ) {
 		Filters\expectApplied( 'rocket_lazyload_exclude_youtube_thumbnail' )
 			->andReturn( $excluded );
 
-		$this->assertSame(
-			$expected,
-			$this->assets->getYoutubeThumbnailScript( $args )
-		);
+		$actual = $this->assets->getYoutubeThumbnailScript( $args );
+
+		$this->assertSame( $expected, $actual );
+
+		// The generated script must never build markup from element data via
+		// innerHTML, and must validate the id and embed URL before using them.
+		$this->assertStringNotContainsString( 'innerHTML', $actual );
+		$this->assertStringContainsString( '/^[A-Za-z0-9_-]{11}$/', $actual );
+		$this->assertStringContainsString( '/^https:\/\/(www\.)?youtube(-nocookie)?\.com\/embed\/[A-Za-z0-9_-]{11}$/', $actual );
+		$this->assertStringContainsString( 'new URL(', $actual );
+		$this->assertStringContainsString( 'new URLSearchParams(', $actual );
 	}
 
 	/**
@@ -48,42 +56,42 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 			[
 				[],
 				[],
-				$this->add_element( '<img src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360">', '[]', 'https://i.ytimg.com/vi/ID/hqdefault.jpg' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'true', 'false', 'play Youtube video', '[]' ),
 			],
 			[
 				[
 					'resolution' => 'mqdefault',
 				],
 				[],
-				$this->add_element( '<img src="https://i.ytimg.com/vi/ID/mqdefault.jpg" alt="" width="320" height="180">', '[]', 'https://i.ytimg.com/vi/ID/mqdefault.jpg' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/mqdefault.jpg', 320, 180, 'true', 'false', 'play Youtube video', '[]' ),
 			],
 			[
 				[
 					'resolution' => 'sddefault',
 				],
 				[],
-				$this->add_element( '<img src="https://i.ytimg.com/vi/ID/sddefault.jpg" alt="" width="640" height="480">', '[]', 'https://i.ytimg.com/vi/ID/sddefault.jpg' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/sddefault.jpg', 640, 480, 'true', 'false', 'play Youtube video', '[]' ),
 			],
 			[
 				[
 					'resolution' => 'hqdefault',
 				],
 				[],
-				$this->add_element( '<img src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360">', '[]', 'https://i.ytimg.com/vi/ID/hqdefault.jpg' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'true', 'false', 'play Youtube video', '[]' ),
 			],
 			[
 				[
 					'resolution' => 'maxresdefault',
 				],
 				[],
-				$this->add_element( '<img src="https://i.ytimg.com/vi/ID/maxresdefault.jpg" alt="" width="1280" height="720">', '[]', 'https://i.ytimg.com/vi/ID/maxresdefault.jpg' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/maxresdefault.jpg', 1280, 720, 'true', 'false', 'play Youtube video', '[]' ),
 			],
 			[
 				[
 					'resolution' => 'ultra',
 				],
 				[],
-				$this->add_element( '<img src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360">', '[]', 'https://i.ytimg.com/vi/ID/hqdefault.jpg' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'true', 'false', 'play Youtube video', '[]' ),
 			],
 			[
 				[
@@ -92,7 +100,7 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 					'native'     => false,
 				],
 				[],
-				$this->add_element( '<img data-lazy-src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360"><noscript><img src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360"></noscript>', '[]', 'https://i.ytimg.com/vi/ID/hqdefault.jpg' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'false', 'true', 'play Youtube video', '[]' ),
 			],
 			[
 				[
@@ -101,17 +109,17 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 					'native'     => true,
 				],
 				[],
-				$this->add_element( '<img loading="lazy" src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360">', '[]', 'https://i.ytimg.com/vi/ID/hqdefault.jpg' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'true', 'true', 'play Youtube video', '[]' ),
 			],
 			[
 				[
 					'resolution' => 'hqdefault',
 					'lazy_image' => true,
 					'native'     => true,
-					'extension'     => 'webp',
+					'extension'  => 'webp',
 				],
 				[],
-				$this->add_element( '<img loading="lazy" src="https://i.ytimg.com/vi_webp/ID/hqdefault.webp" alt="" width="480" height="360">', '[]', 'https://i.ytimg.com/vi_webp/ID/hqdefault.webp' ),
+				$this->build_script( 'https://i.ytimg.com/vi_webp/ID/hqdefault.webp', 480, 360, 'true', 'true', 'play Youtube video', '[]' ),
 			],
 			[
 				[
@@ -122,22 +130,93 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 				[
 					'https://i.ytimg.com/vi/12345/hqdefault.jpg',
 				],
-				$this->add_element( '<img loading="lazy" src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360">', '["https:\/\/i.ytimg.com\/vi\/12345\/hqdefault.jpg"]', 'https://i.ytimg.com/vi/ID/hqdefault.jpg' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'true', 'true', 'play Youtube video', '["https:\/\/i.ytimg.com\/vi\/12345\/hqdefault.jpg"]' ),
 			],
 			[
 				[
 					'resolution' => 'hqdefault',
 					'lazy_image' => true,
 					'native'     => true,
-					'extension'     => 'webp',
+					'extension'  => 'webp',
 				],
 				[],
-				"<script>function lazyLoadThumb(e,alt,l){var t='<img loading=\"lazy\" src=\"https://i.ytimg.com/vi_webp/ID/hqdefault.webp\" alt=\"\" width=\"480\" height=\"360\">',a='<button class=\"play\" aria-label=\"play Youtube video\"></button>';if(l){t=t.replace('data-lazy-','');t=t.replace('loading=\"lazy\"','');t=t.replace(/<noscript>.*?<\/noscript>/g,'');}t=t.replace('alt=\"\"','alt=\"'+alt+'\"');return t.replace(\"ID\",e)+a}function lazyLoadYoutubeIframe(){var e=document.createElement(\"iframe\"),t=\"ID?autoplay=1\";t+=0===this.parentNode.dataset.query.length?\"\":\"&\"+this.parentNode.dataset.query;e.setAttribute(\"src\",t.replace(\"ID\",this.parentNode.dataset.src)),e.setAttribute(\"frameborder\",\"0\"),e.setAttribute(\"allowfullscreen\",\"1\"),e.setAttribute(\"allow\",\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\"),this.parentNode.parentNode.replaceChild(e,this.parentNode)}document.addEventListener(\"DOMContentLoaded\",function(){var exclusions=[];var e,t,p,u,l,a=document.getElementsByClassName(\"rll-youtube-player\");for(t=0;t<a.length;t++)(e=document.createElement(\"div\")),(u='https://i.ytimg.com/vi_webp/ID/hqdefault.webp'),(u=u.replace('ID',a[t].dataset.id)),(l=exclusions.some(exclusion=>u.includes(exclusion))),e.setAttribute(\"data-id\",a[t].dataset.id),e.setAttribute(\"data-query\",a[t].dataset.query),e.setAttribute(\"data-src\",a[t].dataset.src),(e.innerHTML=lazyLoadThumb(a[t].dataset.id,a[t].dataset.alt,l)),a[t].appendChild(e),(p=e.querySelector(\".play\")),(p.onclick=lazyLoadYoutubeIframe)});</script>"
+				$this->build_script( 'https://i.ytimg.com/vi_webp/ID/hqdefault.webp', 480, 360, 'true', 'true', 'play Youtube video', '[]' ),
 			],
 		];
 	}
 
-	private function add_element( $element, $excluded_patterns, $image_url ) {
-		return "<script>function lazyLoadThumb(e,alt,l){var t='{$element}',a='<button class=\"play\" aria-label=\"play Youtube video\"></button>';if(l){t=t.replace('data-lazy-','');t=t.replace('loading=\"lazy\"','');t=t.replace(/<noscript>.*?<\/noscript>/g,'');}t=t.replace('alt=\"\"','alt=\"'+alt+'\"');return t.replace(\"ID\",e)+a}function lazyLoadYoutubeIframe(){var e=document.createElement(\"iframe\"),t=\"ID?autoplay=1\";t+=0===this.parentNode.dataset.query.length?\"\":\"&\"+this.parentNode.dataset.query;e.setAttribute(\"src\",t.replace(\"ID\",this.parentNode.dataset.src)),e.setAttribute(\"frameborder\",\"0\"),e.setAttribute(\"allowfullscreen\",\"1\"),e.setAttribute(\"allow\",\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\"),this.parentNode.parentNode.replaceChild(e,this.parentNode)}document.addEventListener(\"DOMContentLoaded\",function(){var exclusions={$excluded_patterns};var e,t,p,u,l,a=document.getElementsByClassName(\"rll-youtube-player\");for(t=0;t<a.length;t++)(e=document.createElement(\"div\")),(u='{$image_url}'),(u=u.replace('ID',a[t].dataset.id)),(l=exclusions.some(exclusion=>u.includes(exclusion))),e.setAttribute(\"data-id\",a[t].dataset.id),e.setAttribute(\"data-query\",a[t].dataset.query),e.setAttribute(\"data-src\",a[t].dataset.src),(e.innerHTML=lazyLoadThumb(a[t].dataset.id,a[t].dataset.alt,l)),a[t].appendChild(e),(p=e.querySelector(\".play\")),(p.onclick=lazyLoadYoutubeIframe)});</script>";
+	/**
+	 * Builds the expected inline script from its variable parts.
+	 *
+	 * @param string $image_url         Thumbnail image URL, still containing the `ID` placeholder.
+	 * @param int    $width             Thumbnail width.
+	 * @param int    $height            Thumbnail height.
+	 * @param string $native            `'true'` or `'false'` (as a JS literal, not a PHP bool).
+	 * @param string $lazy_image        `'true'` or `'false'` (as a JS literal, not a PHP bool).
+	 * @param string $button_aria_label Play button aria-label text.
+	 * @param string $excluded_patterns JSON-encoded array of excluded patterns.
+	 *
+	 * @return string
+	 */
+	private function build_script( $image_url, $width, $height, $native, $lazy_image, $button_aria_label, $excluded_patterns ) {
+		return '<script>'
+			. 'function lazyLoadImg(id,l){'
+			. 'var s=\'' . $image_url . '\'.replace("ID",id),img=document.createElement("img");'
+			. 'if(' . $lazy_image . '&&!l&&' . $native . '){img.setAttribute("loading","lazy");img.setAttribute("src",s);}'
+			. 'else if(' . $lazy_image . '&&!l&&!' . $native . '){img.setAttribute("data-lazy-src",s);}'
+			. 'else{img.setAttribute("src",s);}'
+			. 'img.setAttribute("width","' . $width . '");'
+			. 'img.setAttribute("height","' . $height . '");'
+			. 'return img;'
+			. '}'
+			. 'function lazyLoadThumb(id,alt,l){'
+			. 'if(!/^[A-Za-z0-9_-]{11}$/.test(id)){return null;}'
+			. 'var frag=document.createDocumentFragment(),img=lazyLoadImg(id,l);'
+			. 'img.setAttribute("alt",alt);'
+			. 'frag.appendChild(img);'
+			. 'if(' . $lazy_image . '&&!' . $native . '&&!l){'
+			. 'var noscript=document.createElement("noscript"),nimg=lazyLoadImg(id,true);'
+			. 'nimg.setAttribute("alt",alt);'
+			. 'noscript.appendChild(nimg);'
+			. 'frag.appendChild(noscript);'
+			. '}'
+			. 'var btn=document.createElement("button");'
+			. 'btn.setAttribute("class","play");'
+			. 'btn.setAttribute("aria-label","' . $button_aria_label . '");'
+			. 'frag.appendChild(btn);'
+			. 'return frag;'
+			. '}'
+			. 'function lazyLoadYoutubeIframe(){'
+			. 'var src=this.parentNode.dataset.src;'
+			. 'if(!/^https:\/\/(www\.)?youtube(-nocookie)?\.com\/embed\/[A-Za-z0-9_-]{11}$/.test(src)){return;}'
+			. 'var url=new URL(src);'
+			. 'url.searchParams.set("autoplay","1");'
+			. 'var query=this.parentNode.dataset.query||"";'
+			. 'new URLSearchParams(query).forEach(function(v,k){url.searchParams.set(k,v);});'
+			. 'var e=document.createElement("iframe");'
+			. 'e.setAttribute("src",url.href);'
+			. 'e.setAttribute("frameborder","0");'
+			. 'e.setAttribute("allowfullscreen","1");'
+			. 'e.setAttribute("allow","accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture");'
+			. 'this.parentNode.parentNode.replaceChild(e,this.parentNode);'
+			. '}'
+			. 'document.addEventListener("DOMContentLoaded",function(){'
+			. 'var exclusions=' . $excluded_patterns . ';'
+			. 'var e,t,frag,u,l,a=document.getElementsByClassName("rll-youtube-player");'
+			. 'for(t=0;t<a.length;t++){'
+			. 'u=\'' . $image_url . '\'.replace("ID",a[t].dataset.id);'
+			. 'l=exclusions.some(function(exclusion){return u.indexOf(exclusion)!==-1;});'
+			. 'e=document.createElement("div");'
+			. 'e.setAttribute("data-id",a[t].dataset.id);'
+			. 'e.setAttribute("data-query",a[t].dataset.query);'
+			. 'e.setAttribute("data-src",a[t].dataset.src);'
+			. 'frag=lazyLoadThumb(a[t].dataset.id,a[t].dataset.alt,l);'
+			. 'if(!frag){continue;}'
+			. 'e.appendChild(frag);'
+			. 'a[t].appendChild(e);'
+			. 'e.querySelector(".play").onclick=lazyLoadYoutubeIframe;'
+			. '}'
+			. '});'
+			. '</script>';
 	}
 }
