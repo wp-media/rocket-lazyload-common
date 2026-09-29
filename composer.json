@@ -17,6 +17,12 @@
 		"allow-plugins": {
 			"dealerdirect/phpcodesniffer-composer-installer": true,
 			"phpstan/extension-installer": true
+		},
+		"audit": {
+			"ignore": [
+				"PKSA-mh9b-91zm-m1gy",
+				"PKSA-z3gr-8qht-p93v"
+			]
 		}
 	},
     "minimum-stability": "stable",
@@ -42,7 +48,7 @@
         "phpunit/phpunit": "^7.5 || ^8 || ^9",
         "szepeviktor/phpstan-wordpress": "^1.3",
         "wp-coding-standards/wpcs": "^2.0",
-        "wp-media/phpunit": "^3.0"
+        "wp-media/phpunit": "~3.0.4"
     },
     "scripts": {
         "test-unit": "\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist",
