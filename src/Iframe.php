@@ -213,7 +213,9 @@ class Iframe {
 	private function addRenderToken( $html ) {
 		$result = preg_replace_callback(
 			'#<div\b(?:[^>"\']++|"[^"]*+"|\'[^\']*+\')*+>#i',
-			[ $this, 'addRenderTokenToDivTag' ],
+			function ( $matches ) {
+				return $this->addRenderTokenToDivTag( $matches );
+			},
 			$html
 		);
 
