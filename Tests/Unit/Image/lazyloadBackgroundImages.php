@@ -241,23 +241,36 @@ class Test_LazyloadBackgroundImages extends TestCase {
 				'<div title=\'never closes class="my-class" style="background-image:url(https://example.com/a.png)">bg</div>',
 				'<div title=\'never closes class="my-class" style="background-image:url(https://example.com/a.png)">bg</div>',
 			],
+			'double-quoted title, nested single-quoted style= and class= tokens, untouched' => [
+				'<a href="https://example.com" title="style=\'background-image:url(https://example.com/a.png);\' class=x marker=y flag=z">lorem</a>',
+				'<a href="https://example.com" title="style=\'background-image:url(https://example.com/a.png);\' class=x marker=y flag=z">lorem</a>',
+			],
+			'single-quoted title, nested double-quoted style= and class= tokens, untouched' => [
+				"<a href=\"https://example.com\" title='style=\"background-image:url(https://example.com/a.png);\" class=x marker=y flag=z'>lorem</a>",
+				"<a href=\"https://example.com\" title='style=\"background-image:url(https://example.com/a.png);\" class=x marker=y flag=z'>lorem</a>",
+			],
 		];
 	}
 
 	/**
-	 * A tag whose title attribute holds a very long run of `style="d" `-shaped
+	 * A tag whose title attribute holds a very long run of `style='d' `-shaped
 	 * tokens (none of them real) must still resolve in time roughly
 	 * proportional to its length, not to length squared: the per-candidate
 	 * quote-state walk must not re-scan the tag from the start for every
 	 * candidate it rejects. Exercised through the public method with a
 	 * generous time budget so it isn't flaky on CI, while still failing hard
 	 * if quadratic behaviour is reintroduced.
+	 *
+	 * The decoy tokens use single quotes, nested inside title's double-quoted
+	 * value: a well-formed shape (the embedded quote character never matches
+	 * title's own delimiter), so this stays a valid, unambiguous tag whether or
+	 * not the HTML API cross-check (see findRealAttribute()) is available.
 	 */
 	public function testShouldProcessLongAttributeValuesInLinearTime() {
 		$this->stubEscapeFunctions();
 		Functions\stubs( [ 'wp_strip_all_tags' ] );
 
-		$tokens = str_repeat( 'style="d" ', 4000 ); // ~40KB of never-real tokens.
+		$tokens = str_repeat( "style='d' ", 4000 ); // ~40KB of never-real tokens.
 		$tag    = '<div title="' . $tokens . '" style="background-image:url(https://example.com/a.png)">bg</div>';
 
 		$start    = microtime( true );
@@ -276,6 +289,124 @@ class Test_LazyloadBackgroundImages extends TestCase {
 
 		$this->assertSame( 20, substr_count( $many, 'data-bg="https://example.com/a.png"' ) );
 		$this->assertLessThan( 2.0, $many_s, '20 such tags in one buffer must still resolve well within budget' );
+	}
+
+	/**
+	 * When WordPress's own HTML API (WP_HTML_Tag_Processor, WP 6.2+) is available
+	 * and agrees with the hardened parser, behaviour is exactly as if the
+	 * cross-check did not run at all.
+	 *
+	 * Runs in an isolated process: it declares a global WP_HTML_Tag_Processor
+	 * test double (see Tests/Fixtures/stubs/wp-html-tag-processor-stub.php),
+	 * which must not leak into any other test in this suite.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function testShouldProcessNormallyWhenHtmlApiAgrees() {
+		require_once RLL_COMMON_ROOT . 'Tests/Fixtures/stubs/wp-html-tag-processor-stub.php';
+		\WP_HTML_Tag_Processor::reset_stub();
+		\WP_HTML_Tag_Processor::$attributes = [
+			'class' => 'my-class',
+			'style' => 'background-image:url(https://example.com/a.png)',
+		];
+
+		$this->stubEscapeFunctions();
+		Functions\stubs( [ 'wp_strip_all_tags' ] );
+
+		$input    = '<div class="my-class" style="background-image:url(https://example.com/a.png)">bg</div>';
+		$expected = '<div data-bg="https://example.com/a.png" class="my-class rocket-lazyload" style="">bg</div>';
+
+		$this->assertSame(
+			$expected,
+			$this->image->lazyloadBackgroundImages( $input, $input )
+		);
+	}
+
+	/**
+	 * When the hardened parser finds no class attribute but the HTML API
+	 * reports a real one (a gap in the hardened parser), the element is left
+	 * completely untouched by class handling rather than risking a duplicate
+	 * class attribute -- even though the background-image rewrite around it
+	 * still proceeds normally.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function testShouldLeaveElementUntouchedByClassHandlingWhenHtmlApiFindsWhatHardenedParserMissed() {
+		require_once RLL_COMMON_ROOT . 'Tests/Fixtures/stubs/wp-html-tag-processor-stub.php';
+		\WP_HTML_Tag_Processor::reset_stub();
+		\WP_HTML_Tag_Processor::$attributes = [
+			'class' => 'my-class',
+			'style' => 'background-image:url(https://example.com/a.png)',
+		];
+
+		$this->stubEscapeFunctions();
+		Functions\stubs( [ 'wp_strip_all_tags' ] );
+
+		// No class attribute visible to the hardened parser at all.
+		$input    = '<div style="background-image:url(https://example.com/a.png)">bg</div>';
+		$expected = '<div data-bg="https://example.com/a.png" style="">bg</div>';
+
+		$actual = $this->image->lazyloadBackgroundImages( $input, $input );
+
+		$this->assertSame( $expected, $actual );
+		$this->assertStringNotContainsString( 'class=', $actual, 'no class attribute must be added when the two parsers disagree on presence' );
+	}
+
+	/**
+	 * When the hardened parser finds a class attribute but the HTML API says
+	 * the value is different, that is treated the same as "no real attribute":
+	 * the existing, already-safe "add a fresh class" fallback applies.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function testShouldFallBackToFreshClassWhenHtmlApiValueDiffers() {
+		require_once RLL_COMMON_ROOT . 'Tests/Fixtures/stubs/wp-html-tag-processor-stub.php';
+		\WP_HTML_Tag_Processor::reset_stub();
+		\WP_HTML_Tag_Processor::$attributes = [
+			'class' => 'not-what-the-hardened-parser-saw',
+			'style' => 'background-image:url(https://example.com/a.png)',
+		];
+
+		$this->stubEscapeFunctions();
+		Functions\stubs( [ 'wp_strip_all_tags' ] );
+
+		$input    = '<div class="my-class" style="background-image:url(https://example.com/a.png)">bg</div>';
+		$expected = '<div data-bg="https://example.com/a.png" class="rocket-lazyload" class="my-class" style="">bg</div>';
+
+		$this->assertSame(
+			$expected,
+			$this->image->lazyloadBackgroundImages( $input, $input )
+		);
+	}
+
+	/**
+	 * When the hardened parser finds a class attribute but the HTML API says
+	 * there is none at all, that is also treated the same as "no real
+	 * attribute".
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function testShouldFallBackToFreshClassWhenHtmlApiSaysAbsent() {
+		require_once RLL_COMMON_ROOT . 'Tests/Fixtures/stubs/wp-html-tag-processor-stub.php';
+		\WP_HTML_Tag_Processor::reset_stub();
+		\WP_HTML_Tag_Processor::$attributes = [
+			'style' => 'background-image:url(https://example.com/a.png)',
+		];
+
+		$this->stubEscapeFunctions();
+		Functions\stubs( [ 'wp_strip_all_tags' ] );
+
+		$input    = '<div class="my-class" style="background-image:url(https://example.com/a.png)">bg</div>';
+		$expected = '<div data-bg="https://example.com/a.png" class="rocket-lazyload" class="my-class" style="">bg</div>';
+
+		$this->assertSame(
+			$expected,
+			$this->image->lazyloadBackgroundImages( $input, $input )
+		);
 	}
 
 	/**
