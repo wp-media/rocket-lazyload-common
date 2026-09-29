@@ -150,14 +150,6 @@ class Image {
 	private function addLazyClass( $element ) {
 		$class = $this->getClasses( $element );
 
-		if ( null === $class ) {
-			// The hardened parser and the HTML API (when available) disagree about
-			// whether a real class attribute exists; leave the element untouched
-			// rather than risk adding a second class attribute alongside one the
-			// hardened parser simply failed to see.
-			return $element;
-		}
-
 		if ( ! $class ) {
 			$result = preg_replace( '#<(img|div|figure|section|aside|li|span|a)([^>]*)>#is', '<\1 class="rocket-lazyload"\2>', $element );
 
@@ -241,18 +233,13 @@ class Image {
 	 *
 	 * @param string $element Given HTML element to extract classes from.
 	 *
-	 * @return null|false|string[] {
+	 * @return false|string[] {
 	 *      @type string $attribute Class attribute and value, e.g. class="value"
 	 *      @type string $classes   String of class attribute's value(s)
-	 * }; false when no class attribute exists; null when the hardened parser and
-	 *    the HTML API (when available) disagree and neither can be trusted.
+	 * }; else, false when no class attribute exists.
 	 */
 	private function getClasses( $element ) {
 		$found = $this->findRealAttribute( $element, 'class' );
-
-		if ( null === $found ) {
-			return null;
-		}
 
 		if ( ! $found ) {
 			return false;
@@ -276,33 +263,13 @@ class Image {
 	 * in ascending offset order, so each byte of the tag only needs to be visited once in
 	 * total, keeping this O(tag length) instead of O(candidates x tag length).
 	 *
-	 * When WordPress's own HTML API (`WP_HTML_Tag_Processor`, WP 6.2+) is available, its
-	 * result is used as a read-only cross-check of this result -- see
-	 * crossCheckWithHtmlApi() for how disagreements are resolved.
-	 *
-	 * @param string $tag  HTML tag string to search in, e.g. `<div class="a">`.
-	 * @param string $name Attribute name to look for, e.g. `class` or `style`.
-	 *
-	 * @return null|false|array{attribute: string, value: string} The matched attribute text and
-	 *         its (still-quoted, if applicable) value; false when no genuine attribute exists;
-	 *         null when the two parsers disagree and neither result can be trusted.
-	 */
-	private function findRealAttribute( $tag, $name ) {
-		$found = $this->findRealAttributeHardened( $tag, $name );
-
-		return $this->crossCheckWithHtmlApi( $tag, $name, $found );
-	}
-
-	/**
-	 * The hardened, regex-based attribute lookup, without any cross-check.
-	 *
 	 * @param string $tag  HTML tag string to search in, e.g. `<div class="a">`.
 	 * @param string $name Attribute name to look for, e.g. `class` or `style`.
 	 *
 	 * @return false|array{attribute: string, value: string} The matched attribute text and its
 	 *         (still-quoted, if applicable) value; false when no genuine attribute is found.
 	 */
-	private function findRealAttributeHardened( $tag, $name ) {
+	private function findRealAttribute( $tag, $name ) {
 		$pattern = '#(?<=\s)' . preg_quote( $name, '#' ) . '\s*=\s*(?<value>"[^"]*+"|\'[^\']*+\'|[^\s>]++)#is';
 
 		if ( ! preg_match_all( $pattern, $tag, $matches, PREG_OFFSET_CAPTURE ) ) {
@@ -329,62 +296,6 @@ class Image {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Cross-checks the hardened parser's result against WordPress's own HTML API, when
-	 * available, without ever letting it rewrite the tag: only `next_tag()` and
-	 * `get_attribute()` are used (read-only), so the byte-for-byte output of the hardened
-	 * parser is unaffected on WP versions where this cross-check runs, and unaffected
-	 * entirely (falls back to today's behaviour) on older versions.
-	 *
-	 * Disagreements always fail closed:
-	 *  - hardened parser found nothing, HTML API found a real attribute: the hardened
-	 *    parser has a gap; return null so the caller leaves the element untouched instead
-	 *    of risking a duplicate attribute.
-	 *  - hardened parser found something, HTML API says it is absent or has a different
-	 *    value: treat it the same as "no real attribute" (false).
-	 *  - both agree (or the HTML API is unavailable, or errors out): return the hardened
-	 *    parser's own result unchanged.
-	 *
-	 * @param string                                     $tag   HTML tag string being checked.
-	 * @param string                                     $name  Attribute name being checked.
-	 * @param false|array{attribute:string,value:string} $found Hardened parser's result.
-	 *
-	 * @return null|false|array{attribute: string, value: string}
-	 */
-	private function crossCheckWithHtmlApi( $tag, $name, $found ) {
-		if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
-			return $found;
-		}
-
-		try {
-			$processor = new \WP_HTML_Tag_Processor( $tag );
-
-			if ( ! $processor->next_tag() ) {
-				return $found;
-			}
-
-			$api_value = $processor->get_attribute( $name );
-		} catch ( \Throwable $exception ) {
-			return $found;
-		}
-
-		if ( ! $found ) {
-			return null === $api_value ? $found : null;
-		}
-
-		if ( null === $api_value || true === $api_value ) {
-			return false;
-		}
-
-		$decoded = html_entity_decode( $this->stripOuterQuoteChars( $found['value'] ), ENT_QUOTES | ENT_HTML5 );
-
-		if ( $decoded !== $api_value ) {
-			return false;
-		}
-
-		return $found;
 	}
 
 	/**

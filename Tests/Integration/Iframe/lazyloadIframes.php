@@ -3,7 +3,6 @@
 namespace RocketLazyload\Tests\Integration\Iframe;
 
 use RocketLazyload\Iframe;
-use RocketLazyload\RenderToken;
 use RocketLazyload\Tests\Integration\TestCase;
 
 /**
@@ -16,15 +15,6 @@ class Test_LazyloadIframes extends TestCase {
 	public function set_up() {
 		parent::set_up();
 		$this->iframe = new Iframe();
-
-		// Deterministic token so the youtubelazyloaded.html fixture can assert
-		// on an exact value; shared with the unit test's own fixture copy.
-		( new RenderToken() )->set( '0123456789abcdef' );
-	}
-
-	public function tear_down() {
-		( new RenderToken() )->reset();
-		parent::tear_down();
 	}
 
 	public function testShouldReturnSameWhenNoIframe() {

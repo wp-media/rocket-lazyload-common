@@ -261,14 +261,7 @@ class Assets {
 		$native     = ( isset( $args['native'] ) && $args['native'] ) ? 'true' : 'false';
 		$lazy_image = ( isset( $args['lazy_image'] ) && $args['lazy_image'] ) ? 'true' : 'false';
 
-		// wp_json_encode() gives a ready-to-embed, safely quoted JS string literal:
-		// quotes/backslashes are escaped and, since JSON_UNESCAPED_SLASHES is not
-		// set, `/` is escaped too, so a label containing `</script>` cannot end
-		// the surrounding <script> tag early.
-		$button_aria_label = wp_json_encode( $args['button_aria_label'] );
-		// The token ends up in visible page markup/script and is a pairing check
-		// against Iframe's own output (defence in depth), not a secret.
-		$render_token = wp_json_encode( ( new RenderToken() )->get() );
+		$button_aria_label = $args['button_aria_label'];
 
 		/**
 		 * Filters the patterns excluded from lazyload for youtube thumbnails.
@@ -307,7 +300,7 @@ class Assets {
 			. '}'
 			. 'var btn=document.createElement("button");'
 			. 'btn.setAttribute("class","play");'
-			. "btn.setAttribute(\"aria-label\",{$button_aria_label});"
+			. "btn.setAttribute(\"aria-label\",\"{$button_aria_label}\");"
 			. 'frag.appendChild(btn);'
 			. 'return frag;'
 			. '}'
@@ -326,11 +319,9 @@ class Assets {
 			. 'this.parentNode.parentNode.replaceChild(e,this.parentNode);'
 			. '}'
 			. 'document.addEventListener("DOMContentLoaded",function(){'
-			. "var token={$render_token};"
 			. "var exclusions={$excluded_patterns};"
 			. 'var e,t,frag,u,l,a=document.getElementsByClassName("rll-youtube-player");'
 			. 'for(t=0;t<a.length;t++){'
-			. 'if(a[t].dataset.rllToken!==token){continue;}'
 			. "u='{$image_url}'.replace(\"ID\",a[t].dataset.id);"
 			. 'l=exclusions.some(function(exclusion){return u.indexOf(exclusion)!==-1;});'
 			. 'e=document.createElement("div");'
