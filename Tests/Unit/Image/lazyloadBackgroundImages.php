@@ -241,6 +241,14 @@ class Test_LazyloadBackgroundImages extends TestCase {
 				'<div title=\'never closes class="my-class" style="background-image:url(https://example.com/a.png)">bg</div>',
 				'<div title=\'never closes class="my-class" style="background-image:url(https://example.com/a.png)">bg</div>',
 			],
+			'double-quoted title, nested single-quoted style= and class= tokens, untouched' => [
+				'<a href="https://example.com" title="style=\'background-image:url(https://example.com/a.png);\' class=x marker=y flag=z">lorem</a>',
+				'<a href="https://example.com" title="style=\'background-image:url(https://example.com/a.png);\' class=x marker=y flag=z">lorem</a>',
+			],
+			'single-quoted title, nested double-quoted style= and class= tokens, untouched' => [
+				"<a href=\"https://example.com\" title='style=\"background-image:url(https://example.com/a.png);\" class=x marker=y flag=z'>lorem</a>",
+				"<a href=\"https://example.com\" title='style=\"background-image:url(https://example.com/a.png);\" class=x marker=y flag=z'>lorem</a>",
+			],
 		];
 	}
 
