@@ -5,10 +5,12 @@ namespace RocketLazyload\Tests\Unit\Assets;
 use Brain\Monkey\Functions;
 use Brain\Monkey\Filters;
 use RocketLazyload\Assets;
+use RocketLazyload\RenderToken;
 use RocketLazyload\Tests\Unit\TestCase;
 
 /**
  * @covers RocketLazyload\Assets::getYoutubeThumbnailScript
+ * @uses RocketLazyload\RenderToken::get
  */
 class Test_GetYoutubeThumbnaiScript extends TestCase {
 	private $assets;
@@ -17,9 +19,17 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 		parent::set_up();
 		$this->assets = new Assets();
 
+		// Deterministic token so the expected script text is exact and stable.
+		RenderToken::reset( '0123456789abcdef' );
+
 		Functions\when( 'wp_parse_args' )->alias( static function ( $parsed_args, $defaults ) {
 			return \array_merge( $defaults, $parsed_args );
 		} );
+	}
+
+	protected function tear_down() {
+		RenderToken::reset();
+		parent::tear_down();
 	}
 
 	/**
@@ -44,6 +54,31 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 		$this->assertStringContainsString( '/^https:\/\/(www\.)?youtube(-nocookie)?\.com\/embed\/[A-Za-z0-9_-]{11}$/', $actual );
 		$this->assertStringContainsString( 'new URL(', $actual );
 		$this->assertStringContainsString( 'new URLSearchParams(', $actual );
+
+		// The script must only ever process elements carrying this request's
+		// own render token, and skip everything else.
+		$this->assertStringContainsString( 'var token="0123456789abcdef";', $actual );
+		$this->assertStringContainsString( 'if(a[t].dataset.rllToken!==token){continue;}', $actual );
+	}
+
+	/**
+	 * A play-button label containing a quote, a backslash, and a literal
+	 * `</script>` must be embedded as an inert JS string, unable to end the
+	 * surrounding <script> tag or break out of the string literal.
+	 */
+	public function testShouldSafelyEscapeAriaLabelContainingSpecialCharacters() {
+		Filters\expectApplied( 'rocket_lazyload_exclude_youtube_thumbnail' )
+			->andReturn( [] );
+
+		$label = 'play "cool" video\\</script>';
+
+		$actual = $this->assets->getYoutubeThumbnailScript( [ 'button_aria_label' => $label ] );
+
+		$this->assertStringNotContainsString( '</script>', substr( $actual, 8, -9 ), 'the label must not contain a literal closing script tag inside the script body' );
+		$this->assertStringContainsString(
+			'btn.setAttribute("aria-label",' . wp_json_encode( $label ) . ');',
+			$actual
+		);
 	}
 
 	/**
@@ -182,7 +217,7 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 			. '}'
 			. 'var btn=document.createElement("button");'
 			. 'btn.setAttribute("class","play");'
-			. 'btn.setAttribute("aria-label","' . $button_aria_label . '");'
+			. 'btn.setAttribute("aria-label",' . json_encode( $button_aria_label ) . ');'
 			. 'frag.appendChild(btn);'
 			. 'return frag;'
 			. '}'
@@ -201,9 +236,11 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 			. 'this.parentNode.parentNode.replaceChild(e,this.parentNode);'
 			. '}'
 			. 'document.addEventListener("DOMContentLoaded",function(){'
+			. 'var token="0123456789abcdef";'
 			. 'var exclusions=' . $excluded_patterns . ';'
 			. 'var e,t,frag,u,l,a=document.getElementsByClassName("rll-youtube-player");'
 			. 'for(t=0;t<a.length;t++){'
+			. 'if(a[t].dataset.rllToken!==token){continue;}'
 			. 'u=\'' . $image_url . '\'.replace("ID",a[t].dataset.id);'
 			. 'l=exclusions.some(function(exclusion){return u.indexOf(exclusion)!==-1;});'
 			. 'e=document.createElement("div");'

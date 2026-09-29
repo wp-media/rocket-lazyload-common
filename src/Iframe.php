@@ -185,9 +185,37 @@ class Iframe {
 		 * @param string $html Output that will be printed.
 		 */
 		$youtube_lazyload  = apply_filters( 'rocket_lazyload_youtube_html', '<div class="rll-youtube-player" data-src="' . esc_attr( $youtube_url ) . '" data-id="' . esc_attr( $youtube_id ) . '" data-query="' . esc_attr( $query ) . '" data-alt="' . esc_attr( $title ) . '"></div>' );
+		$youtube_lazyload  = $this->addRenderToken( $youtube_lazyload );
 		$youtube_lazyload .= '<noscript>' . $iframe[0] . '</noscript>';
 
 		return $youtube_lazyload;
+	}
+
+	/**
+	 * Marks the placeholder this method just built (whether or not a site filter
+	 * customised it) with the current request's render token, so the companion
+	 * inline script can recognise it as something this library rendered.
+	 *
+	 * Applied after the `rocket_lazyload_youtube_html` filter runs, and targets
+	 * whichever element in the filtered output still carries the
+	 * `rll-youtube-player` class, so a filter that only tweaks attributes or
+	 * markup around that element keeps working exactly as before. A filter that
+	 * removes that class already opts the element out of the feature; nothing
+	 * further is needed for that case.
+	 *
+	 * @param string $html Youtube placeholder markup, already filtered.
+	 *
+	 * @return string
+	 */
+	private function addRenderToken( $html ) {
+		$with_token = preg_replace(
+			'#<div(\s+class="[^"]*\brll-youtube-player\b[^"]*")#i',
+			'<div data-rll-token="' . esc_attr( RenderToken::get() ) . '"$1',
+			$html,
+			1
+		);
+
+		return null === $with_token ? $html : $with_token;
 	}
 
 	/**
