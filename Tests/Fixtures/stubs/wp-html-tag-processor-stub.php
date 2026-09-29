@@ -7,14 +7,35 @@
  * process (@runInSeparateProcess), so the global class it declares never leaks
  * into the rest of the unit test suite.
  *
- * Configuration is via a plain function and $GLOBALS, not a static class
- * method/property, so calling code never performs a static access on the
- * stub. Declared in the global namespace on purpose: RocketLazyload\Image
- * checks for the real class via `class_exists( 'WP_HTML_Tag_Processor' )`, an
- * unqualified, global lookup.
+ * Configuration is via a plain function backed by function-local static
+ * storage (no superglobals, no static class members), so calling code never
+ * performs a static access on the stub. Declared in the global namespace on
+ * purpose: RocketLazyload\Image checks for the real class via
+ * `class_exists( 'WP_HTML_Tag_Processor' )`, an unqualified, global lookup.
  */
 
-if ( ! function_exists( 'rll_html_api_stub_configure' ) ) {
+if ( ! function_exists( 'rll_html_api_stub_config' ) ) {
+	/**
+	 * Gets or sets the WP_HTML_Tag_Processor stub's current configuration.
+	 *
+	 * @param array{attributes: array<string, string|true>, has_tag: bool}|null $set Configuration
+	 *        to store, or null to just read the current one.
+	 *
+	 * @return array{attributes: array<string, string|true>, has_tag: bool}
+	 */
+	function rll_html_api_stub_config( $set = null ) {
+		static $config = [
+			'attributes' => [],
+			'has_tag'    => true,
+		];
+
+		if ( null !== $set ) {
+			$config = $set;
+		}
+
+		return $config;
+	}
+
 	/**
 	 * Configures how the next WP_HTML_Tag_Processor stub instance behaves.
 	 *
@@ -26,8 +47,12 @@ if ( ! function_exists( 'rll_html_api_stub_configure' ) ) {
 	 * @return void
 	 */
 	function rll_html_api_stub_configure( array $attributes, $has_tag = true ) {
-		$GLOBALS['rll_html_api_stub_attributes'] = $attributes;
-		$GLOBALS['rll_html_api_stub_has_tag']    = $has_tag;
+		rll_html_api_stub_config(
+			[
+				'attributes' => $attributes,
+				'has_tag'    => $has_tag,
+			]
+		);
 	}
 }
 
@@ -51,7 +76,7 @@ if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
 		 * @return bool
 		 */
 		public function next_tag() {
-			return $GLOBALS['rll_html_api_stub_has_tag'] ?? true;
+			return rll_html_api_stub_config()['has_tag'];
 		}
 
 		/**
@@ -60,7 +85,7 @@ if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
 		 * @return string|true|null
 		 */
 		public function get_attribute( $name ) {
-			$attributes = $GLOBALS['rll_html_api_stub_attributes'] ?? [];
+			$attributes = rll_html_api_stub_config()['attributes'];
 
 			return array_key_exists( $name, $attributes ) ? $attributes[ $name ] : null;
 		}

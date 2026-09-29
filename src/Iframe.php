@@ -192,30 +192,159 @@ class Iframe {
 	}
 
 	/**
-	 * Marks the placeholder this method just built (whether or not a site filter
-	 * customised it) with the current request's render token, so the companion
-	 * inline script can recognise it as something this library rendered.
+	 * Marks every placeholder in the (already filtered) markup with the current
+	 * request's render token, so the companion inline script can recognise it
+	 * as something this library rendered.
 	 *
-	 * Applied after the `rocket_lazyload_youtube_html` filter runs, and targets
-	 * whichever element in the filtered output still carries the
-	 * `rll-youtube-player` class, so a filter that only tweaks attributes or
-	 * markup around that element keeps working exactly as before. A filter that
-	 * removes that class already opts the element out of the feature; nothing
-	 * further is needed for that case.
+	 * Applied after the `rocket_lazyload_youtube_html` filter runs, and scans
+	 * every `<div>` opening tag in the result for a genuine `class` attribute
+	 * containing the `rll-youtube-player` token -- quoted with either `"` or
+	 * `'`, unquoted, in any attribute position, and never a `class=`-looking
+	 * substring nested inside another attribute's value. This way a filter
+	 * that only reorders/adds attributes, changes the quote style, or emits
+	 * more than one placeholder keeps working exactly as before. A filter that
+	 * removes that class from an element already opts it out of the feature;
+	 * nothing further is needed for that case.
 	 *
 	 * @param string $html Youtube placeholder markup, already filtered.
 	 *
 	 * @return string
 	 */
 	private function addRenderToken( $html ) {
-		$with_token = preg_replace(
-			'#<div(\s+class="[^"]*\brll-youtube-player\b[^"]*")#i',
-			'<div data-rll-token="' . esc_attr( ( new RenderToken() )->get() ) . '"$1',
-			$html,
-			1
+		$result = preg_replace_callback(
+			'#<div\b(?:[^>"\']++|"[^"]*+"|\'[^\']*+\')*+>#i',
+			[ $this, 'addRenderTokenToDivTag' ],
+			$html
 		);
 
-		return null === $with_token ? $html : $with_token;
+		return null === $result ? $html : $result;
+	}
+
+	/**
+	 * Adds the render token to a single `<div>` tag, if it is a genuine
+	 * `rll-youtube-player` placeholder that does not already carry one.
+	 *
+	 * A tag that already has a `data-rll-token` attribute (e.g. one
+	 * hand-authored directly in content) is left alone rather than overwritten:
+	 * the inline script only ever compares it against the current request's
+	 * token, so a stale or content-supplied value simply never matches and
+	 * that element is skipped, exactly as if it had no token at all.
+	 *
+	 * @param array<int, string> $matches Regex match set; [0] is the full tag.
+	 *
+	 * @return string
+	 */
+	private function addRenderTokenToDivTag( $matches ) {
+		$tag   = $matches[0];
+		$class = $this->findAttribute( $tag, 'class' );
+
+		if ( ! $class || ! $this->hasClassToken( $class['value'], 'rll-youtube-player' ) ) {
+			return $tag;
+		}
+
+		if ( $this->findAttribute( $tag, 'data-rll-token' ) ) {
+			return $tag;
+		}
+
+		return substr( $tag, 0, 4 ) . ' data-rll-token="' . esc_attr( ( new RenderToken() )->get() ) . '"' . substr( $tag, 4 );
+	}
+
+	/**
+	 * Checks whether a (still-quoted, if applicable) class attribute value
+	 * contains the given whitespace-separated class token, case-sensitively,
+	 * the same way a browser matches CSS classes.
+	 *
+	 * @param string $raw_value Attribute value as returned by findAttribute(), still quoted if applicable.
+	 * @param string $token     Class token to look for, e.g. `rll-youtube-player`.
+	 *
+	 * @return bool
+	 */
+	private function hasClassToken( $raw_value, $token ) {
+		$value  = $this->stripOuterQuoteChars( $raw_value );
+		$tokens = preg_split( '/\s+/', trim( $value ) );
+
+		return is_array( $tokens ) && in_array( $token, $tokens, true );
+	}
+
+	/**
+	 * Removes a matching pair of leading/trailing quote characters from an
+	 * attribute value, without trimming any whitespace. Small, Iframe-local
+	 * equivalent of Image::stripOuterQuoteChars().
+	 *
+	 * @param string $value Attribute value, as returned by findAttribute().
+	 *
+	 * @return string
+	 */
+	private function stripOuterQuoteChars( $value ) {
+		$length = strlen( $value );
+
+		if ( $length < 2 ) {
+			return $value;
+		}
+
+		$first = $value[0];
+		$last  = $value[ $length - 1 ];
+
+		if ( ( '"' === $first || "'" === $first ) && $first === $last ) {
+			return substr( $value, 1, -1 );
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Finds the first genuine, non-nested occurrence of the given attribute on
+	 * an HTML tag string. Small, Iframe-local equivalent of
+	 * Image::findRealAttribute()'s quote-aware, linear (single-pass) lookup,
+	 * kept separate since that one is private to Image.
+	 *
+	 * @param string $tag  HTML tag string to search in, e.g. `<div class="a">`.
+	 * @param string $name Attribute name to look for, e.g. `class`.
+	 *
+	 * @return false|array{attribute: string, value: string}
+	 */
+	private function findAttribute( $tag, $name ) {
+		$pattern = '#(?<=\s)' . preg_quote( $name, '#' ) . '\s*=\s*(?<value>"[^"]*+"|\'[^\']*+\'|[^\s>]++)#i';
+
+		if ( ! preg_match_all( $pattern, $tag, $matches, PREG_OFFSET_CAPTURE ) ) {
+			return false;
+		}
+
+		$pos        = 0;
+		$open_quote = null;
+
+		foreach ( $matches[0] as $index => $match ) {
+			$offset = $match[1];
+
+			for ( $i = $pos; $i < $offset; $i++ ) {
+				$char = $tag[ $i ];
+
+				if ( null === $open_quote ) {
+					if ( '"' === $char || "'" === $char ) {
+						$open_quote = $char;
+					}
+
+					continue;
+				}
+
+				if ( $char === $open_quote ) {
+					$open_quote = null;
+				}
+			}
+
+			$pos = $offset;
+
+			if ( null !== $open_quote ) {
+				continue;
+			}
+
+			return [
+				'attribute' => $match[0],
+				'value'     => $matches['value'][ $index ][0],
+			];
+		}
+
+		return false;
 	}
 
 	/**
