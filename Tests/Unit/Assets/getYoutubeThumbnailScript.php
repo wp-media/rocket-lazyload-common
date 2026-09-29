@@ -41,8 +41,12 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 		// innerHTML, and must validate the id and embed URL before using them.
 		$this->assertStringNotContainsString( 'innerHTML', $actual );
 		$this->assertStringContainsString( '/^[A-Za-z0-9_-]{11}$/', $actual );
-		$this->assertStringContainsString( '/^https:\/\/(www\.)?youtube(-nocookie)?\.com\/embed\/[A-Za-z0-9_-]{11}$/', $actual );
-		$this->assertStringContainsString( 'new URL(', $actual );
+		$this->assertStringContainsString( 'new URL(src,"https://www.youtube.com")', $actual );
+		$this->assertStringContainsString( '"https:"!==url.protocol&&"http:"!==url.protocol', $actual );
+		$this->assertStringContainsString( '["youtube.com","www.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com"].indexOf(url.hostname)===-1', $actual );
+		$this->assertStringContainsString( 'url.username||url.password||url.port', $actual );
+		$this->assertStringContainsString( '/^\/embed\/[A-Za-z0-9_-]{11}\/?$/', $actual );
+		$this->assertStringContainsString( 'new URL("https://"+url.hostname+url.pathname.replace(/\/$/,""))', $actual );
 		$this->assertStringContainsString( 'new URLSearchParams(', $actual );
 	}
 
@@ -187,9 +191,13 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 			. 'return frag;'
 			. '}'
 			. 'function lazyLoadYoutubeIframe(){'
-			. 'var src=this.parentNode.dataset.src;'
-			. 'if(!/^https:\/\/(www\.)?youtube(-nocookie)?\.com\/embed\/[A-Za-z0-9_-]{11}$/.test(src)){return;}'
-			. 'var url=new URL(src);'
+			. 'var src=this.parentNode.dataset.src,url;'
+			. 'try{url=new URL(src,"https://www.youtube.com");}catch(err){return;}'
+			. 'if("https:"!==url.protocol&&"http:"!==url.protocol){return;}'
+			. 'if(["youtube.com","www.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com"].indexOf(url.hostname)===-1){return;}'
+			. 'if(url.username||url.password||url.port){return;}'
+			. 'if(!/^\/embed\/[A-Za-z0-9_-]{11}\/?$/.test(url.pathname)){return;}'
+			. 'url=new URL("https://"+url.hostname+url.pathname.replace(/\/$/,""));'
 			. 'url.searchParams.set("autoplay","1");'
 			. 'var query=this.parentNode.dataset.query||"";'
 			. 'new URLSearchParams(query).forEach(function(v,k){url.searchParams.set(k,v);});'
