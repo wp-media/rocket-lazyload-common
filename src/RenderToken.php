@@ -14,6 +14,11 @@ namespace RocketLazyload;
  * renderer that needs it), so the client-side script can recognise markup this
  * library rendered in the same request/response without relying on a static,
  * guessable marker.
+ *
+ * The token itself is stored in a private static property so every instance
+ * shares the same one-per-request value, but the public surface is instance
+ * methods, so callers use `( new RenderToken() )->get()` rather than a static
+ * call.
  */
 class RenderToken {
 
@@ -29,7 +34,7 @@ class RenderToken {
 	 *
 	 * @return string
 	 */
-	public static function get() {
+	public function get() {
 		if ( null === self::$token ) {
 			self::$token = bin2hex( random_bytes( 8 ) );
 		}
@@ -38,15 +43,23 @@ class RenderToken {
 	}
 
 	/**
-	 * Resets the stored token. Intended for tests only.
+	 * Sets a deterministic token. Intended for tests only.
 	 *
-	 * @param string|null $token Deterministic token to use for subsequent get() calls;
-	 *                           omit (or pass null) to force the next get() call to
-	 *                           generate a fresh one.
+	 * @param string $token Deterministic token for subsequent get() calls.
 	 *
 	 * @return void
 	 */
-	public static function reset( $token = null ) {
+	public function set( $token ) {
 		self::$token = $token;
+	}
+
+	/**
+	 * Clears the stored token, so the next get() call generates a fresh one.
+	 * Intended for tests only.
+	 *
+	 * @return void
+	 */
+	public function reset() {
+		self::$token = null;
 	}
 }

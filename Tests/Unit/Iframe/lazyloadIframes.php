@@ -29,7 +29,7 @@ class Test_LazyloadIframe extends TestCase {
 		$this->iframe = new Iframe();
 
 		// Deterministic token so fixtures can assert on an exact value.
-		RenderToken::reset( '0123456789abcdef' );
+		( new RenderToken() )->set( '0123456789abcdef' );
 
 		$this->stubEscapeFunctions();
 
@@ -39,7 +39,7 @@ class Test_LazyloadIframe extends TestCase {
 	}
 
 	protected function tear_down() {
-		RenderToken::reset();
+		( new RenderToken() )->reset();
 		parent::tear_down();
 	}
 

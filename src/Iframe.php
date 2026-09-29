@@ -210,7 +210,7 @@ class Iframe {
 	private function addRenderToken( $html ) {
 		$with_token = preg_replace(
 			'#<div(\s+class="[^"]*\brll-youtube-player\b[^"]*")#i',
-			'<div data-rll-token="' . esc_attr( RenderToken::get() ) . '"$1',
+			'<div data-rll-token="' . esc_attr( ( new RenderToken() )->get() ) . '"$1',
 			$html,
 			1
 		);

@@ -266,7 +266,7 @@ class Assets {
 		// set, `/` is escaped too, so a label containing `</script>` cannot end
 		// the surrounding <script> tag early.
 		$button_aria_label = wp_json_encode( $args['button_aria_label'] );
-		$render_token      = wp_json_encode( RenderToken::get() );
+		$render_token      = wp_json_encode( ( new RenderToken() )->get() );
 
 		/**
 		 * Filters the patterns excluded from lazyload for youtube thumbnails.

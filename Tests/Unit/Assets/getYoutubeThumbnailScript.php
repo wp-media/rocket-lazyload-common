@@ -20,7 +20,7 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 		$this->assets = new Assets();
 
 		// Deterministic token so the expected script text is exact and stable.
-		RenderToken::reset( '0123456789abcdef' );
+		( new RenderToken() )->set( '0123456789abcdef' );
 
 		Functions\when( 'wp_parse_args' )->alias( static function ( $parsed_args, $defaults ) {
 			return \array_merge( $defaults, $parsed_args );
@@ -28,7 +28,7 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 	}
 
 	protected function tear_down() {
-		RenderToken::reset();
+		( new RenderToken() )->reset();
 		parent::tear_down();
 	}
 

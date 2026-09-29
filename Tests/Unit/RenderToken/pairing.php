@@ -26,12 +26,12 @@ use RocketLazyload\Tests\Unit\TestCase;
  */
 class Test_Pairing extends TestCase {
 	protected function tear_down() {
-		RenderToken::reset();
+		( new RenderToken() )->reset();
 		parent::tear_down();
 	}
 
 	public function testIframeAndAssetsShouldEmbedTheSameTokenInOneRequest() {
-		RenderToken::reset();
+		( new RenderToken() )->reset();
 
 		$this->stubEscapeFunctions();
 

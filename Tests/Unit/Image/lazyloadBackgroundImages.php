@@ -305,11 +305,10 @@ class Test_LazyloadBackgroundImages extends TestCase {
 	 */
 	public function testShouldProcessNormallyWhenHtmlApiAgrees() {
 		require_once RLL_COMMON_ROOT . 'Tests/Fixtures/stubs/wp-html-tag-processor-stub.php';
-		\WP_HTML_Tag_Processor::reset_stub();
-		\WP_HTML_Tag_Processor::$attributes = [
+		rll_html_api_stub_configure( [
 			'class' => 'my-class',
 			'style' => 'background-image:url(https://example.com/a.png)',
-		];
+		] );
 
 		$this->stubEscapeFunctions();
 		Functions\stubs( [ 'wp_strip_all_tags' ] );
@@ -335,11 +334,10 @@ class Test_LazyloadBackgroundImages extends TestCase {
 	 */
 	public function testShouldLeaveElementUntouchedByClassHandlingWhenHtmlApiFindsWhatHardenedParserMissed() {
 		require_once RLL_COMMON_ROOT . 'Tests/Fixtures/stubs/wp-html-tag-processor-stub.php';
-		\WP_HTML_Tag_Processor::reset_stub();
-		\WP_HTML_Tag_Processor::$attributes = [
+		rll_html_api_stub_configure( [
 			'class' => 'my-class',
 			'style' => 'background-image:url(https://example.com/a.png)',
-		];
+		] );
 
 		$this->stubEscapeFunctions();
 		Functions\stubs( [ 'wp_strip_all_tags' ] );
@@ -364,11 +362,10 @@ class Test_LazyloadBackgroundImages extends TestCase {
 	 */
 	public function testShouldFallBackToFreshClassWhenHtmlApiValueDiffers() {
 		require_once RLL_COMMON_ROOT . 'Tests/Fixtures/stubs/wp-html-tag-processor-stub.php';
-		\WP_HTML_Tag_Processor::reset_stub();
-		\WP_HTML_Tag_Processor::$attributes = [
+		rll_html_api_stub_configure( [
 			'class' => 'not-what-the-hardened-parser-saw',
 			'style' => 'background-image:url(https://example.com/a.png)',
-		];
+		] );
 
 		$this->stubEscapeFunctions();
 		Functions\stubs( [ 'wp_strip_all_tags' ] );
@@ -392,10 +389,9 @@ class Test_LazyloadBackgroundImages extends TestCase {
 	 */
 	public function testShouldFallBackToFreshClassWhenHtmlApiSaysAbsent() {
 		require_once RLL_COMMON_ROOT . 'Tests/Fixtures/stubs/wp-html-tag-processor-stub.php';
-		\WP_HTML_Tag_Processor::reset_stub();
-		\WP_HTML_Tag_Processor::$attributes = [
+		rll_html_api_stub_configure( [
 			'style' => 'background-image:url(https://example.com/a.png)',
-		];
+		] );
 
 		$this->stubEscapeFunctions();
 		Functions\stubs( [ 'wp_strip_all_tags' ] );

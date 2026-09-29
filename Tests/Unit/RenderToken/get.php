@@ -14,40 +14,40 @@ use RocketLazyload\Tests\Unit\TestCase;
  */
 class Test_Get extends TestCase {
 	protected function tear_down() {
-		RenderToken::reset();
+		( new RenderToken() )->reset();
 		parent::tear_down();
 	}
 
 	public function testShouldGenerateAHexTokenOfAtLeast16Characters() {
-		RenderToken::reset();
+		( new RenderToken() )->reset();
 
-		$token = RenderToken::get();
+		$token = ( new RenderToken() )->get();
 
 		$this->assertMatchesRegularExpression( '/^[0-9a-f]{16,}$/', $token );
 	}
 
 	public function testShouldReturnTheSameTokenOnEveryCallWithinOneRequest() {
-		RenderToken::reset();
+		( new RenderToken() )->reset();
 
-		$first  = RenderToken::get();
-		$second = RenderToken::get();
+		$first  = ( new RenderToken() )->get();
+		$second = ( new RenderToken() )->get();
 
 		$this->assertSame( $first, $second );
 	}
 
 	public function testShouldReturnADifferentTokenAfterANewRequestResetsIt() {
-		RenderToken::reset( 'aaaaaaaaaaaaaaaa' );
-		$before = RenderToken::get();
+		( new RenderToken() )->set( 'aaaaaaaaaaaaaaaa' );
+		$before = ( new RenderToken() )->get();
 
-		RenderToken::reset();
-		$after = RenderToken::get();
+		( new RenderToken() )->reset();
+		$after = ( new RenderToken() )->get();
 
 		$this->assertNotSame( $before, $after );
 	}
 
 	public function testShouldAllowTestsToForceADeterministicToken() {
-		RenderToken::reset( 'deadbeefcafebabe' );
+		( new RenderToken() )->set( 'deadbeefcafebabe' );
 
-		$this->assertSame( 'deadbeefcafebabe', RenderToken::get() );
+		$this->assertSame( 'deadbeefcafebabe', ( new RenderToken() )->get() );
 	}
 }
