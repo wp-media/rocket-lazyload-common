@@ -48,6 +48,11 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 		$this->assertStringContainsString( '/^\/embed\/[A-Za-z0-9_-]{11}\/?$/', $actual );
 		$this->assertStringContainsString( 'new URL("https://"+url.hostname+url.pathname.replace(/\/$/,""))', $actual );
 		$this->assertStringContainsString( 'new URLSearchParams(', $actual );
+
+		// No <noscript> fallback: this script only runs with JavaScript enabled, so it would
+		// never be displayed, and an <img> built with DOM APIs starts downloading as soon as
+		// its src is set, which would fetch the thumbnail eagerly and defeat lazyload.
+		$this->assertStringNotContainsString( 'noscript', $actual );
 	}
 
 	/**
@@ -178,12 +183,6 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 			. 'var frag=document.createDocumentFragment(),img=lazyLoadImg(id,l);'
 			. 'img.setAttribute("alt",alt);'
 			. 'frag.appendChild(img);'
-			. 'if(' . $lazy_image . '&&!' . $native . '&&!l){'
-			. 'var noscript=document.createElement("noscript"),nimg=lazyLoadImg(id,true);'
-			. 'nimg.setAttribute("alt",alt);'
-			. 'noscript.appendChild(nimg);'
-			. 'frag.appendChild(noscript);'
-			. '}'
 			. 'var btn=document.createElement("button");'
 			. 'btn.setAttribute("class","play");'
 			. 'btn.setAttribute("aria-label","' . $button_aria_label . '");'
