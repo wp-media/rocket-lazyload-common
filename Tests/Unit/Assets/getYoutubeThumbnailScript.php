@@ -60,6 +60,57 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 	}
 
 	/**
+	 * The embed host allowlist can be changed through the `hosts` argument and the
+	 * `rocket_lazyload_youtube_hosts` filter, e.g. for a privacy proxy. Only valid host
+	 * names are kept, so nothing else can reach the inline script; when none is left,
+	 * the default YouTube hosts are used.
+	 *
+	 * @dataProvider youtubeHostsProvider
+	 *
+	 * @param array $args     Script arguments.
+	 * @param mixed $filtered Value returned by the rocket_lazyload_youtube_hosts filter, null to not filter.
+	 * @param string $expected Expected allowlist literal in the script.
+	 */
+	public function testShouldUseConfiguredYoutubeHosts( $args, $filtered, $expected ) {
+		Filters\expectApplied( 'rocket_lazyload_exclude_youtube_thumbnail' )
+			->andReturn( [] );
+
+		if ( null !== $filtered ) {
+			Filters\expectApplied( 'rocket_lazyload_youtube_hosts' )
+				->once()
+				->andReturn( $filtered );
+		}
+
+		$actual = $this->assets->getYoutubeThumbnailScript( $args );
+
+		$this->assertStringContainsString( 'if(' . $expected . '.indexOf(url.hostname)===-1){return;}', $actual );
+		// The other embed URL checks still apply to every host.
+		$this->assertStringContainsString( 'url.username||url.password||url.port', $actual );
+		$this->assertStringContainsString( '/^\/embed\/[A-Za-z0-9_-]{11}\/?$/', $actual );
+	}
+
+	public function youtubeHostsProvider() {
+		$defaults = '["youtube.com","www.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com"]';
+
+		return [
+			'defaults'                                  => [ [], null, $defaults ],
+			'hosts argument'                            => [ [ 'hosts' => [ 'yt.example.org' ] ], null, '["yt.example.org"]' ],
+			'filter adds a host'                        => [
+				[],
+				[ 'youtube.com', 'www.youtube.com', 'youtube-nocookie.com', 'www.youtube-nocookie.com', 'yt.example.org' ],
+				'["youtube.com","www.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com","yt.example.org"]',
+			],
+			'invalid entries dropped, case normalized' => [
+				[],
+				[ 'YT.Example.org', 'evil.com"];alert(1);//', '</script><script>alert(1)</script>', 'a b.com', 42, [ 'x' ], 'yt.example.org' ],
+				'["yt.example.org"]',
+			],
+			'nothing valid left falls back to defaults' => [ [], [ '"', '' ], $defaults ],
+			'filter returns a non-array'                => [ [], 'yt.example.org', $defaults ],
+		];
+	}
+
+	/**
 	 * Data Provider for testShouldReturnYoutubeThumbnailScript.
 	 *
 	 * @return array

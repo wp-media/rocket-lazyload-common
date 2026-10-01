@@ -13,6 +13,18 @@ namespace RocketLazyload;
  * Class containing the methods to return or print the assets needed for lazyloading
  */
 class Assets {
+	/**
+	 * Default embed hosts the YouTube iframe may be created for.
+	 *
+	 * @var string[]
+	 */
+	const YOUTUBE_HOSTS = [
+		'youtube.com',
+		'www.youtube.com',
+		'youtube-nocookie.com',
+		'www.youtube-nocookie.com',
+	];
+
 
 	/**
 	 * Inserts the lazyload script in the HTML
@@ -212,7 +224,9 @@ class Assets {
 	/**
 	 * Returns the Youtube Thumbnail inline script
 	 *
-	 * @param array<string, bool> $args Array of arguments to populate the script options.
+	 * @param array<string, mixed> $args Array of arguments to populate the script options.
+	 *                                   `hosts` (string[]) is the list of embed hosts the
+	 *                                   iframe may be created for, YouTube's by default.
 	 * @return string
 	 */
 	public function getYoutubeThumbnailScript( $args = [] ) {
@@ -222,6 +236,7 @@ class Assets {
 			'native'            => true,
 			'extension'         => 'jpg',
 			'button_aria_label' => 'play Youtube video',
+			'hosts'             => self::YOUTUBE_HOSTS,
 		];
 
 		$allowed_resolutions = [
@@ -276,6 +291,16 @@ class Assets {
 
 		$excluded_patterns = wp_json_encode( $excluded_patterns );
 
+		/**
+		 * Filters the embed hosts the YouTube iframe may be created for when the preview is clicked.
+		 *
+		 * Useful when the embed URL is rewritten to a privacy proxy or another domain through
+		 * `rocket_lazyload_youtube_html`. Only valid host names are kept.
+		 *
+		 * @param string[] $hosts Array of host names.
+		 */
+		$youtube_hosts = wp_json_encode( $this->sanitizeHosts( apply_filters( 'rocket_lazyload_youtube_hosts', $args['hosts'] ) ) );
+
 		// phpcs:disable Generic.Files.LineLength.TooLong
 		return '<script>'
 			. 'function lazyLoadImg(id,l){'
@@ -302,7 +327,7 @@ class Assets {
 			. 'var src=this.parentNode.dataset.src,url;'
 			. 'try{url=new URL(src,"https://www.youtube.com");}catch(err){return;}'
 			. 'if("https:"!==url.protocol&&"http:"!==url.protocol){return;}'
-			. 'if(["youtube.com","www.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com"].indexOf(url.hostname)===-1){return;}'
+			. "if({$youtube_hosts}.indexOf(url.hostname)===-1){return;}"
 			. 'if(url.username||url.password||url.port){return;}'
 			. 'if(!/^\/embed\/[A-Za-z0-9_-]{11}\/?$/.test(url.pathname)){return;}'
 			. 'url=new URL("https://"+url.hostname+url.pathname.replace(/\/$/,""));'
@@ -388,5 +413,33 @@ class Assets {
 	 */
 	public function getNoJSCSS() {
 		return '<noscript><style id="rocket-lazyload-nojs-css">.rll-youtube-player, [data-lazy-src]{display:none !important;}</style></noscript>';
+	}
+
+	/**
+	 * Keeps only valid, lowercased and unique host names, falling back to the YouTube hosts.
+	 *
+	 * The result is printed in an inline script, so anything else than a host name is dropped.
+	 *
+	 * @param mixed $hosts List of host names.
+	 * @return string[]
+	 */
+	private function sanitizeHosts( $hosts ) {
+		$valid = [];
+
+		foreach ( is_array( $hosts ) ? $hosts : [] as $host ) {
+			if ( ! is_string( $host ) ) {
+				continue;
+			}
+
+			$host = strtolower( $host );
+
+			if ( preg_match( '/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*$/', $host ) ) {
+				$valid[] = $host;
+			}
+		}
+
+		$valid = array_values( array_unique( $valid ) );
+
+		return empty( $valid ) ? self::YOUTUBE_HOSTS : $valid;
 	}
 }
