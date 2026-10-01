@@ -265,7 +265,7 @@ class Test_LazyloadBackgroundImages extends TestCase {
 		$this->stubEscapeFunctions();
 		Functions\stubs( [ 'wp_strip_all_tags' ] );
 
-		$tokens = str_repeat( 'style="d" ', 4000 ); // ~40KB of never-real tokens.
+		$tokens = str_repeat( "style='d' ", 4000 ); // ~40KB of never-real tokens, nested in the double-quoted title.
 		$tag    = '<div title="' . $tokens . '" style="background-image:url(https://example.com/a.png)">bg</div>';
 
 		$start    = microtime( true );
@@ -345,5 +345,53 @@ class Test_LazyloadBackgroundImages extends TestCase {
 		}
 
 		return $attributes;
+	}
+
+	/**
+	 * Browsers accept an attribute right after the closing quote of the previous
+	 * value (`href="#"style=…`), and treat a quote that does not follow `=` as a
+	 * plain character, not as the start of a value. Both shapes must be detected,
+	 * while a `style=`/`class=` token inside another attribute's value must still
+	 * be ignored.
+	 *
+	 * @dataProvider attributeAfterQuoteProvider
+	 */
+	public function testShouldDetectAttributesFollowingAQuote( $input, $expected ) {
+		$this->stubEscapeFunctions();
+		Functions\stubs( [ 'wp_strip_all_tags' ] );
+
+		$this->assertSame(
+			$expected,
+			$this->image->lazyloadBackgroundImages( $input, $input )
+		);
+	}
+
+	public function attributeAfterQuoteProvider() {
+		return [
+			'style right after a closing double quote'                => [
+				'<a href="#"style="background-image:url(https://example.com/a.png)">bg</a>',
+				'<a data-bg="https://example.com/a.png" class="rocket-lazyload" href="#"style="">bg</a>',
+			],
+			'class right after a closing double quote'                => [
+				'<div id="x"class="a" style="background-image:url(https://example.com/a.png)">bg</div>',
+				'<div data-bg="https://example.com/a.png" id="x"class="a rocket-lazyload" style="">bg</div>',
+			],
+			'stray quote before the style attribute'                  => [
+				'<div class="a" " style="background-image:url(https://example.com/a.png)">bg</div>',
+				'<div data-bg="https://example.com/a.png" class="a rocket-lazyload" " style="">bg</div>',
+			],
+			'style= after a double quote inside a single-quoted value' => [
+				'<a title=\'x"style="background-image:url(https://example.com/a.png)"\'>lorem</a>',
+				'<a title=\'x"style="background-image:url(https://example.com/a.png)"\'>lorem</a>',
+			],
+			'style= after a single quote inside a double-quoted value' => [
+				'<a title="x\'style=\'background-image:url(https://example.com/a.png)\'">lorem</a>',
+				'<a title="x\'style=\'background-image:url(https://example.com/a.png)\'">lorem</a>',
+			],
+			'stray quote, then style= inside a real value'            => [
+				'<div " title="style=background-image:url(https://example.com/a.png)">lorem</div>',
+				'<div " title="style=background-image:url(https://example.com/a.png)">lorem</div>',
+			],
+		];
 	}
 }
