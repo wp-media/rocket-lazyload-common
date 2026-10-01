@@ -273,7 +273,9 @@ class Image {
 	 *         (still-quoted, if applicable) value; false when no genuine attribute is found.
 	 */
 	private function findRealAttribute( $tag, $name ) {
-		$pattern = '#(?<=\s)' . preg_quote( $name, '#' ) . '\s*=\s*(?<value>"[^"]*+"|\'[^\']*+\'|[^\s>]++)#is';
+		// As in browsers, an attribute may directly follow the closing quote of the previous
+		// value (`href="#"style=…`), not only whitespace.
+		$pattern = '#(?<=[\s"\'])' . preg_quote( $name, '#' ) . '\s*=\s*(?<value>"[^"]*+"|\'[^\']*+\'|[^\s>]++)#is';
 
 		if ( ! preg_match_all( $pattern, $tag, $matches, PREG_OFFSET_CAPTURE ) ) {
 			return false;
@@ -308,6 +310,9 @@ class Image {
 	 * isOffsetInsideQuotedValue() used to from byte 0 on every call. Callers resume from
 	 * their own cursor instead of restarting at 0, so a tag is only walked once in total.
 	 *
+	 * As in browsers, a quote only opens a value right after `=` (optionally followed by
+	 * whitespace): a stray quote anywhere else is a plain character.
+	 *
 	 * @param string      $tag        HTML tag string being walked.
 	 * @param int         $from       Start offset to resume scanning from (inclusive).
 	 * @param int         $end        End offset to scan up to (exclusive).
@@ -321,7 +326,7 @@ class Image {
 			$char = $tag[ $i ];
 
 			if ( null === $open_quote ) {
-				if ( '"' === $char || "'" === $char ) {
+				if ( ( '"' === $char || "'" === $char ) && $this->followsEqualsSign( $tag, $i ) ) {
 					$open_quote = $char;
 				}
 
@@ -332,6 +337,28 @@ class Image {
 				$open_quote = null;
 			}
 		}
+	}
+
+	/**
+	 * Checks whether the character at $offset is preceded by `=`, ignoring whitespace.
+	 *
+	 * Only scans back over the whitespace run before $offset, so a full walk over a tag
+	 * stays linear in its length.
+	 *
+	 * @param string $tag    HTML tag string being walked.
+	 * @param int    $offset Offset of the character to check.
+	 *
+	 * @return bool
+	 */
+	private function followsEqualsSign( $tag, $offset ) {
+		for ( $i = $offset - 1; $i >= 0; $i-- ) {
+			// No ctype_space(): ctype is an optional PHP extension.
+			if ( false === strpos( " \t\n\r\f", $tag[ $i ] ) ) {
+				return '=' === $tag[ $i ];
+			}
+		}
+
+		return false;
 	}
 
 	/**
