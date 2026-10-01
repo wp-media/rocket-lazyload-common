@@ -53,6 +53,10 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 		// never be displayed, and an <img> built with DOM APIs starts downloading as soon as
 		// its src is set, which would fetch the thumbnail eagerly and defeat lazyload.
 		$this->assertStringNotContainsString( 'noscript', $actual );
+
+		// The click is the user asking to play: autoplay=1 is set after the embed's
+		// own query parameters, so an original autoplay=0 can't leave the video paused.
+		$this->assertStringContainsString( 'url.searchParams.set(k,v);});url.searchParams.set("autoplay","1");', $actual );
 	}
 
 	/**
@@ -197,9 +201,9 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 			. 'if(url.username||url.password||url.port){return;}'
 			. 'if(!/^\/embed\/[A-Za-z0-9_-]{11}\/?$/.test(url.pathname)){return;}'
 			. 'url=new URL("https://"+url.hostname+url.pathname.replace(/\/$/,""));'
-			. 'url.searchParams.set("autoplay","1");'
 			. 'var query=this.parentNode.dataset.query||"";'
 			. 'new URLSearchParams(query).forEach(function(v,k){url.searchParams.set(k,v);});'
+			. 'url.searchParams.set("autoplay","1");'
 			. 'var e=document.createElement("iframe");'
 			. 'e.setAttribute("src",url.href);'
 			. 'e.setAttribute("frameborder","0");'

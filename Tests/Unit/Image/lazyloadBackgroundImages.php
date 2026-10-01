@@ -287,6 +287,44 @@ class Test_LazyloadBackgroundImages extends TestCase {
 	}
 
 	/**
+	 * A stray quote inside an earlier tag's attribute value (e.g. unescaped
+	 * JSON written by a third-party plugin) must not pair with a quote found
+	 * later in the document: the candidate match for that earlier tag must end
+	 * at its own `>`, as in browsers, so the backgrounds that follow are still
+	 * lazyloaded.
+	 *
+	 * @dataProvider strayQuoteProvider
+	 */
+	public function testShouldLazyloadBackgroundsFollowingATagWithAStrayQuote( $input, $expected ) {
+		$this->stubEscapeFunctions();
+		Functions\stubs( [ 'wp_strip_all_tags' ] );
+
+		$this->assertSame(
+			$expected,
+			$this->image->lazyloadBackgroundImages( $input, $input )
+		);
+	}
+
+	public function strayQuoteProvider() {
+		return [
+			'stray quote, quote in later text'                  => [
+				'<div data-cfg="a=" b">x</div><div class="bg" style="background-image: url(https://example.com/bg.jpg)">bg</div><p title="t">He said " ok ></p>',
+				'<div data-cfg="a=" b">x</div><div data-bg="https://example.com/bg.jpg" class="bg rocket-lazyload" style="">bg</div><p title="t">He said " ok ></p>',
+			],
+			'unescaped JSON in a data attribute, several bgs' => [
+				'<div class="ctf" data-ctfshortcode="{"0": "linktextcolor=" ", "1": "num=3"}"></div>'
+				. '<section class="s1" style="background-image:url(https://example.com/a.png)">a</section>'
+				. '<div class="s2" data-x="1" style="background-image:url(https://example.com/b.png)">b</div>'
+				. '<p>it\'s "quoted" text</p>',
+				'<div class="ctf" data-ctfshortcode="{"0": "linktextcolor=" ", "1": "num=3"}"></div>'
+				. '<section data-bg="https://example.com/a.png" class="s1 rocket-lazyload" style="">a</section>'
+				. '<div data-bg="https://example.com/b.png" class="s2 rocket-lazyload" data-x="1" style="">b</div>'
+				. '<p>it\'s "quoted" text</p>',
+			],
+		];
+	}
+
+	/**
 	 * Parses the attribute list of the first HTML element found in $html.
 	 *
 	 * @param string $html HTML fragment containing exactly one element.
