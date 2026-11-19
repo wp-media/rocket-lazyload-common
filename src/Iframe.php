@@ -172,7 +172,7 @@ class Iframe {
 		}
 
 		$youtube_url = $this->changeYoutubeUrlForYoutuDotBe( $iframe['src'] );
-		$youtube_url = $this->cleanYoutubeUrl( $iframe['src'] );
+		$youtube_url = $this->cleanYoutubeUrl( $youtube_url );
 
 		preg_match( '@\s*title\s*=\s*(\'|")(?<title>.*)\1@iUs', $iframe['atts'], $atts );
 

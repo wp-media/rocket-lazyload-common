@@ -71,4 +71,22 @@ class Test_LazyloadIframe extends TestCase {
 			$this->iframe->lazyloadIframes( $original, $original, $args )
 		);
 	}
+
+	public function testShouldConvertYoutuDotBeUrlToEmbedUrl() {
+		$args = [
+			'youtube' => true,
+		];
+
+		Functions\when( 'wp_parse_url' )->alias( function( $url, $component ) {
+			return parse_url( $url, $component );
+		} );
+
+		$original = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/iframe/youtudotbe.html' );
+		$expected = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/iframe/youtudotbelazyloaded.html' );
+
+		$this->assertSame(
+			$expected,
+			$this->iframe->lazyloadIframes( $original, $original, $args )
+		);
+	}
 }
