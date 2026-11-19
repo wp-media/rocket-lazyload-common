@@ -519,6 +519,12 @@ class Image {
 			return false;
 		}
 
+		// Inline data: images are already in the page, so lazyloading them saves no request.
+		// esc_url() would also strip the data: protocol and leave an empty data-lazy-src.
+		if ( 0 === stripos( $image['src'], 'data:' ) ) {
+			return false;
+		}
+
 		if ( $this->isExcluded( $image['src'], $this->getExcludedSrc() ) ) {
 			return false;
 		}
