@@ -1,5 +1,4 @@
 .github export-ignore
-bin export-ignore
 Tests export-ignore
 
 .editorconfig export-ignore
@@ -9,4 +8,5 @@ composer.lock export-ignore
 LICENSE export-ignore
 phpcs.xml export-ignore
 phpstan.neon.dist export-ignore
+phpstan-baseline.neon export-ignore
 README.md export-ignore

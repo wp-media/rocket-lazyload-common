@@ -1,11 +1,11 @@
 <?php
-declare(strict_types=1);
-
 /**
  * Handles lazyloading of images
  *
  * @package RocketLazyload
  */
+
+declare(strict_types=1);
 
 namespace RocketLazyload;
 
@@ -337,25 +337,25 @@ class Image {
 	/**
 	 * Removes outer single or double quotations.
 	 *
-	 * @param string       $string String to strip quotes from.
+	 * @param string       $value  String to strip quotes from.
 	 * @param false|string $quotes The outer quotes to remove.
 	 *
 	 * @return string string without quotes.
 	 */
-	private function trimOuterQuotes( $string, $quotes ) {
-		$string = trim( $string );
+	private function trimOuterQuotes( $value, $quotes ) {
+		$value = trim( $value );
 
-		if ( empty( $string ) ) {
+		if ( empty( $value ) ) {
 			return '';
 		}
 
 		if ( empty( $quotes ) ) {
-			return $string;
+			return $value;
 		}
 
-		$string = ltrim( $string, $quotes );
-		$string = rtrim( $string, $quotes );
-		return trim( $string );
+		$value = ltrim( $value, $quotes );
+		$value = rtrim( $value, $quotes );
+		return trim( $value );
 	}
 
 	/**
@@ -384,17 +384,17 @@ class Image {
 	 *  1. Removes empties.
 	 *  2. Trims each string.
 	 *
-	 * @param string           $string    The target string to convert.
+	 * @param string           $value     The target string to convert.
 	 * @param non-empty-string $delimiter Optional. Default: ' ' (one space).
 	 *
 	 * @return array<string> An array of trimmed strings.
 	 */
-	private function stringToArray( $string, $delimiter = ' ' ) {
-		if ( empty( $string ) ) {
+	private function stringToArray( $value, $delimiter = ' ' ) {
+		if ( empty( $value ) ) {
 			return [];
 		}
 
-		$array = explode( $delimiter, $string );
+		$array = explode( $delimiter, $value );
 
 		if ( ! $array ) {
 			return [];
@@ -454,7 +454,7 @@ class Image {
 					$lazy_picture = str_replace( $source[0], $lazyload_srcset, $lazy_picture );
 
 					unset( $lazyload_srcset );
-					$lazy_sources++;
+					++$lazy_sources;
 				}
 
 				if ( 0 === $lazy_sources ) {
@@ -519,6 +519,12 @@ class Image {
 			return false;
 		}
 
+		// Inline data: images are already in the page, so lazyloading them saves no request.
+		// esc_url() would also strip the data: protocol and leave an empty data-lazy-src.
+		if ( 0 === stripos( $image['src'], 'data:' ) ) {
+			return false;
+		}
+
 		if ( $this->isExcluded( $image['src'], $this->getExcludedSrc() ) ) {
 			return false;
 		}
@@ -534,7 +540,7 @@ class Image {
 	 *
 	 * @return bool
 	 */
-	public function isExcluded( $string, $excluded_values ) {
+	public function isExcluded( $string, $excluded_values ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.stringFound -- Public API: renaming would break named-argument callers.
 		if ( ! is_array( $excluded_values ) ) {
 			$excluded_values = (array) $excluded_values;
 		}

@@ -33,6 +33,8 @@ class TestLazyloadPictures extends TestCase {
 	 * @dataProvider configTestData
 	 */
 	public function testShouldReturnExpected( $config, $original, $expected ) {
+		$this->stubEscapeFunctions();
+
 		Functions\when( 'absint' )->alias( function( $value ) {
 			return abs( intval( $value ) );
 		} );

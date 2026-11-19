@@ -1,11 +1,11 @@
 <?php
-declare(strict_types=1);
-
 /**
  * Handle the lazyload required assets: inline CSS and JS
  *
  * @package RocketLazyload
  */
+
+declare(strict_types=1);
 
 namespace RocketLazyload;
 
