@@ -30,7 +30,7 @@ class Test_LazyloadBackgroundImages extends TestCase {
 	}
 
 	public function testShouldReturnSameWhenNoBackgroundImage() {
-		$noimage = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/noimage.html' );
+		$noimage = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/Image/noimage.html' );
 
 		$this->assertSame(
 			$noimage,
@@ -52,8 +52,8 @@ class Test_LazyloadBackgroundImages extends TestCase {
 			return \trim( $string );
 		} );
 
-		$original = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/bgimages.html' );
-		$expected = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/image/bgimageslazyloaded.html' );
+		$original = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/Image/bgimages.html' );
+		$expected = file_get_contents( RLL_COMMON_ROOT . 'Tests/Fixtures/Image/bgimageslazyloaded.html' );
 
 		$this->assertSame(
 			$expected,
