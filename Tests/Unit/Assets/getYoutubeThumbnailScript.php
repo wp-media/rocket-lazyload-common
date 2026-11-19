@@ -69,42 +69,42 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 			[
 				[],
 				[],
-				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'true', 'false', 'play Youtube video', '[]' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'true', 'false', 'play YouTube video', '[]' ),
 			],
 			[
 				[
 					'resolution' => 'mqdefault',
 				],
 				[],
-				$this->build_script( 'https://i.ytimg.com/vi/ID/mqdefault.jpg', 320, 180, 'true', 'false', 'play Youtube video', '[]' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/mqdefault.jpg', 320, 180, 'true', 'false', 'play YouTube video', '[]' ),
 			],
 			[
 				[
 					'resolution' => 'sddefault',
 				],
 				[],
-				$this->build_script( 'https://i.ytimg.com/vi/ID/sddefault.jpg', 640, 480, 'true', 'false', 'play Youtube video', '[]' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/sddefault.jpg', 640, 480, 'true', 'false', 'play YouTube video', '[]' ),
 			],
 			[
 				[
 					'resolution' => 'hqdefault',
 				],
 				[],
-				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'true', 'false', 'play Youtube video', '[]' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'true', 'false', 'play YouTube video', '[]' ),
 			],
 			[
 				[
 					'resolution' => 'maxresdefault',
 				],
 				[],
-				$this->build_script( 'https://i.ytimg.com/vi/ID/maxresdefault.jpg', 1280, 720, 'true', 'false', 'play Youtube video', '[]' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/maxresdefault.jpg', 1280, 720, 'true', 'false', 'play YouTube video', '[]' ),
 			],
 			[
 				[
 					'resolution' => 'ultra',
 				],
 				[],
-				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'true', 'false', 'play Youtube video', '[]' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'true', 'false', 'play YouTube video', '[]' ),
 			],
 			[
 				[
@@ -113,7 +113,7 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 					'native'     => false,
 				],
 				[],
-				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'false', 'true', 'play Youtube video', '[]' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'false', 'true', 'play YouTube video', '[]' ),
 			],
 			[
 				[
@@ -122,7 +122,7 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 					'native'     => true,
 				],
 				[],
-				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'true', 'true', 'play Youtube video', '[]' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'true', 'true', 'play YouTube video', '[]' ),
 			],
 			[
 				[
@@ -132,7 +132,7 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 					'extension'  => 'webp',
 				],
 				[],
-				$this->build_script( 'https://i.ytimg.com/vi_webp/ID/hqdefault.webp', 480, 360, 'true', 'true', 'play Youtube video', '[]' ),
+				$this->build_script( 'https://i.ytimg.com/vi_webp/ID/hqdefault.webp', 480, 360, 'true', 'true', 'play YouTube video', '[]' ),
 			],
 			[
 				[
@@ -143,7 +143,7 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 				[
 					'https://i.ytimg.com/vi/12345/hqdefault.jpg',
 				],
-				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'true', 'true', 'play Youtube video', '["https:\/\/i.ytimg.com\/vi\/12345\/hqdefault.jpg"]' ),
+				$this->build_script( 'https://i.ytimg.com/vi/ID/hqdefault.jpg', 480, 360, 'true', 'true', 'play YouTube video', '["https:\/\/i.ytimg.com\/vi\/12345\/hqdefault.jpg"]' ),
 			],
 			[
 				[
@@ -153,7 +153,7 @@ class Test_GetYoutubeThumbnaiScript extends TestCase {
 					'extension'  => 'webp',
 				],
 				[],
-				$this->build_script( 'https://i.ytimg.com/vi_webp/ID/hqdefault.webp', 480, 360, 'true', 'true', 'play Youtube video', '[]' ),
+				$this->build_script( 'https://i.ytimg.com/vi_webp/ID/hqdefault.webp', 480, 360, 'true', 'true', 'play YouTube video', '[]' ),
 			],
 		];
 	}
