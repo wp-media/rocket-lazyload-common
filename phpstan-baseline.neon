@@ -1,0 +1,7 @@
+parameters:
+	ignoreErrors:
+		-
+			rawMessage: Value assigned to variable $youtube_url is never read before being overwritten.
+			identifier: assign.overwritten
+			count: 1
+			path: src/Iframe.php
